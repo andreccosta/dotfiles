@@ -1,0 +1,51 @@
+#!/bin/bash
+
+# navigation
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+alias ~='cd ~'
+
+# shorts
+alias v='vim'
+alias ll='ls -lpah'
+
+# colors
+alias grep='grep --color=auto'
+
+# curl
+alias curl='curl -#'
+
+# untar
+alias untar='tar xvf'
+
+# copy/paste
+alias copy='pbcopy'
+alias paste='pbpaste'
+
+# docker
+alias ds='docker ps'
+
+# docker machine
+alias dm_env='eval $(docker-machine env `docker-machine active`)'
+alias dm_ip='docker-machine ip `docker-machine active`'
+alias dm_stop='docker-machine stop `docker-machine active`'
+
+# git
+alias ga='git add'
+alias gc='git clone'
+alias gca='git commit -a'
+alias gd='git diff'
+alias gl='git log --pretty="format:%Cgreen%h%Creset %an - %s" --graph'
+alias gst='git status'
+alias gp='git push'
+alias gpr='git pull --rebase'
+alias gpt='git push --tags'
+alias gr='git reset'
+alias gs='git status'
+
+# utils
+alias hc='rm $HISTFILE'
+
+# send WOL to NAS
+alias wakeNAS='wakeonlan 38:EA:A7:AB:F3:05'

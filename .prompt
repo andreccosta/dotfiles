@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# simple prompt with git branch
+__git_ps1() {
+        git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
+}
