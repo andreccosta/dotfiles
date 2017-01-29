@@ -46,6 +46,3 @@ alias gs='git status'
 
 # utils
 alias hc='rm $HISTFILE'
-
-# send WOL to NAS
-alias wakeNAS='wakeonlan 38:EA:A7:AB:F3:05'
