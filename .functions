@@ -1,27 +1,5 @@
 #!/bin/bash
 
-# show/hide dot files
-show_dot() {
-  defaults write com.apple.finder AppleShowAllFiles YES
-  killall Finder
-}
-
-hide_dot() {
-  defaults write com.apple.finder AppleShowAllFiles NO
-  killall Finder
-}
-
-# show/hide desktop icons
-show_icons() {
-  defaults write com.apple.finder CreateDesktop true
-  killall Finder
-}
-
-hide_icons() {
-  defaults write com.apple.finder CreateDesktop false
-  killall Finder
-}
-
 # docker machine
 function dm_start() {
   docker-machine start "$1" && 

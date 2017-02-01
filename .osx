@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# detect platform
+platform=$("uname")
+if [ "$platform" != "Darwin" ]; then
+    return;
+fi
+
+# show/hide dot files
+show_dot() {
+  defaults write com.apple.finder AppleShowAllFiles YES
+  killall Finder
+}
+
+hide_dot() {
+  defaults write com.apple.finder AppleShowAllFiles NO
+  killall Finder
+}
+
+# show/hide desktop icons
+show_icons() {
+  defaults write com.apple.finder CreateDesktop true
+  killall Finder
+}
+
+hide_icons() {
+  defaults write com.apple.finder CreateDesktop false
+  killall Finder
+}
+
+# lock screen
+alias lock='/System/Library/CoreServices/"Menu Extras"/User.menu/Contents/Resources/CGSession -suspend'
