@@ -24,6 +24,6 @@ hide_icons() {
 
 # docker machine
 function dm_start() {
-  docker-machine start $1 && 
-  eval $(docker-machine env `docker-machine active`)
+  docker-machine start "$1" && 
+  eval "$(docker-machine env "$(docker-machine active)")"
 }
