@@ -1,4 +1,4 @@
-.PHONY: all dotfiles
+.PHONY: all dotfiles test shellcheck
 
 all: dotfiles
 
