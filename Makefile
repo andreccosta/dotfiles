@@ -13,7 +13,6 @@ test: shellcheck
 
 shellcheck:
 	docker run --rm -it \
-		--name df-shellcheck \
 		-v $(CURDIR):/usr/src:ro \
 		--workdir /usr/src \
 		andreccosta/shellcheck ./test.sh
