@@ -1,11 +1,10 @@
----
-  language: haskell
-  sudo: required
-  services:
-    - docker
-  notifications:
-    email: true
-  before_install:
-    - docker pull andreccosta/shellcheck
-  script:
-    - make test
+language: generic
+sudo: required
+services:
+  - docker
+notifications:
+  email: true
+before_install:
+  - docker pull andreccosta/shellcheck
+script:
+  - make test
