@@ -1,9 +1,9 @@
 # dotfiles
 
-:warning: Most of this was shamelessly stolen from [@jessfraz/dotfiles](/jessfraz/dotfiles "jessfraz/dotfiles")
+:warning: Most of this was shamelessly stolen from [@jessfraz/dotfiles](https://github.com/jessfraz/dotfiles "jessfraz/dotfiles")
 
 
-[![Build Status](https://travis-ci.org/andreccosta/dotfiles.svg?branch=master)](https://travis-ci.org/andreccosta/dotfiles)
+[![Build status](https://travis-ci.org/andreccosta/dotfiles.svg?branch=master)](https://travis-ci.org/andreccosta/dotfiles "Build status")
 
 
 **Install**
