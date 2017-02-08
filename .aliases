@@ -45,5 +45,8 @@ alias gpt='git push --tags'
 alias gr='git reset'
 alias gs='git status'
 
+# webpack
+alias wp='./node_modules/.bin/webpack --progress --colors'
+
 # utils
 alias hc='rm $HISTFILE'
