@@ -27,11 +27,6 @@ alias paste='pbpaste'
 # docker
 alias ds='docker ps'
 
-# docker machine
-alias dm_env='eval $(docker-machine env `docker-machine active`)'
-alias dm_ip='docker-machine ip `docker-machine active`'
-alias dm_stop='docker-machine stop `docker-machine active`'
-
 # git
 alias ga='git add'
 alias gc='git clone'
