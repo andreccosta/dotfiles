@@ -1,1 +1,4 @@
 #!/bin/bash
+
+# yarn global pkgs
+export PATH="$PATH:$(yarn global bin)"
