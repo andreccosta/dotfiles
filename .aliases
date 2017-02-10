@@ -8,6 +8,7 @@ alias ~='cd ~'
 
 # shorts
 alias c='clear'
+alias h='history'
 alias v='vim'
 alias ll='ls -lpah'
 
@@ -45,3 +46,4 @@ alias wp='./node_modules/.bin/webpack --progress --colors'
 
 # utils
 alias hc='rm $HISTFILE'
+alias rmdir='rm -ri'

@@ -33,3 +33,12 @@ dm_ip() {
     docker-machine ip "$1"
   fi
 }
+
+# utils
+mcd () {
+  if [[ $# -eq 0 ]] ; then
+    echo "usage: mcd <directory>"; return;
+  else
+    mkdir -p -- "$1" && cd -P -- "$1"
+  fi
+}
