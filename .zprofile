@@ -8,3 +8,6 @@ for file in ~/.{prompt,aliases,functions,path,osx,extra,exports}; do
 	fi
 done
 unset file
+
+# fix curl alias
+alias curl='noglob curl -#'
