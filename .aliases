@@ -16,7 +16,7 @@ alias ll='ls -lpah'
 alias grep='grep --color=auto'
 
 # curl
-alias curl='curl -#'
+alias curl='noglob curl -#'
 
 # untar
 alias untar='tar xvf'
