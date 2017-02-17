@@ -1,0 +1,19 @@
+[color]
+	ui = true
+[user]
+	name = André Costa
+	email = andreccosta@me.com
+[push]
+	default = matching
+[filter "lfs"]
+	smudge = git-lfs smudge %f
+	required = true
+	clean = git-lfs clean %f
+[core]
+	editor = vim
+[alias]
+	cm = commit
+	cmm = commit -m
+	l = log --pretty='format:%C(green)%h%C(reset) %C(bold blue)%ar%C(reset) %an : %s' --graph
+	last = log - 1 HEAD
+	st = status
