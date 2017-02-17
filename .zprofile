@@ -9,5 +9,9 @@ for file in ~/.{prompt,aliases,functions,path,osx,extra,exports}; do
 done
 unset file
 
+# vscode
+ln -sf $PWD/vscode/settings.json ~/Library/Application\ Support/Code/User/settings.json
+
 # fix curl alias
 alias curl='noglob curl -#'
+

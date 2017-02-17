@@ -1,0 +1,10 @@
+{
+  "editor.insertSpaces": true,
+  "editor.renderWhitespace": "all",
+  "editor.tabCompletion": true,
+  "editor.tabSize": 2,
+  "editor.wordWrap": false,
+  "explorer.openEditors.visible": 0,
+  "terminal.integrated.fontFamily": "Meslo LG M DZ for Powerline",
+  "typescript.check.tscVersion": false
+}
