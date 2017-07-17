@@ -2,11 +2,13 @@
   "editor.insertSpaces": true,
   "editor.fontFamily": "'Fira Code', Menlo, Monaco, monospace",
   "editor.fontLigatures": true,
+  "editor.minimap.enabled": false,
   "editor.renderWhitespace": "all",
   "editor.tabCompletion": true,
   "editor.tabSize": 2,
   "editor.wordWrap": "off",
   "explorer.openEditors.visible": 0,
   "terminal.integrated.fontFamily": "Meslo LG M DZ for Powerline",
-  "typescript.check.tscVersion": false
+  "typescript.check.tscVersion": false,
+  "workbench.startupEditor": "newUntitledFile"
 }
