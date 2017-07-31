@@ -31,3 +31,6 @@ hide_icons() {
 # lock screen
 alias lock='/System/Library/CoreServices/"Menu Extras"/User.menu/Contents/Resources/CGSession -suspend'
 alias slp='pmset displaysleepnow'
+
+# symbolic link vscode config
+ln -sf ~/.dotfiles/vscode/settings.json ~/Library/Application\ Support/Code/User/settings.json
