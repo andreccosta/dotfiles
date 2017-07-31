@@ -10,5 +10,6 @@
   "explorer.openEditors.visible": 0,
   "terminal.integrated.fontFamily": "Meslo LG M DZ for Powerline",
   "typescript.check.tscVersion": false,
+  "workbench.colorTheme": "Atom One Dark",
   "workbench.startupEditor": "newUntitledFile"
 }
