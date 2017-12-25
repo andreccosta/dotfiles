@@ -39,6 +39,6 @@ mcd () {
   if [[ $# -eq 0 ]] ; then
     echo "usage: mcd <directory>"; return;
   else
-    mkdir -p -- "$1" && cd -P -- "$1"
+    mkdir -p -- "$1" && cd -P -- "$1" || return;
   fi
 }
