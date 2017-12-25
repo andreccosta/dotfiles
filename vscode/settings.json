@@ -1,4 +1,5 @@
 {
+  "editor.autoIndent": true,
   "editor.insertSpaces": true,
   "editor.fontFamily": "'Fira Code', Menlo, Monaco, monospace",
   "editor.fontLigatures": true,
@@ -8,10 +9,13 @@
   "editor.tabCompletion": true,
   "editor.tabSize": 2,
   "editor.wordWrap": "off",
+  "extensions.autoUpdate": true,
   "explorer.openEditors.visible": 0,
-  "terminal.integrated.fontFamily": "Meslo LG M for Powerline",
-  "typescript.check.tscVersion": false,
+  "workbench.activityBar.visible": false,
   "workbench.colorTheme": "Atom One Dark",
-  "workbench.startupEditor": "newUntitledFile",
+  "workbench.editor.showTabs": false,
+  "workbench.startupEditor": "none",
+  "workbench.statusBar.visible": true,
+  "terminal.integrated.fontFamily": "Meslo LG M for Powerline",
   "extensions.ignoreRecommendations": false
 }
