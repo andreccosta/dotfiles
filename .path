@@ -1,4 +1,8 @@
 #!/bin/bash
 
+# go
+export GOPATH="$HOME/code/go"
+export PATH="$PATH:$GOPATH/bin"
+
 # yarn global pkgs
 export PATH="$PATH:$(yarn global bin)"
