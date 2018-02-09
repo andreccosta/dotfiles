@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# detect platform
+platform=$("uname")
+if [ "$platform" != "Linux" ]; then
+    return;
+fi
+
+# load zsh syntax highlighting
+source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
+# symbolic link vscode config
+ln -sf ~/.dotfiles/vscode/settings.json ~/.config/Code/User/settings.json
