@@ -6,6 +6,24 @@ if [ "$platform" != "Darwin" ]; then
     return;
 fi
 
+# hide Safari bookmark bar
+defaults write com.apple.Safari ShowFavoritesBar -bool false
+
+# set Safari to dev mode
+defaults write com.apple.Safari IncludeInternalDebugMenu -bool true
+defaults write com.apple.Safari IncludeDevelopMenu -bool true
+defaults write com.apple.Safari WebKitDeveloperExtrasEnabledPreferenceKey -bool true
+defaults write com.apple.Safari "com.apple.Safari.ContentPageGroupIdentifier.WebKit2DeveloperExtrasEnabled" -bool true
+defaults write NSGlobalDomain WebKitDeveloperExtras -bool true
+
+# always open Finder in list view
+defaults write com.apple.Finder FXPreferredViewStyle Nlsv
+
+# use AirDrop over every interface
+defaults write com.apple.NetworkBrowser BrowseAllInterfaces 1
+
+## functions
+
 # show/hide dot files
 show_dot() {
   defaults write com.apple.finder AppleShowAllFiles YES
@@ -31,9 +49,13 @@ hide_icons() {
 # load zsh syntax highlighting
 source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
+## aliases
+
 # lock screen
 alias lock='/System/Library/CoreServices/"Menu Extras"/User.menu/Contents/Resources/CGSession -suspend'
 alias slp='pmset displaysleepnow'
+
+## links
 
 # symbolic link vscode config
 ln -sf ~/.dotfiles/vscode/settings.json ~/Library/Application\ Support/Code/User/settings.json
