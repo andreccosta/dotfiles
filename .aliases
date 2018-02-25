@@ -46,4 +46,5 @@ alias wp='./node_modules/.bin/webpack --progress --colors'
 
 # utils
 alias hc='rm $HISTFILE'
-alias rmdir='rm -ri'
+alias rm='rm -I'
+alias rmdir='rm -rI'
