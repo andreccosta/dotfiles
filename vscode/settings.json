@@ -1,7 +1,7 @@
 {
   "editor.autoIndent": true,
   "editor.insertSpaces": true,
-  "editor.fontFamily": "'Fira Code', Menlo, Monaco, monospace",
+  "editor.fontFamily": "'Fira Code', Menlo, monospace",
   "editor.fontLigatures": true,
   "editor.fontSize": 13,
   "editor.minimap.enabled": false,
@@ -14,6 +14,7 @@
   "files.trimTrailingWhitespace": true,
   "telemetry.enableTelemetry": false,
   "terminal.integrated.fontFamily": "Meslo LG M for Powerline",
+  "window.menuBarVisibility": "toggle",
   "window.openFilesInNewWindow": "on",
   "window.openFoldersInNewWindow": "on",
   "workbench.activityBar.visible": false,
