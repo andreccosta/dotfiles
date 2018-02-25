@@ -3,7 +3,7 @@
 all: dotfiles
 
 dotfiles:
-	# add aliases for dotfiles in ~
+	# adding symbolic links to dotfiles in ~
 	@for file in $(shell find $(CURDIR) -name ".*" -not -name "readme.md" -not -name ".gitignore" -not -name ".travis.yml" -not -name ".git" -not -name ".*.swp" -not -name ".gnupg"); do \
 		if [ -f $$file ]; then \
 			f=$$(basename $$file); \
