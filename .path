@@ -3,7 +3,3 @@
 # go
 export GOPATH="$HOME/code/go"
 export PATH="$PATH:$GOPATH/bin"
-
-# yarn global pkgs
-yarn_global=$(yarn global bin)
-export PATH="$PATH:$yarn_global"

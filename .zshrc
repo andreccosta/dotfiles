@@ -18,9 +18,6 @@ ZSH_THEME_TERM_TITLE_IDLE=$ZSH_THEME_TERM_TAB_TITLE_IDLE
 # export default lang
 #export LANG=en_US.UTF-8
 
-# yarn
-export PATH="$HOME/.yarn/bin:$PATH"
-
 # golang
 export GOPATH="$HOME/code/go"
 export PATH=$PATH:$GOPATH/bin
