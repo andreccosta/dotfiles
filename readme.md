@@ -9,7 +9,7 @@
 $ make
 ```
 
-*This will create symlinks from this repo to your home folder*
+*Creates symlinks to home folder*
 
 ## Test
 
