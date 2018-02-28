@@ -6,6 +6,9 @@ if [ "$platform" != "Linux" ]; then
     return;
 fi
 
+# alias clip for clipboard
+alias clip='xclip -sel clip'
+
 # load zsh syntax highlighting
 source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
