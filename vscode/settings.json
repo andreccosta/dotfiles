@@ -20,7 +20,7 @@
   "window.openFoldersInNewWindow": "on",
   "workbench.activityBar.visible": false,
   "workbench.colorTheme": "Atom One Dark",
-  "workbench.editor.showTabs": false,
+  "workbench.editor.showTabs": true,
   "workbench.startupEditor": "none",
   "workbench.statusBar.visible": true,
   "python.linting.enabled": false,
