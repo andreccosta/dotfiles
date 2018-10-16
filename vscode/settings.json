@@ -5,20 +5,22 @@
   "editor.fontLigatures": true,
   "editor.fontSize": 13,
   "editor.minimap.enabled": false,
-  "editor.renderWhitespace": "all",
-  "editor.tabCompletion": true,
+  "editor.renderWhitespace": "none",
+  "editor.tabCompletion": "on",
   "editor.tabSize": 2,
   "editor.wordWrap": "off",
   "extensions.autoUpdate": true,
   "explorer.openEditors.visible": 0,
+  "files.associations": {
+    "*.gohtml": "html"
+  },
   "files.insertFinalNewline": true,
   "files.trimTrailingWhitespace": true,
   "telemetry.enableTelemetry": false,
   "terminal.integrated.fontFamily": "Meslo LG M for Powerline",
-  "window.menuBarVisibility": "toggle",
   "window.openFilesInNewWindow": "on",
   "window.openFoldersInNewWindow": "on",
-  "workbench.activityBar.visible": false,
+  "workbench.activityBar.visible": true,
   "workbench.colorTheme": "Atom One Dark",
   "workbench.editor.showTabs": true,
   "workbench.startupEditor": "none",
@@ -31,5 +33,7 @@
   "[php]": {
     "editor.tabSize": 4,
     "editor.insertSpaces": true,
-  }
+  },
+  "todo.timekeeping.created.enabled": true,
+  "todo.archive.remove.emptyProjects": false
 }
