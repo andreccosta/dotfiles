@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Default editor
+export EDITOR="code"
+
+# Disable dotnet telemetry
+export DOTNET_CLI_TELEMETRY_OPTOUT=1
+
 # Prefer US English and use UTF-8
-export LANG="en_US.UTF-8";
-export LC_ALL="en_US.UTF-8";
+export LANG="en_US.UTF-8"
+export LC_ALL="en_US.UTF-8"
