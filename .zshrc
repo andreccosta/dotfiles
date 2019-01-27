@@ -5,7 +5,7 @@ ZSH=$HOME/.oh-my-zsh
 DEFAULT_USER=`whoami`
 
 # set theme
-ZSH_THEME="agnoster"
+ZSH_THEME="agnoster-custom"
 
 # set plugins (the less the better)
 plugins=(git osx)
