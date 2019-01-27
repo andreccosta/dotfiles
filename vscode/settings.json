@@ -20,7 +20,6 @@
   "terminal.integrated.fontFamily": "Meslo LG M for Powerline",
   "window.openFilesInNewWindow": "on",
   "window.openFoldersInNewWindow": "on",
-  "workbench.activityBar.visible": true,
   "workbench.colorTheme": "Atom One Dark",
   "workbench.editor.showTabs": true,
   "workbench.startupEditor": "none",
@@ -35,5 +34,7 @@
     "editor.insertSpaces": true,
   },
   "todo.timekeeping.created.enabled": true,
-  "todo.archive.remove.emptyProjects": false
+  "todo.archive.remove.emptyProjects": false,
+  "workbench.activityBar.visible": false,
+  "workbench.statusBar.feedback.visible": false
 }
