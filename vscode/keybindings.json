@@ -1,3 +1,16 @@
 [
-  { "key": "ctrl+k ctrl+d", "command": "editor.action.formatDocument" }
+  {
+    "key": "ctrl+k ctrl+d",
+    "command": "editor.action.formatDocument"
+  },
+  {
+    "key": "cmd+n",
+    "command": "explorer.newFile",
+    "when": "explorerViewletFocus"
+  },
+  {
+    "key": "shift+cmd+n",
+    "command": "explorer.newFolder",
+    "when": "explorerViewletFocus"
+  }
 ]

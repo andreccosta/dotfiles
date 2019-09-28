@@ -6,6 +6,7 @@
   "editor.fontSize": 13,
   "editor.minimap.enabled": false,
   "editor.renderWhitespace": "none",
+  "editor.rulers": [80],
   "editor.tabCompletion": "on",
   "editor.tabSize": 2,
   "editor.wordWrap": "off",
