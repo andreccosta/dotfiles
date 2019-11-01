@@ -46,8 +46,8 @@ alias wp='npx webpack --progress --colors'
 
 # utils
 alias hc='rm $HISTFILE'
-alias rm='rm -I'
-alias rmdir='rm -rI'
+alias rm='rm -i'
+alias rmdir='rm -ri'
 
 # random
 alias weather='curl -4 http://wttr.in/Porto,Portugal'
