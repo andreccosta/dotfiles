@@ -18,18 +18,18 @@
   "files.insertFinalNewline": true,
   "files.trimTrailingWhitespace": true,
   "telemetry.enableTelemetry": false,
-  "terminal.integrated.fontFamily": "Meslo LG M for Powerline",
+  "terminal.integrated.fontFamily": "Fira Code",
   "window.openFilesInNewWindow": "on",
   "window.openFoldersInNewWindow": "on",
+  "workbench.colorTheme": "Dracula",
   "workbench.colorCustomizations": {
     "tab.activeModifiedBorder": "#ff00ff"
   },
-  "workbench.colorTheme": "Atom One Dark",
   "workbench.editor.showTabs": true,
   "workbench.startupEditor": "none",
   "workbench.statusBar.visible": true,
   "workbench.editor.highlightModifiedTabs": true,
-  "python.linting.enabled": false,
+  "workbench.iconTheme": "material-icon-theme",
   "[csharp]": {
     "editor.tabSize": 4,
     "editor.insertSpaces": true,
@@ -47,5 +47,5 @@
   "todo.timekeeping.created.enabled": true,
   "todo.archive.remove.emptyProjects": false,
   "workbench.activityBar.visible": false,
-  "workbench.statusBar.feedback.visible": false
+  "breadcrumbs.enabled": false
 }
