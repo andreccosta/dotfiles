@@ -6,7 +6,7 @@ function dm_start() {
     echo "No machine name given"; return;
   fi
 
-  docker-machine start "$1" && 
+  docker-machine start "$1" &&
   eval "$(docker-machine env "$1")"
 }
 
@@ -35,11 +35,32 @@ dm_ip() {
 }
 
 # utils
-mcd () {
+mcd() {
   if [[ $# -eq 0 ]] ; then
-    echo "usage: mcd <directory>"; return;
+    echo "usage: mcd <directory>"; return -1;
   else
     mkdir -p -- "$1" && cd -P -- "$1" || return;
+  fi
+}
+
+wake() {
+  if [[ ! -a ~/.wakehosts ]]; then
+    echo ".wakehosts file not found"; return -1;
+  fi
+
+  declare -A hosts
+
+  for line in $(<~/.wakehosts); do
+    split=("${(s/=/)line}")
+    key=$split[1]
+    value=$split[2]
+    hosts[$key]=$value
+  done
+
+  if [ -z $hosts[$1] ]; then
+    echo "unknown host"
+  else
+    wakeonlan ${hosts[$1]}
   fi
 }
 
