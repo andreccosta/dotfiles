@@ -4,9 +4,8 @@
   "editor.fontFamily": "'Fira Code', Menlo, monospace",
   "editor.fontLigatures": true,
   "editor.fontSize": 13,
-  "editor.minimap.enabled": false,
   "editor.renderWhitespace": "none",
-  "editor.rulers": [80],
+  "editor.rulers": [80, 120, 160],
   "editor.tabCompletion": "on",
   "editor.tabSize": 2,
   "editor.wordWrap": "off",
@@ -46,6 +45,13 @@
   },
   "todo.timekeeping.created.enabled": true,
   "todo.archive.remove.emptyProjects": false,
-  "workbench.activityBar.visible": false,
-  "breadcrumbs.enabled": false
+  "workbench.activityBar.visible": true,
+  "breadcrumbs.enabled": false,
+  "git.autofetch": true,
+  "javascript.updateImportsOnFileMove.enabled": "always",
+  "editor.minimap.enabled": false,
+  "workbench.editor.enablePreviewFromQuickOpen": false,
+  "workbench.editor.enablePreview": false,
+  "explorer.compactFolders": false,
+  "git.confirmSync": false
 }

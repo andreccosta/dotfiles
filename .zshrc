@@ -19,7 +19,7 @@ ZSH_THEME_TERM_TITLE_IDLE=$ZSH_THEME_TERM_TAB_TITLE_IDLE
 #export LANG=en_US.UTF-8
 
 # golang
-export GOPATH="$HOME/code/go"
+export GOPATH="$HOME/code"
 export PATH=$PATH:$GOPATH/bin
 
 # spacehsip customization
