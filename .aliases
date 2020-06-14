@@ -53,5 +53,6 @@ alias rmdir='rm -ri'
 alias weather='curl -4 http://wttr.in/Porto,Portugal'
 
 # npm
+alias n='npm'
 alias nrd='npm run dev'
 alias nrt='npm run test'
