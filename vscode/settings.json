@@ -1,5 +1,5 @@
 {
-  "editor.autoIndent": true,
+  "editor.autoIndent": "full",
   "editor.insertSpaces": true,
   "editor.fontFamily": "'Fira Code', Menlo, monospace",
   "editor.fontLigatures": true,
@@ -31,17 +31,17 @@
   "workbench.iconTheme": "material-icon-theme",
   "[csharp]": {
     "editor.tabSize": 4,
-    "editor.insertSpaces": true,
+    "editor.insertSpaces": true
   },
   "[php]": {
     "editor.tabSize": 4,
-    "editor.insertSpaces": true,
+    "editor.insertSpaces": true
   },
   "[markdown]": {
     "editor.wordWrap": "on",
     "editor.quickSuggestions": false,
     "files.insertFinalNewline": false,
-  "files.trimTrailingWhitespace": false,
+    "files.trimTrailingWhitespace": false
   },
   "todo.timekeeping.created.enabled": true,
   "todo.archive.remove.emptyProjects": false,
@@ -53,6 +53,10 @@
   "workbench.editor.enablePreviewFromQuickOpen": false,
   "workbench.editor.enablePreview": false,
   "explorer.compactFolders": false,
-  "git.confirmSync": false,
-  "editor.formatOnSave": true
+  "git.confirmSync": true,
+  "editor.formatOnSave": true,
+  "go.useLanguageServer": true,
+  "editor.wordWrapColumn": 120,
+  "prettier.semi": false,
+  "prettier.singleQuote": true,
 }
