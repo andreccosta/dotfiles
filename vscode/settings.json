@@ -59,4 +59,6 @@
   "editor.wordWrapColumn": 120,
   "prettier.semi": false,
   "prettier.singleQuote": true,
+  "git.enableSmartCommit": true,
+  "window.zoomLevel": 0,
 }
