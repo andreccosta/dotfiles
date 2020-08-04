@@ -22,6 +22,10 @@ ZSH_THEME_TERM_TITLE_IDLE=$ZSH_THEME_TERM_TAB_TITLE_IDLE
 export GOPATH="$HOME/code"
 export PATH=$PATH:$GOPATH/bin
 
+# gcloud sdk
+source "/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc"
+source "/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc"
+
 # spacehsip customization
 SPACESHIP_PROMPT_ORDER=(
   user          # Username section
