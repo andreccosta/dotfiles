@@ -8,7 +8,7 @@ DEFAULT_USER=`whoami`
 ZSH_THEME="spaceship"
 
 # set plugins (the less the better)
-plugins=(git osx)
+plugins=(docker git osx zsh-syntax-highlighting zsh-autosuggestions)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -21,10 +21,6 @@ ZSH_THEME_TERM_TITLE_IDLE=$ZSH_THEME_TERM_TAB_TITLE_IDLE
 # golang
 export GOPATH="$HOME/code"
 export PATH=$PATH:$GOPATH/bin
-
-# gcloud sdk
-source "/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc"
-source "/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc"
 
 # spacehsip customization
 SPACESHIP_PROMPT_ORDER=(
@@ -45,3 +41,7 @@ SPACESHIP_PROMPT_ADD_NEWLINE=false
 SPACESHIP_CHAR_SYMBOL="❯"
 SPACESHIP_CHAR_SUFFIX=" "
 SPACESHIP_PROMPT_SEPARATE_LINE=false
+
+if [[ -f $HOME/.zshrc.local ]]; then
+  source $HOME/.zshrc.local
+fi
