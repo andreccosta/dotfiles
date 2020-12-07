@@ -116,5 +116,5 @@ Set-Alias l Get-ChildItemColor -Option AllScope
 Set-Alias ls Get-ChildItemColorFormatWide -Option AllScope
 
 # Set python alias
-Set-Alias -Name "py" -Value "python"
-Set-Alias -Name "python" -Value "python3"
+Set-Alias -Name "py" -Value "python.exe"
+Set-Alias -Name "python" -Value "python.exe"
