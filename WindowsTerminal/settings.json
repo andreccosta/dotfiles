@@ -31,7 +31,8 @@
       "useAcrylic": true,
       "acrylicOpacity": 0.8,
       "fontFace": "Cascadia Mono PL",
-      "fontSize": 12
+      "fontSize": 12,
+      "padding": "0"
     },
     "list": [
       {
@@ -54,6 +55,12 @@
         "hidden": false,
         "name": "Azure Cloud Shell",
         "source": "Windows.Terminal.Azure"
+      },
+      {
+          "guid": "{58ad8b0c-3ef8-5f4d-bc6f-13e4c00f2530}",
+          "hidden": false,
+          "name": "Debian",
+          "source": "Windows.Terminal.Wsl"
       }
     ]
   },

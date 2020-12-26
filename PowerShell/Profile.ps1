@@ -93,8 +93,18 @@ function Watch {
   }
 }
 
+function Touch {
+  param (
+    [string]$fileName
+  )
+
+  New-Item -ItemType file $fileName
+}
+
 Set-Alias -Name "ccd" -Value Get-PartialMatchDir
 Set-Alias -Name "scd" -Value Subst-CurrentDir
+
+Set-Alias -Name "touch" -Value Touch
 
 # Visual Studio
 Set-Alias -Name "vs2019" -Value "${Env:ProgramFiles(x86)}\Microsoft Visual Studio\2019\Enterprise\Common7\IDE\devenv.exe"
