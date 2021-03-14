@@ -1,6 +1,7 @@
+$global:DefaultUser = $env:UserName
+$env:POSH_SESSION_DEFAULT_USER = $env:UserName
+
 Import-Module posh-git
 Import-Module oh-my-posh
 
-$DefaultUser = $env:UserName
-
-Set-Theme Agnoster
+Set-PoshPrompt ~/.agnoster.omp.json

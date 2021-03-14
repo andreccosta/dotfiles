@@ -30,7 +30,7 @@
       // Put settings here that you want to apply to all profiles.
       "useAcrylic": true,
       "acrylicOpacity": 0.8,
-      "fontFace": "Cascadia Mono PL",
+      "fontFace": "CaskaydiaCove Nerd Font Mono",
       "fontSize": 12
     },
     "list": [
