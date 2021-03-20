@@ -93,7 +93,7 @@ function Watch {
   }
 }
 
-function Touch {
+function New-EmptyFile {
   param (
     [string]$fileName
   )
@@ -101,10 +101,24 @@ function Touch {
   New-Item -ItemType file $fileName
 }
 
+# If (-not(Get-Command 'Get-Uptime' -errorAction SilentlyContinue)) {
+  Function Get-Uptime {
+    $os = Get-CimInstance win32_operatingsystem
+    $lastBootUpTime = $os.lastbootuptime
+    $uptime = (Get-Date) - $lastBootUpTime
+    $uptimeHuman = $uptime.ToString("d' days 'h' hours 'm' minutes 's' seconds'")
+
+    return @{
+      LastBootUpTime = $lastBootUpTime;
+      Uptime = $uptimeHuman;
+    }
+  }
+# }
+
 Set-Alias -Name "ccd" -Value Get-PartialMatchDir
 Set-Alias -Name "scd" -Value Subst-CurrentDir
 
-Set-Alias -Name "touch" -Value Touch
+Set-Alias -Name "touch" -Value New-EmptyFile
 
 # Visual Studio
 Set-Alias -Name "vs2019" -Value "${Env:ProgramFiles(x86)}\Microsoft Visual Studio\2019\Enterprise\Common7\IDE\devenv.exe"
