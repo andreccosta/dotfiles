@@ -72,21 +72,6 @@
                     "properties": null
                 },
                 {
-                    "type": "python",
-                    "style": "powerline",
-                    "powerline_symbol": "",
-                    "invert_powerline": false,
-                    "foreground": "#100e23",
-                    "foreground_templates": null,
-                    "background": "#906cff",
-                    "background_templates": null,
-                    "leading_diamond": "",
-                    "trailing_diamond": "",
-                    "properties": {
-                        "prefix": "  "
-                    }
-                },
-                {
                     "type": "exit",
                     "style": "powerline",
                     "powerline_symbol": "",
