@@ -11,6 +11,8 @@
 	clean = git-lfs clean %f
 [core]
 	editor = vim
+[init]
+	defaultBranch = main
 [alias]
 	cm = commit
 	cmm = commit -m
