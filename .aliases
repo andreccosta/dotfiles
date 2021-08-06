@@ -56,3 +56,7 @@ alias weather='curl -4 http://wttr.in/Porto,Portugal'
 alias n='npm'
 alias nrd='npm run dev'
 alias nrt='npm run test'
+
+# habit breaking
+alias nano='micro'
+alias vim='nvim'
