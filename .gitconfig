@@ -21,3 +21,5 @@
 	st = status
 [pull]
 	rebase = false
+[init]
+	defaultBranch = main
