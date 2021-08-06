@@ -8,7 +8,7 @@ if (-not (Get-Command "choco" -ErrorAction SilentlyContinue))
 }
 
 # Install requirements
-choco install cascadiafonts cascadia-code-nerd-font firacode powershell-core vscode git hub -y
+choco install starship cascadiafonts cascadia-code-nerd-font firacode powershell-core vscode git hub -y
 
 # Install powershell modules
 Install-Module posh-git -Scope CurrentUser
