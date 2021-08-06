@@ -5,7 +5,11 @@
   "editor.fontLigatures": true,
   "editor.fontSize": 13,
   "editor.renderWhitespace": "none",
-  "editor.rulers": [80, 120, 160],
+  "editor.rulers": [
+    80,
+    120,
+    160
+  ],
   "editor.tabCompletion": "on",
   "editor.tabSize": 2,
   "editor.wordWrap": "off",
@@ -20,7 +24,7 @@
   "terminal.integrated.fontFamily": "Fira Code",
   "window.openFilesInNewWindow": "on",
   "window.openFoldersInNewWindow": "on",
-  "workbench.colorTheme": "Dracula",
+  "workbench.colorTheme": "Atom One Dark",
   "workbench.colorCustomizations": {
     "tab.activeModifiedBorder": "#ff00ff"
   },
@@ -61,4 +65,29 @@
   "prettier.singleQuote": true,
   "git.enableSmartCommit": true,
   "window.zoomLevel": 0,
+  "window.menuBarVisibility": "toggle",
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[html]": {
+    "editor.defaultFormatter": "vscode.html-language-features"
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "vscode.json-language-features"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "vscode.json-language-features"
+  },
+  "prettier.printWidth": 120,
+  "workbench.editorAssociations": {
+    "*.ipynb": "jupyter-notebook"
+  },
+  "notebook.cellToolbarLocation": {
+    "default": "right",
+    "jupyter-notebook": "left"
+  },
+  "go.toolsManagement.autoUpdate": true,
 }

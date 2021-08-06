@@ -12,5 +12,14 @@
     "key": "shift+cmd+n",
     "command": "explorer.newFolder",
     "when": "explorerViewletFocus"
+  },
+  {
+    "key": "ctrl+[IntlBackslash]",
+    "command": "workbench.action.terminal.focus"
+  },
+  {
+    "key": "ctrl+[IntlBackslash]",
+    "command": "workbench.action.focusActiveEditorGroup",
+    "when": "terminalFocus"
   }
 ]
