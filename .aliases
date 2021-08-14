@@ -59,4 +59,3 @@ alias nrt='npm run test'
 
 # habit breaking
 alias nano='micro'
-alias vim='nvim'
