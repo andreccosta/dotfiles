@@ -13,10 +13,10 @@ DEFAULT_USER=`whoami`
 #source $ZSH/oh-my-zsh.sh
 
 # window title same as tab
-#ZSH_THEME_TERM_TITLE_IDLE=$ZSH_THEME_TERM_TAB_TITLE_IDLE
+ZSH_THEME_TERM_TITLE_IDLE=$ZSH_THEME_TERM_TAB_TITLE_IDLE
 
 # export default lang
-#export LANG=en_US.UTF-8
+export LANG=en_US.UTF-8
 
 # golang
 export GOPATH="$HOME/code"
@@ -44,6 +44,10 @@ export PATH=$PATH:$GOPATH/bin
 
 # starship
 eval "$(starship init zsh)"
+
+# syntax highlighting
+source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source /usr/local/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 if [[ -f $HOME/.zshrc.local ]]; then
   source $HOME/.zshrc.local
