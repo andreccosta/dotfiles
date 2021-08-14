@@ -19,6 +19,7 @@
 	l = log --pretty='format:%C(green)%h%C(reset) %C(bold blue)%ar%C(reset) %an : %s' --graph
 	last = log - 1 HEAD
 	st = status
+	diffs = diff --cached
 [pull]
 	rebase = false
 [init]
