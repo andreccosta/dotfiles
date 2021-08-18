@@ -46,8 +46,10 @@ export PATH=$PATH:$GOPATH/bin
 eval "$(starship init zsh)"
 
 # syntax highlighting
-source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-source /usr/local/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+[ -d "/usr/share/zsh-syntax-highlighting" ] && source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+[ -d "/usr/local/share/zsh-syntax-highlighting" ] && source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+[ -d "/usr/share/zsh-autosuggestions" ] && source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+[ -d "/usr/local/share/zsh-autosuggestions" ] && source /usr/local/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 if [[ -f $HOME/.zshrc.local ]]; then
   source $HOME/.zshrc.local
