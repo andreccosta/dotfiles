@@ -15,8 +15,12 @@ if filereadable(expand("~/.vim/autoload/plug.vim"))
 	call plug#begin('~/.local/share/vim/plugins')
 	Plug 'sheerun/vim-polyglot'
 	Plug 'fatih/vim-go', { 'do': ':GoInstallBinaries' }
+	
 	"Plug 'pangloss/vim-javascript'
+	Plug 'leafgarland/typescript-vim'
+	
 	Plug 'tpope/vim-fugitive'
+
 	Plug 'vim-airline/vim-airline'
 	Plug 'dracula/vim', { 'as': 'dracula' }
 	call plug#end()
@@ -31,4 +35,6 @@ let g:airline#extensions#branch#enabled = 1
 let g:airline_section_warning = '' 
 let g:airline_section_y = '' 
 let g:airline_section_x = '' 
+let g:netrw_liststyle = 3
+let g:netrw_banner = 0
 set laststatus=2
