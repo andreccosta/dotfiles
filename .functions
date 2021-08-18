@@ -64,6 +64,23 @@ wake() {
   fi
 }
 
+function watch() {
+  case $1 in
+  	py | python)
+  	  ls *.py | entr -c python \/_
+  	;;
+  	sh | bash)
+  	  ls *.sh | entr -c bash \/_
+  	;;
+  	js | node)
+  	  ls *.js | entr -c node \/_
+  	;;
+  	rb | ruby)
+  	  ls *.rb | entr -c ruby \/_
+  	;;
+  esac
+}
+
 # curl redirects
 resolve_redirect() {
   curl -w "%{url_effective}\n" -I -L -s -S $1 -o /dev/null
