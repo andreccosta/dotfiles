@@ -69,3 +69,4 @@ unset file
 if [[ -f $HOME/.zshrc.local ]]; then
   source $HOME/.zshrc.local
 fi
+if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
