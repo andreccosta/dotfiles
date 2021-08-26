@@ -42,6 +42,10 @@ export PATH=$PATH:$GOPATH/bin
 #SPACESHIP_CHAR_SUFFIX=" "
 #SPACESHIP_PROMPT_SEPARATE_LINE=false
 
+# bind home/end
+bindkey '\e[H' beginning-of-line
+bindkey '\e[F' end-of-line
+
 # starship
 eval "$(starship init zsh)"
 
