@@ -37,7 +37,14 @@
     "editor.tabSize": 4,
     "editor.insertSpaces": true
   },
+  "[go]": {
+    "editor.insertSpaces": false
+  },
   "[php]": {
+    "editor.tabSize": 4,
+    "editor.insertSpaces": true
+  },
+  "[python]": {
     "editor.tabSize": 4,
     "editor.insertSpaces": true
   },
@@ -64,7 +71,6 @@
   "prettier.semi": false,
   "prettier.singleQuote": true,
   "git.enableSmartCommit": true,
-  "window.zoomLevel": 0,
   "window.menuBarVisibility": "toggle",
   "[javascript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
