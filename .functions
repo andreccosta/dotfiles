@@ -67,7 +67,7 @@ wake() {
 function watch() {
   case $1 in
   	py | python)
-  	  ls *.py | entr -c python \/_
+  	  ls *.py | entr -cp python3 \/_
   	;;
   	sh | bash)
   	  ls *.sh | entr -c bash \/_
