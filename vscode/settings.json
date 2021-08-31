@@ -21,7 +21,7 @@
   "files.insertFinalNewline": true,
   "files.trimTrailingWhitespace": true,
   "telemetry.enableTelemetry": false,
-  "terminal.integrated.fontFamily": "Fira Code",
+  "terminal.integrated.fontFamily": "FiraMono Nerd Font Mono, Fira Code",
   "window.openFilesInNewWindow": "on",
   "window.openFoldersInNewWindow": "on",
   "workbench.colorTheme": "Atom One Dark",
@@ -54,8 +54,6 @@
     "files.insertFinalNewline": false,
     "files.trimTrailingWhitespace": false
   },
-  "todo.timekeeping.created.enabled": true,
-  "todo.archive.remove.emptyProjects": false,
   "workbench.activityBar.visible": true,
   "breadcrumbs.enabled": false,
   "git.autofetch": true,
@@ -71,7 +69,6 @@
   "prettier.semi": false,
   "prettier.singleQuote": true,
   "git.enableSmartCommit": true,
-  "window.menuBarVisibility": "toggle",
   "[javascript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
@@ -96,4 +93,12 @@
     "jupyter-notebook": "left"
   },
   "go.toolsManagement.autoUpdate": true,
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/bower_components": true,
+    "**/*.code-search": true
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
 }
