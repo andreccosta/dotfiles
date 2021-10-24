@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # docker machine
-function dm_start() {
+dm_start() {
   if [[ $# -eq 0 ]] ; then
     echo "No machine name given"; return;
   fi
@@ -64,7 +64,7 @@ wake() {
   fi
 }
 
-function watch() {
+watch() {
   case $1 in
   	py | python)
   	  ls *.py | entr -cp python3 \/_
@@ -85,3 +85,16 @@ function watch() {
 resolve_redirect() {
   curl -w "%{url_effective}\n" -I -L -s -S $1 -o /dev/null
 }
+
+# goto
+goto() {
+	declare -A paths=(
+		aoc ~/code/src/github.com/andreccosta/advent-of-code
+		code ~/code
+		dot ~/code/src/github.com/andreccosta/dotfiles
+		tmp ~/code/tmp
+	)
+
+	cd $paths[$1]
+}
+

@@ -8,7 +8,7 @@ alias ~='cd ~'
 
 # shorts
 alias c='clear'
-alias g='git'
+alias g='goto'
 alias h='history'
 alias v='vim'
 alias ll='ls -lpah'
