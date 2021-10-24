@@ -49,6 +49,10 @@ bindkey '\e[F' end-of-line
 # starship
 eval "$(starship init zsh)"
 
+# options
+setopt AUTO_PUSHD	# push old dir to stack
+setopt CDABLE_VARS	# expand (allow 'cd -2/tmp')
+
 # syntax highlighting
 [ -d "/usr/share/zsh-syntax-highlighting" ] && source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 [ -d "/usr/local/share/zsh-syntax-highlighting" ] && source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
@@ -69,4 +73,5 @@ unset file
 if [[ -f $HOME/.zshrc.local ]]; then
   source $HOME/.zshrc.local
 fi
+
 if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
