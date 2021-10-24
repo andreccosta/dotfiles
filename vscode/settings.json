@@ -16,11 +16,11 @@
   "extensions.autoUpdate": true,
   "explorer.openEditors.visible": 0,
   "files.associations": {
-    "*.gohtml": "html"
+    "*.gohtml": "html",
+    "*.erb": "html"
   },
-  "files.insertFinalNewline": true,
   "files.trimTrailingWhitespace": true,
-  "telemetry.enableTelemetry": false,
+  "telemetry.telemetryLevel": "off",
   "terminal.integrated.fontFamily": "FiraMono Nerd Font Mono, Fira Code",
   "window.openFilesInNewWindow": "on",
   "window.openFoldersInNewWindow": "on",
