@@ -22,6 +22,4 @@
 	st = status
 	diffs = diff --cached
 [pull]
-	rebase = false
-[init]
-	defaultBranch = main
+	rebase = true
