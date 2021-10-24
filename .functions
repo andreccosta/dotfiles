@@ -95,6 +95,11 @@ goto() {
 		tmp ~/code/tmp
 	)
 
-	cd $paths[$1]
+	# partial matches
+	matches=(${(Mk)paths:#$1*})
+
+	if [[ ${#matches[@]} -ne ${#paths[@]} &&  ${#matches[@]} -gt 0 ]]; then
+		cd $paths[$matches[1]]
+	fi
 }
 
