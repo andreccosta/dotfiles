@@ -27,7 +27,10 @@ alias copy='pbcopy'
 alias paste='pbpaste'
 
 # docker
+alias compose='docker compose'
 alias ds='docker ps'
+alias dcu='docker compose up -d'
+alias dce='docker compose exec'
 
 # git
 alias ga='git add'
