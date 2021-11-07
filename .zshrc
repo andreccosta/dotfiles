@@ -77,7 +77,7 @@ fi
 # keychain
 if which keychain > /dev/null; then
 	/usr/bin/keychain -q --nogui $HOME/.ssh/id_rsa
-	source $HOME/.keychain/ARGON-sh
+	source $HOME/.keychain/$HOST-sh
 fi
 
 # rbenv
