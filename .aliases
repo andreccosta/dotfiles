@@ -10,6 +10,7 @@ alias ~='cd ~'
 alias c='clear'
 alias g='goto'
 alias h='history'
+alias r='. ranger'
 alias v='vim'
 alias ll='ls -lpah'
 
@@ -60,6 +61,3 @@ alias weather='curl -4 http://wttr.in/Porto,Portugal'
 alias n='npm'
 alias nrd='npm run dev'
 alias nrt='npm run test'
-
-# habit breaking
-alias nano='micro'
