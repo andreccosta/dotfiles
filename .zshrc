@@ -76,21 +76,17 @@ fi
 
 # keychain
 if which keychain > /dev/null; then
-	if [[ -r $HOME/.ssh/id_rsa ]]; then
-		/usr/bin/keychain -q --nogui $HOME/.ssh/id_rsa
-	fi
-	
-	if [[ -r $HOME/.ssh/id_ed25519 ]]; then
-		/usr/bin/keychain -q --nogui $HOME/.ssh/id_ed25519
-	fi
-	
+	[[ -f $HOME/.ssh/id_rsa ]] && /usr/bin/keychain -q --nogui $HOME/.ssh/id_rsa
+	[[ -f $HOME/.ssh/id_ed25519 ]] && /usr/bin/keychain -q --nogui $HOME/.ssh/id_ed25519
+
 	source $HOME/.keychain/$HOST-sh
 fi
 
 # rbenv
+[[ -d $HOME/.rbenv/bin ]] && export PATH="$HOME/.rbenv/bin:$PATH"
 if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
+[[ -d $HOME/.rbenv/plugins/ruby-build/bin ]] && export PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"
 
 # nvm
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
