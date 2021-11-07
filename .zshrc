@@ -74,6 +74,13 @@ if [[ -f $HOME/.zshrc.local ]]; then
   source $HOME/.zshrc.local
 fi
 
+# keychain
+
+if which keychain > /dev/null; then
+	/usr/bin/keychain -q --nogui $HOME/.ssh/id_rsa
+	source $HOME/.keychain/ARGON-sh
+fi
+
 # rbenv
 if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
 
