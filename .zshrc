@@ -76,7 +76,14 @@ fi
 
 # keychain
 if which keychain > /dev/null; then
-	/usr/bin/keychain -q --nogui $HOME/.ssh/id_rsa
+	if [[ -r $HOME/.ssh/id_rsa ]]; then
+		/usr/bin/keychain -q --nogui $HOME/.ssh/id_rsa
+	fi
+	
+	if [[ -r $HOME/.ssh/id_ed25519 ]]; then
+		/usr/bin/keychain -q --nogui $HOME/.ssh/id_ed25519
+	fi
+	
 	source $HOME/.keychain/$HOST-sh
 fi
 
