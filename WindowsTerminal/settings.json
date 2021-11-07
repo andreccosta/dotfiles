@@ -37,7 +37,7 @@
         "hidden": false,
         "name": "Debian",
         "source": "Windows.Terminal.Wsl",
-        "startingDirectory": "//wsl$/Debian/home/acosta"
+        "startingDirectory": "/home/acosta"
       }
     ]
   },
