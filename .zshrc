@@ -90,3 +90,6 @@ if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
 # nvm
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+
+# z
+[ -s /usr/local/etc/profile.d/z.sh ] && source /usr/local/etc/profile.d/z.sh
