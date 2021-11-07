@@ -63,7 +63,6 @@
   "workbench.editor.enablePreview": false,
   "explorer.compactFolders": false,
   "git.confirmSync": true,
-  "editor.formatOnSave": true,
   "go.useLanguageServer": true,
   "editor.wordWrapColumn": 120,
   "prettier.semi": false,
@@ -100,5 +99,27 @@
   },
   "[typescript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
-  }
+  },
+  "ruby.useBundler": false,
+  "ruby.useLanguageServer": false,
+  "ruby.lint": {
+    "rubocop": {
+      "useBundler": false,
+      "command": "rubocop --require rubocop-rails",
+      "except": [
+        "Style/Documentation",
+        "Style/StringLiterals"
+      ]
+    }
+  },
+  "cSpell.enableFiletypes": [
+    "haml",
+    "ruby"
+  ],
+  "cSpell.userWords": [
+    "Amplemarket",
+    "LinkedIn",
+    "Numericality",
+    "Titlebar"
+  ]
 }
