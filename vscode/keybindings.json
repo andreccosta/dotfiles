@@ -21,5 +21,17 @@
     "key": "ctrl+[IntlBackslash]",
     "command": "workbench.action.focusActiveEditorGroup",
     "when": "terminalFocus"
+  },
+  {
+    "key": "ctrl+left",
+    "command": "workbench.action.terminal.sendSequence",
+    "args": { "text": "\u001bb" },
+    "when":"terminalFocus"
+  },
+  {
+    "key": "ctrl+right",
+    "command": "workbench.action.terminal.sendSequence",
+    "args": { "text": "\u001bf" },
+    "when":"terminalFocus"
   }
 ]
