@@ -21,7 +21,7 @@
   },
   "files.trimTrailingWhitespace": true,
   "telemetry.telemetryLevel": "off",
-  "terminal.integrated.fontFamily": "FiraMono Nerd Font Mono, Fira Code",
+  "terminal.integrated.fontFamily": "FiraMono Nerd Font Mono, 'Fira Code', Menlo, monospace",
   "window.openFilesInNewWindow": "on",
   "window.openFoldersInNewWindow": "on",
   "workbench.colorTheme": "Atom One Dark",
@@ -107,6 +107,7 @@
       "useBundler": false,
       "command": "rubocop --require rubocop-rails",
       "except": [
+        "Layout/MultilineMethodCallIndentation",
         "Style/Documentation",
         "Style/StringLiterals"
       ]
@@ -118,8 +119,11 @@
   ],
   "cSpell.userWords": [
     "Amplemarket",
+    "concat",
+    "Hubspot",
     "LinkedIn",
     "Numericality",
     "Titlebar"
-  ]
+  ],
+  "window.menuBarVisibility": "toggle"
 }
