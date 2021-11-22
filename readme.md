@@ -1,8 +1,5 @@
 # dotfiles
 
-[![Build status](https://travis-ci.org/andreccosta/dotfiles.svg?branch=master)](https://travis-ci.org/andreccosta/dotfiles "Build status")
-
-
 ## Install
 
 ```console
