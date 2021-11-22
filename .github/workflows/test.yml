@@ -1,0 +1,16 @@
+name: Test
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    name: make test
+    runs-on: ubuntu-latest
+    container: andreccosta/shellcheck
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: make test
+        run: make test
