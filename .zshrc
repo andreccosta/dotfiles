@@ -82,3 +82,6 @@ if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
 
 # z
 [ -s /usr/local/etc/profile.d/z.sh ] && source /usr/local/etc/profile.d/z.sh
+
+# gvm
+[[ -s "/home/acosta/.gvm/scripts/gvm" ]] && source "/home/acosta/.gvm/scripts/gvm"
