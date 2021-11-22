@@ -8,9 +8,31 @@ export LANG=en_US.UTF-8
 export GOPATH="$HOME/code"
 export PATH=$PATH:$GOPATH/bin
 
+## key bindings
+
 # bind home/end
 bindkey '\e[H' beginning-of-line
 bindkey '\e[F' end-of-line
+
+# ctrl+arrows
+bindkey "\e[1;5C" forward-word
+bindkey "\e[1;5D" backward-word
+# urxvt
+bindkey "\eOc" forward-word
+bindkey "\eOd" backward-word
+
+# ctrl+delete
+bindkey "\e[3;5~" kill-word
+# urxvt
+bindkey "\e[3^" kill-word
+
+# ctrl+backspace
+bindkey '^H' backward-kill-word
+
+# ctrl+shift+delete
+bindkey "\e[3;6~" kill-line
+# urxvt
+bindkey "\e[3@" kill-line
 
 # starship
 eval "$(starship init zsh)"
