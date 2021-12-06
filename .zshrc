@@ -40,6 +40,7 @@ eval "$(starship init zsh)"
 # options
 setopt AUTO_PUSHD	# push old dir to stack
 setopt CDABLE_VARS	# expand (allow 'cd -2/tmp')
+setopt histignorespace  # ignore history for commands starting with space
 
 # syntax highlighting
 [ -d "/usr/share/zsh-syntax-highlighting" ] && source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
