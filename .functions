@@ -78,6 +78,12 @@ watch() {
   	rb | ruby)
   	  ls *.rb | entr -c ruby \/_
   	;;
+	cr | crystal)
+	  ls *.cr | entr -c crystal run \/_
+	;;
+	go)
+	  ls *.go | entr -c go run \/_
+	;;
   esac
 }
 
