@@ -1,6 +1,5 @@
 {
-  "breadcrumbs.enabled" : false,
-  "workbench.editorAssociations" : {
+  "workbench.editorAssociations": {
     "*.ipynb" : "jupyter-notebook"
   },
   "editor.wordWrapColumn" : 120,
@@ -52,7 +51,7 @@
   "explorer.openEditors.visible" : 0,
   "git.confirmSync" : true,
   "git.enableSmartCommit" : true,
-  "go.useLanguageServer" : true,
+  "go.useLanguageServer": true,
   "ruby.lint" : {
     "rubocop" : {
       "useBundler" : false,
@@ -64,10 +63,10 @@
       ]
     }
   },
+  "ruby.useBundler" : false,
   "editor.insertSpaces" : true,
   "editor.wordWrap" : "off",
   "editor.autoIndent" : "full",
-  "ruby.useBundler" : false,
   "workbench.colorCustomizations" : {
     "tab.activeModifiedBorder" : "#ff00ff"
   },
@@ -128,5 +127,6 @@
   },
   "terminal.integrated.env.osx": {
     "FIG_NEW_SESSION": "1"
-  }
+  },
+  "solargraph.formatting": true
 }
