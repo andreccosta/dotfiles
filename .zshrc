@@ -4,10 +4,6 @@ DEFAULT_USER=`whoami`
 # export default lang
 export LANG=en_US.UTF-8
 
-# golang
-export GOPATH="$HOME/code"
-export PATH=$PATH:$GOPATH/bin
-
 ## key bindings
 
 # bind home/end
@@ -57,7 +53,7 @@ setopt histignorespace  # ignore history for commands starting with space
 # load the shell dotfiles, and then some:
 # * ~/.path can be used to extend `$PATH`.
 # * ~/.extra can be used for other settings you dont want to commit.
-for file in ~/.{aliases,env,functions,path,prompt,osx,extra,exports}; do
+for file in ~/.{aliases,functions,prompt,osx,extra,exports}; do
 	if [[ -r "$file" ]] && [[ -f "$file" ]]; then
 		# shellcheck source=/dev/null
 		source "$file"
