@@ -65,3 +65,6 @@ alias nrt='npm run test'
 
 # cat
 alias bat='bat --theme="base16"'
+
+# fix curl alias
+alias curl='noglob curl -#'
