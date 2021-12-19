@@ -66,24 +66,27 @@ wake() {
 
 watch() {
   case $1 in
-  	py | python)
-  	  ls *.py | entr -cp python3 \/_
-  	;;
-  	sh | bash)
-  	  ls *.sh | entr -c bash \/_
-  	;;
-  	js | node)
-  	  ls *.js | entr -c node \/_
-  	;;
-  	rb | ruby)
-  	  ls *.rb | entr -c ruby \/_
-  	;;
-	cr | crystal)
-	  ls *.cr | entr -c crystal run \/_
-	;;
-	go)
-	  ls *.go | entr -c go run \/_
-	;;
+    py | python)
+      ls *.py | entr -ccp python3 \/_
+    ;;
+    sh | bash)
+      ls *.sh | entr -cc bash \/_
+    ;;
+    js | node)
+      ls *.js | entr -cc node \/_
+    ;;
+    rb | ruby)
+      ls *.rb | entr -ccp ruby \/_
+    ;;
+    rr)
+      ls *.rb | entr -ccrp rescue \/_
+    ;;
+    cr | crystal)
+      ls *.cr | entr -cc crystal run \/_
+    ;;
+    go)
+      ls *.go | entr -cc go run \/_
+    ;;
   esac
 }
 
@@ -94,18 +97,18 @@ resolve_redirect() {
 
 # goto
 goto() {
-	declare -A paths=(
-		aoc ~/code/src/github.com/andreccosta/advent-of-code
-		code ~/code
-		dot ~/code/src/github.com/andreccosta/dotfiles
-		tmp ~/code/tmp
-	)
+  declare -A paths=(
+    aoc ~/code/src/github.com/andreccosta/advent-of-code
+    code ~/code
+    dot ~/code/src/github.com/andreccosta/dotfiles
+    tmp ~/code/tmp
+  )
 
-	# partial matches
-	matches=(${(Mk)paths:#$1*})
+  # partial matches
+  matches=(${(Mk)paths:#$1*})
 
-	if [[ ${#matches[@]} -ne ${#paths[@]} &&  ${#matches[@]} -gt 0 ]]; then
-		cd $paths[$matches[1]]
-	fi
+  if [[ ${#matches[@]} -ne ${#paths[@]} &&  ${#matches[@]} -gt 0 ]]; then
+    cd $paths[$matches[1]]
+  fi
 }
 
