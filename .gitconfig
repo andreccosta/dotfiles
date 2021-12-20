@@ -21,5 +21,7 @@
 	last = log - 1 HEAD
 	st = status
 	diffs = diff --cached
+[fetch]
+	prune = true
 [pull]
 	rebase = true
