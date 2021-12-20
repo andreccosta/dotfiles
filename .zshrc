@@ -40,6 +40,8 @@ bindkey "^X^E" edit-command-line
 eval "$(starship init zsh)"
 
 # options
+SAVEHIST=10000
+HISTFILE=~/.zsh_history
 setopt AUTO_PUSHD	# push old dir to stack
 setopt CDABLE_VARS	# expand (allow 'cd -2/tmp')
 setopt histignorespace  # ignore history for commands starting with space
