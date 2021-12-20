@@ -128,5 +128,7 @@
   "terminal.integrated.env.osx": {
     "FIG_NEW_SESSION": "1"
   },
-  "solargraph.formatting": true
+  "solargraph.formatting": true,
+  "terminal.integrated.copyOnSelection": true,
+  "debug.terminal.clearBeforeReusing": true
 }
