@@ -21,9 +21,8 @@
   "terminal.integrated.fontFamily" : "'FiraMono Nerd Font', 'CaskaydiaCove Nerd Font Mono', monospace",
   "window.openFilesInNewWindow" : "on",
   "telemetry.telemetryLevel" : "off",
-  "workbench.colorTheme" : "One Dark Pro Darker",
-  "prettier.singleQuote" : true,
-  "workbench.editor.highlightModifiedTabs" : true,
+  "workbench.colorTheme" : "Moonlight II",
+  "prettier.singleQuote": true,
   "editor.tabCompletion" : "on",
   "ruby.useLanguageServer" : false,
   "workbench.editor.enablePreview" : false,
@@ -130,5 +129,8 @@
   },
   "solargraph.formatting": true,
   "terminal.integrated.copyOnSelection": true,
-  "debug.terminal.clearBeforeReusing": true
+  "debug.terminal.clearBeforeReusing": true,
+  "remote.SSH.remotePlatform": {
+    "ack": "linux"
+  }
 }
