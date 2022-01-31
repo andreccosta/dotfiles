@@ -16,9 +16,9 @@ renamed = " "
 untracked = " "
 
 # prompt
-[character]
-error_symbol = "[](bold red)"
-success_symbol = "[](bold green)"
+#[character]
+#error_symbol = "[](bold red)"
+#success_symbol = "[](bold green)"
 
 # nerd font symbols
 [aws]
