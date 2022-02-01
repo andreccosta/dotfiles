@@ -1,86 +1,85 @@
 {
   "workbench.editorAssociations": {
-    "*.ipynb" : "jupyter-notebook"
+    "*.ipynb": "jupyter-notebook"
   },
-  "editor.wordWrapColumn" : 120,
-  "editor.fontSize" : 13,
-  "git.autofetch" : true,
-  "search.exclude" : {
-    "**\/node_modules" : true,
-    "**\/*.code-search" : true,
-    "**\/bower_components" : true
+  "editor.wordWrapColumn": 120,
+  "editor.fontSize": 13,
+  "git.autofetch": true,
+  "search.exclude": {
+    "**\/node_modules": true,
+    "**\/*.code-search": true,
+    "**\/bower_components": true
   },
-  "[php]" : {
-    "editor.insertSpaces" : true,
-    "editor.tabSize" : 4
+  "[php]": {
+    "editor.insertSpaces": true,
+    "editor.tabSize": 4
   },
-  "workbench.iconTheme" : "material-icon-theme",
-  "prettier.semi" : false,
-  "editor.tabSize" : 2,
-  "editor.fontLigatures" : true,
-  "terminal.integrated.fontFamily" : "'FiraMono Nerd Font', 'CaskaydiaCove Nerd Font Mono', monospace",
-  "window.openFilesInNewWindow" : "on",
-  "telemetry.telemetryLevel" : "off",
-  "workbench.colorTheme" : "Moonlight II",
+  "workbench.iconTheme": "material-icon-theme",
   "prettier.singleQuote": true,
-  "editor.tabCompletion" : "on",
-  "ruby.useLanguageServer" : false,
-  "workbench.editor.enablePreview" : false,
-  "extensions.autoUpdate" : true,
-  "[json]" : {
-    "editor.defaultFormatter" : "vscode.json-language-features"
+  "prettier.semi": false,
+  "editor.tabSize": 2,
+  "editor.fontLigatures": true,
+  "terminal.integrated.fontFamily": "'FiraMono Nerd Font', 'CaskaydiaCove Nerd Font Mono', monospace",
+  "window.openFilesInNewWindow": "on",
+  "telemetry.telemetryLevel": "off",
+  "workbench.colorTheme": "Moonlight II",
+  "editor.tabCompletion": "on",
+  "ruby.useLanguageServer": false,
+  "extensions.autoUpdate": true,
+  "[json]": {
+    "editor.defaultFormatter": "vscode.json-language-features"
   },
-  "workbench.startupEditor" : "none",
-  "[python]" : {
-    "editor.insertSpaces" : true,
-    "editor.tabSize" : 4
+  "workbench.startupEditor": "none",
+  "[python]": {
+    "editor.insertSpaces": true,
+    "editor.tabSize": 4
   },
-  "[markdown]" : {
-    "files.trimTrailingWhitespace" : false,
-    "editor.quickSuggestions" : false,
-    "files.insertFinalNewline" : false,
-    "editor.wordWrap" : "on"
+  "[markdown]": {
+    "files.trimTrailingWhitespace": false,
+    "editor.quickSuggestions": false,
+    "files.insertFinalNewline": false,
+    "editor.wordWrap": "on"
   },
-  "editor.renderWhitespace" : "none",
-  "[csharp]" : {
-    "editor.insertSpaces" : true,
-    "editor.tabSize" : 4
+  "editor.renderWhitespace": "none",
+  "[csharp]": {
+    "editor.insertSpaces": true,
+    "editor.tabSize": 4
   },
-  "explorer.compactFolders" : false,
-  "explorer.openEditors.visible" : 0,
-  "git.confirmSync" : true,
-  "git.enableSmartCommit" : true,
+  "explorer.compactFolders": false,
+  "explorer.openEditors.visible": 0,
+  "git.confirmSync": true,
+  "git.enableSmartCommit": true,
   "go.useLanguageServer": true,
-  "ruby.lint" : {
-    "rubocop" : {
-      "useBundler" : false,
-      "command" : "rubocop --require rubocop-rails",
-      "except" : [
+  "ruby.lint": {
+    "rubocop": {
+      "useBundler": false,
+      "command": "rubocop --require rubocop-rails",
+      "except": [
         "Layout\/MultilineMethodCallIndentation",
         "Style\/Documentation",
         "Style\/StringLiterals"
       ]
     }
   },
-  "ruby.useBundler" : false,
-  "editor.insertSpaces" : true,
-  "editor.wordWrap" : "off",
-  "editor.autoIndent" : "full",
-  "workbench.colorCustomizations" : {
-    "tab.activeModifiedBorder" : "#ff00ff"
+  "ruby.useBundler": false,
+  "editor.insertSpaces": true,
+  "editor.wordWrap": "off",
+  "editor.autoIndent": "full",
+  "workbench.colorCustomizations": {
+    "tab.activeModifiedBorder": "#ff00ff"
   },
-  "workbench.editor.showTabs" : true,
-  "files.trimTrailingWhitespace" : true,
-  "editor.minimap.enabled" : false,
-  "editor.rulers" : [
+  "workbench.editor.showTabs": true,
+  "files.trimTrailingWhitespace": true,
+  "editor.minimap.enabled": false,
+  "editor.rulers": [
     80,
     120,
     160
   ],
-  "[html]" : {
-    "editor.defaultFormatter" : "vscode.html-language-features"
+  "[html]": {
+    "editor.defaultFormatter": "vscode.html-language-features"
   },
-  "cSpell.userWords" : [
+  "cSpell.userWords": [
     "Amplemarket",
     "concat",
     "Hubspot",
@@ -88,49 +87,47 @@
     "Numericality",
     "Titlebar"
   ],
-  "notebook.cellToolbarLocation" : {
-    "default" : "right",
-    "jupyter-notebook" : "left"
+  "notebook.cellToolbarLocation": {
+    "default": "right",
+    "jupyter-notebook": "left"
   },
-  "editor.fontFamily" : "'Fira Code', Menlo, sans-serif",
-  "javascript.updateImportsOnFileMove.enabled" : "always",
-  "[typescript]" : {
-    "editor.defaultFormatter" : "esbenp.prettier-vscode"
+  "editor.fontFamily": "'Fira Code', Menlo, sans-serif",
+  "javascript.updateImportsOnFileMove.enabled": "always",
+  "go.toolsManagement.autoUpdate": true,
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "go.toolsManagement.autoUpdate" : true,
-  "[javascript]" : {
-    "editor.defaultFormatter" : "esbenp.prettier-vscode"
+  "[go]": {
+    "editor.insertSpaces": false,
   },
-  "[go]" : {
-    "editor.insertSpaces" : false
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
   },
-  "[javascriptreact]" : {
-    "editor.defaultFormatter" : "esbenp.prettier-vscode"
-  },
-  "workbench.editor.enablePreviewFromQuickOpen" : false,
-  "editor.accessibilitySupport" : "off",
+  "editor.accessibilitySupport": "off",
   "prettier.printWidth": 120,
-  "window.openFoldersInNewWindow" : "on",
-  "window.menuBarVisibility" : "toggle",
-  "files.associations" : {
-    "*.gohtml" : "html",
-    "*.erb" : "html"
+  "window.openFoldersInNewWindow": "on",
+  "window.menuBarVisibility": "toggle",
+  "files.associations": {
+    "*.gohtml": "html",
+    "*.erb": "html"
   },
-  "cSpell.enableFiletypes" : [
+  "cSpell.enableFiletypes": [
     "haml",
     "ruby"
   ],
-  "workbench.statusBar.visible" : true,
-  "[jsonc]" : {
-    "editor.defaultFormatter" : "vscode.json-language-features"
-  },
-  "terminal.integrated.env.osx": {
-    "FIG_NEW_SESSION": "1"
-  },
+  "workbench.statusBar.visible": true,
   "solargraph.formatting": true,
   "terminal.integrated.copyOnSelection": true,
-  "debug.terminal.clearBeforeReusing": true,
   "remote.SSH.remotePlatform": {
     "ack": "linux"
-  }
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
 }
