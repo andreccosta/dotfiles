@@ -4,7 +4,7 @@
 	name = André Costa
 	email = andreccosta@me.com
 [push]
-	default = matching
+	default = current
 [filter "lfs"]
 	smudge = git-lfs smudge %f
 	required = true
