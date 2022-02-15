@@ -25,3 +25,6 @@
 	prune = true
 [pull]
 	rebase = true
+
+[includeIf "gitdir:~/code/src/github.com/amplemarket/"]
+	path = ~/code/src/github.com/amplemarket/.gitconfig
