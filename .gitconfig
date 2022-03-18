@@ -14,9 +14,11 @@
 [init]
 	defaultBranch = main
 [alias]
+	c = commit
 	cm = commit
 	cmm = commit -m
 	co = checkout
+	d = diff --color
 	nb = checkout -b
 	l = log --pretty='format:%C(green)%h%C(reset) %C(bold blue)%ar%C(reset) %an : %s' --graph
 	last = log - 1 HEAD
@@ -25,7 +27,8 @@
 [fetch]
 	prune = true
 [pull]
-	rebase = true
+	rebase = false
+	ff = only
 
 [includeIf "gitdir:~/code/src/github.com/amplemarket/"]
 	path = ~/code/src/github.com/amplemarket/.gitconfig
