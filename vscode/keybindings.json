@@ -14,11 +14,11 @@
     "when": "explorerViewletFocus"
   },
   {
-    "key": "ctrl+[IntlBackslash]",
+    "key": "ctrl+'",
     "command": "workbench.action.terminal.focus"
   },
   {
-    "key": "ctrl+[IntlBackslash]",
+    "key": "ctrl+'",
     "command": "workbench.action.focusActiveEditorGroup",
     "when": "terminalFocus"
   },

@@ -24,7 +24,6 @@
   "telemetry.telemetryLevel": "off",
   "workbench.colorTheme": "Moonlight II",
   "editor.tabCompletion": "on",
-  "ruby.useLanguageServer": false,
   "extensions.autoUpdate": true,
   "[json]": {
     "editor.defaultFormatter": "vscode.json-language-features"
@@ -51,17 +50,13 @@
   "git.enableSmartCommit": true,
   "go.useLanguageServer": true,
   "ruby.lint": {
-    "rubocop": {
-      "useBundler": false,
-      "command": "rubocop --require rubocop-rails",
-      "except": [
-        "Layout\/MultilineMethodCallIndentation",
-        "Style\/Documentation",
-        "Style\/StringLiterals"
-      ]
-    }
+    "standard": true
   },
   "ruby.useBundler": false,
+  "ruby.format": "standard",
+  "ruby.useLanguageServer": true,
+  "solargraph.formatting": false,
+  "solargraph.diagnostics": false,
   "editor.insertSpaces": true,
   "editor.wordWrap": "off",
   "editor.autoIndent": "full",
@@ -117,17 +112,21 @@
     "ruby"
   ],
   "workbench.statusBar.visible": true,
-  "solargraph.formatting": true,
   "terminal.integrated.copyOnSelection": true,
   "remote.SSH.remotePlatform": {
     "ack": "linux"
   },
   "[typescript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[typescriptreact]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
+  "[ruby]": {
+    "editor.formatOnSave": false,
+    "editor.formatOnSaveMode": "modificationsIfAvailable"
+  },
+  "diffEditor.ignoreTrimWhitespace": false,
 }
