@@ -10,7 +10,7 @@
 	required = true
 	clean = git-lfs clean %f
 [core]
-	editor = code --wait
+	editor = nano
 [init]
 	defaultBranch = main
 [alias]

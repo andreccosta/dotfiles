@@ -88,7 +88,7 @@ watch() {
       ls *.go | entr -cc go run \/_
     ;;
     spec | specs)
-      find . -type f -maxdepth 5 -name "*_spec.rb" | entr -cc bundle exec rspec \/_
+      find . -maxdepth 10 type f -name "*_spec.rb" | entr -cc bundle exec rspec \/_
     ;;
   esac
 }
