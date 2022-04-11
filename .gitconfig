@@ -3,12 +3,7 @@
 [user]
 	name = André Costa
 	email = andreccosta@me.com
-[push]
-	default = current
-[filter "lfs"]
-	smudge = git-lfs smudge %f
-	required = true
-	clean = git-lfs clean %f
+
 [core]
 	editor = nano
 [init]
@@ -24,11 +19,19 @@
 	last = log - 1 HEAD
 	st = status
 	diffs = diff --cached
+
 [fetch]
 	prune = true
 [pull]
 	rebase = false
 	ff = only
+[push]
+	default = current
+
+[filter "lfs"]
+	smudge = git-lfs smudge %f
+	required = true
+	clean = git-lfs clean %f
 
 [includeIf "gitdir:~/code/src/github.com/amplemarket/"]
 	path = ~/code/src/github.com/amplemarket/.gitconfig
