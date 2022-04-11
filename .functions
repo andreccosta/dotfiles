@@ -64,7 +64,7 @@ wake() {
   fi
 }
 
-watch() {
+wx() {
   case $1 in
     py | python)
       ls *.py | entr -ccp python3 \/_
@@ -88,7 +88,7 @@ watch() {
       ls *.go | entr -cc go run \/_
     ;;
     spec | specs)
-      find . -maxdepth 10 -type f -name "*_spec.rb" | entr -ccp bundle exec rspec \/_
+      find . -maxdepth 10 -type f -name "*_spec.rb" | entr -cc bundle exec rspec \/_
     ;;
   esac
 }
