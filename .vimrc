@@ -39,6 +39,7 @@ endif
 let g:airline_theme = 'night_owl'
 let g:airline#extensions#tabline#enabled = 0 
 let g:airline#extensions#branch#enabled = 1 
+let g:airline_powerline_fonts = 1
 let g:airline_section_warning = '' 
 let g:airline_section_y = '' 
 let g:airline_section_x = '' 
