@@ -3,10 +3,10 @@ i3-wm.binding.launcher.app: d
 i3-wm.binding.display: Shift+d
 i3-wm.binding.sleep: F13
 
-i3-wm.gaps.inner.size: 20
-i3-wm.gaps.outer.size: 20
+i3-wm.gaps.inner.size: 5
+i3-wm.gaps.outer.size: 0
 i3-wm.gaps.focus_follows_mouse: yes
-i3-wm.gaps.smart: inverse_outer
+i3-wm.gaps.smart: on
 
 i3xrocks.memory.display: "used"
 i3xrocks.memory.percentage: true
