@@ -1,0 +1,2 @@
+#!/usr/bin/sh
+ln -sf "$PWD/Xresources" "$HOME/.config/regolith2/Xresources"
