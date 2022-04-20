@@ -86,7 +86,7 @@ if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 # z
-[ -s /usr/local/etc/profile.d/z.sh ] && source /usr/local/etc/profile.d/z.sh
+[ -s ~/code/src/github.com/andreccosta/dotfiles/z.sh ] && source ~/code/src/github.com/andreccosta/dotfiles/z.sh
 
-# gvm
+# go version manager
 [[ -s "/home/acosta/.gvm/scripts/gvm" ]] && source "/home/acosta/.gvm/scripts/gvm"

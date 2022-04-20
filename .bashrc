@@ -125,15 +125,15 @@ for file in ~/.{aliases,functions,prompt,osx,extra,exports}; do
 done
 unset file
 
+# rbenv
+[[ -d $HOME/.rbenv/bin ]] && export PATH="$HOME/.rbenv/bin:$PATH"
+if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
+[[ -d $HOME/.rbenv/plugins/ruby-build/bin ]] && export PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"
+
 # nvm
-export NVM_DIR="$HOME/.nvm"
+[[ -d $HOME/.nvm ]] && export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-
-# rbenv
-export PATH="$HOME/.rbenv/bin:$PATH"
-eval "$(rbenv init -)"
-export PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"
 
 # z
 [ -s ~/code/src/github.com/andreccosta/dotfiles/z.sh ] && source ~/code/src/github.com/andreccosta/dotfiles/z.sh
