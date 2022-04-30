@@ -64,7 +64,7 @@ alias nrd='npm run dev'
 alias nrt='npm run test'
 
 # cat
+if command -v batcat &>/dev/null; then
+  alias bat="batcat"
+fi
 alias bat='bat --theme="base16"'
-
-# fix curl alias
-alias curl='noglob curl -#'
