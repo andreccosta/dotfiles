@@ -39,7 +39,7 @@ fi
 
 # set a fancy prompt (non-color, unless we know we "want" color)
 case "$TERM" in
-    xterm-color|*-256color) color_prompt=yes;;
+    xterm-kitty|xterm-color|*-256color) color_prompt=yes;;
 esac
 
 # uncomment for a colored prompt, if the terminal has the capability; turned
@@ -137,3 +137,6 @@ if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
 
 # z
 [ -s ~/code/src/github.com/andreccosta/dotfiles/z.sh ] && source ~/code/src/github.com/andreccosta/dotfiles/z.sh
+
+# cargo
+[ -s $HOME/.cargo/env ] && source $HOME/.cargo/env
