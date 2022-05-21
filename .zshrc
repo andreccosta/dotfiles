@@ -53,7 +53,6 @@ setopt histignorespace  # ignore history for commands starting with space
 [ -d "/usr/local/share/zsh-autosuggestions" ] && source /usr/local/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 # load the shell dotfiles, and then some:
-# * ~/.path can be used to extend `$PATH`.
 # * ~/.extra can be used for other settings you dont want to commit.
 for file in ~/.{aliases,functions,prompt,osx,extra,exports}; do
 	if [[ -r "$file" ]] && [[ -f "$file" ]]; then

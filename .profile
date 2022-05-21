@@ -2,4 +2,4 @@
 export CLICOLOR=1
 export LSCOLORS=ExFxBxDxCxegedabagacad
 
-source .path
+source ~/.path
