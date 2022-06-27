@@ -50,7 +50,7 @@
   },
   "explorer.compactFolders": false,
   "explorer.openEditors.visible": 0,
-  "git.confirmSync": true,
+  "git.confirmSync": false,
   "git.enableSmartCommit": true,
   "go.useLanguageServer": true,
   "ruby.lint": {
@@ -90,7 +90,7 @@
     "default": "right",
     "jupyter-notebook": "left"
   },
-  "editor.fontFamily": "'Fira Code', Menlo, sans-serif",
+  "editor.fontFamily": "'JetBrains Mono', 'Fira Code', Menlo, sans-serif",
   "javascript.updateImportsOnFileMove.enabled": "always",
   "go.toolsManagement.autoUpdate": true,
   "[javascript]": {
@@ -133,4 +133,12 @@
     "editor.formatOnSaveMode": "modificationsIfAvailable"
   },
   "diffEditor.ignoreTrimWhitespace": false,
+  "editor.inlineSuggest.enabled": true,
+  "github.copilot.enable": {
+    "*": true,
+    "yaml": false,
+    "plaintext": false,
+    "markdown": false,
+    "ruby": false
+  },
 }
