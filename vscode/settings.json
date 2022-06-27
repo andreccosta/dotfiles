@@ -35,7 +35,11 @@
   },
   "[markdown]": {
     "files.trimTrailingWhitespace": false,
-    "editor.quickSuggestions": false,
+    "editor.quickSuggestions": {
+      "comments": "off",
+      "strings": "off",
+      "other": "off"
+    },
     "files.insertFinalNewline": false,
     "editor.wordWrap": "on"
   },

@@ -138,4 +138,4 @@ if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
 [ -s ~/code/src/github.com/andreccosta/dotfiles/z.sh ] && source ~/code/src/github.com/andreccosta/dotfiles/z.sh
 
 # cargo
-[ -s $HOME/.cargo/env ] && source $HOME/.cargo/env
+[ -d $HOME/.cargo ] && source "$HOME/.cargo/env"
