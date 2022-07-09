@@ -89,3 +89,5 @@ if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
 
 # go version manager
 [[ -s "/home/acosta/.gvm/scripts/gvm" ]] && source "/home/acosta/.gvm/scripts/gvm"
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh

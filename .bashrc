@@ -139,3 +139,5 @@ if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
 
 # cargo
 [ -d $HOME/.cargo ] && source "$HOME/.cargo/env"
+
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash
