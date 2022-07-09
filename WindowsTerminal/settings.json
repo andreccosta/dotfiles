@@ -1,7 +1,32 @@
 {
+    "$help": "https://aka.ms/terminal-documentation",
     "$schema": "https://aka.ms/terminal-profiles-schema",
     "actions":
     [
+        {
+            "command":
+            {
+                "action": "switchToTab",
+                "index": 0
+            },
+            "keys": "ctrl+1"
+        },
+        {
+            "command":
+            {
+                "action": "switchToTab",
+                "index": 1
+            },
+            "keys": "ctrl+2"
+        },
+        {
+            "command":
+            {
+                "action": "switchToTab",
+                "index": 2
+            },
+            "keys": "ctrl+3"
+        },
         {
             "command":
             {
@@ -14,9 +39,49 @@
             "command":
             {
                 "action": "switchToTab",
+                "index": 4
+            },
+            "keys": "ctrl+5"
+        },
+        {
+            "command":
+            {
+                "action": "switchToTab",
+                "index": 5
+            },
+            "keys": "ctrl+6"
+        },
+        {
+            "command":
+            {
+                "action": "switchToTab",
+                "index": 6
+            },
+            "keys": "ctrl+7"
+        },
+        {
+            "command":
+            {
+                "action": "switchToTab",
                 "index": 7
             },
             "keys": "ctrl+8"
+        },
+        {
+            "command":
+            {
+                "action": "switchToTab",
+                "index": 8
+            },
+            "keys": "ctrl+9"
+        },
+        {
+            "command":
+            {
+                "action": "switchToTab",
+                "index": 9
+            },
+            "keys": "ctrl+0"
         },
         {
             "command":
@@ -29,14 +94,6 @@
         {
             "command": "find",
             "keys": "ctrl+shift+f"
-        },
-        {
-            "command":
-            {
-                "action": "switchToTab",
-                "index": 0
-            },
-            "keys": "ctrl+1"
         },
         {
             "command": "paste",
@@ -54,31 +111,7 @@
             {
                 "action": "closeTab"
             },
-            "keys": "ctrl+w"
-        },
-        {
-            "command":
-            {
-                "action": "switchToTab",
-                "index": 6
-            },
-            "keys": "ctrl+7"
-        },
-        {
-            "command":
-            {
-                "action": "switchToTab",
-                "index": 1
-            },
-            "keys": "ctrl+2"
-        },
-        {
-            "command":
-            {
-                "action": "switchToTab",
-                "index": 4
-            },
-            "keys": "ctrl+5"
+            "keys": "ctrl+shift+w"
         },
         {
             "command":
@@ -90,36 +123,8 @@
             "keys": "alt+shift+d"
         },
         {
-            "command":
-            {
-                "action": "switchToTab",
-                "index": 2
-            },
-            "keys": "ctrl+3"
-        },
-        {
-            "command":
-            {
-                "action": "switchToTab",
-                "index": 9
-            },
-            "keys": "ctrl+0"
-        },
-        {
-            "command":
-            {
-                "action": "switchToTab",
-                "index": 5
-            },
-            "keys": "ctrl+6"
-        },
-        {
-            "command":
-            {
-                "action": "switchToTab",
-                "index": 8
-            },
-            "keys": "ctrl+9"
+            "command": "closePane",
+            "keys": "ctrl+w"
         }
     ],
     "alwaysShowTabs": false,
@@ -131,13 +136,13 @@
     {
         "defaults":
         {
-            "acrylicOpacity": 0.75,
             "colorScheme": "One Half Dark",
             "font":
             {
                 "face": "CaskaydiaCove Nerd Font Mono",
                 "size": 10
             },
+            "opacity": 75,
             "padding": "0",
             "useAcrylic": true
         },
@@ -147,11 +152,10 @@
                 "colorScheme": "Dracula",
                 "commandline": "powershell.exe -NoLogo",
                 "guid": "{61c54bbd-c2c6-5271-96e7-009a87ff44bf}",
-                "hidden": false,
+                "hidden": true,
                 "name": "Windows PowerShell"
             },
             {
-                "commandline": "cmd.exe",
                 "guid": "{0caa0dad-35be-5f56-a8ff-afceeeaa6101}",
                 "hidden": true,
                 "name": "Command Prompt"
@@ -163,7 +167,13 @@
                 "source": "Windows.Terminal.Azure"
             },
             {
+                "colorScheme": "Moonlight II",
                 "commandline": "C:\\Program Files\\PowerShell\\7\\pwsh.exe -NoLogo",
+                "font":
+                {
+                    "face": "JetBrainsMono NF",
+                    "weight": "medium"
+                },
                 "guid": "{574e775e-4f2a-5b96-ac1e-a2962a402336}",
                 "hidden": false,
                 "name": "PowerShell",
@@ -181,7 +191,7 @@
                 "name": "Debian",
                 "padding": "0",
                 "source": "Windows.Terminal.Wsl",
-                "startingDirectory": "/home/acosta"
+                "startingDirectory": "~"
             }
         ]
     },
@@ -257,25 +267,27 @@
             "yellow": "#FFCB6B"
         },
         {
-            "name": "Moonlight II",
-            "black": "#191a2a",
-            "red": "#ff757f",
-            "green": "#c3e88d",
-            "yellow": "#ffc777",
-            "blue": "#82aaff",
-            "purple": "#c099ff",
-            "cyan": "#86e1fc",
-            "white": "#c8d3f5",
-            "brightBlack": "#828bb8",
-            "brightRed": "#ff757f",
-            "brightGreen": "#c3e88d",
-            "brightYellow": "#ffc777",
-            "brightBlue": "#82aaff",
-            "brightPurple": "#c099ff",
-            "brightCyan": "#86e1fc",
-            "brightWhite": "#c8d3f5",
             "background": "#222436",
-            "foreground": "#c8d3f5"
+            "black": "#191A2A",
+            "blue": "#82AAFF",
+            "brightBlack": "#828BB8",
+            "brightBlue": "#82AAFF",
+            "brightCyan": "#86E1FC",
+            "brightGreen": "#C3E88D",
+            "brightPurple": "#C099FF",
+            "brightRed": "#FF757F",
+            "brightWhite": "#C8D3F5",
+            "brightYellow": "#FFC777",
+            "cursorColor": "#FFFFFF",
+            "cyan": "#86E1FC",
+            "foreground": "#C8D3F5",
+            "green": "#C3E88D",
+            "name": "Moonlight II",
+            "purple": "#C099FF",
+            "red": "#FF757F",
+            "selectionBackground": "#FFFFFF",
+            "white": "#C8D3F5",
+            "yellow": "#FFC777"
         },
         {
             "background": "#282C34",
@@ -414,6 +426,29 @@
             "selectionBackground": "#FFFFFF",
             "white": "#D3D7CF",
             "yellow": "#C4A000"
+        },
+        {
+            "background": "#1F2335",
+            "black": "#3B4261",
+            "blue": "#7AA2F7",
+            "brightBlack": "#3B4261",
+            "brightBlue": "#7AA2F7",
+            "brightCyan": "#7DCFFF",
+            "brightGreen": "#73DACA",
+            "brightPurple": "#BB9AF7",
+            "brightRed": "#F7768E",
+            "brightWhite": "#A9B1D6",
+            "brightYellow": "#E0AF68",
+            "cursorColor": "#FFFFFF",
+            "cyan": "#7DCFFF",
+            "foreground": "#7982A9",
+            "green": "#73DACA",
+            "name": "TokyoNightStorm",
+            "purple": "#BB9AF7",
+            "red": "#F7768E",
+            "selectionBackground": "#FFFFFF",
+            "white": "#7982A9",
+            "yellow": "#E0AF68"
         },
         {
             "background": "#000000",
