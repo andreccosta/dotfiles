@@ -138,7 +138,7 @@
     "*": true,
     "yaml": false,
     "plaintext": false,
-    "markdown": false,
-    "ruby": false
+    "markdown": false
   },
+  "terminal.integrated.defaultLocation": "editor",
 }
