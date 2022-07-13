@@ -26,6 +26,7 @@
 	rebase = false
 	ff = only
 [push]
+	autoSetupRemote = true
 	default = current
 
 [filter "lfs"]
