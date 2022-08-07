@@ -3,7 +3,7 @@
     "*.ipynb": "jupyter-notebook"
   },
   "editor.wordWrapColumn": 120,
-  "editor.fontSize": 13,
+  "editor.fontSize": 14,
   "git.autofetch": true,
   "search.exclude": {
     "**\/node_modules": true,
@@ -14,21 +14,20 @@
     "editor.insertSpaces": true,
     "editor.tabSize": 4
   },
+  "workbench.colorTheme": "Moonlight II",
   "workbench.iconTheme": "material-icon-theme",
   "prettier.singleQuote": true,
   "prettier.semi": false,
   "editor.tabSize": 2,
   "editor.fontLigatures": true,
-  "terminal.integrated.fontFamily": "'FiraMono Nerd Font', 'CaskaydiaCove Nerd Font Mono', monospace",
   "window.openFilesInNewWindow": "on",
+  "window.menuBarVisibility": "toggle",
   "telemetry.telemetryLevel": "off",
-  "workbench.colorTheme": "Moonlight II",
   "editor.tabCompletion": "on",
   "extensions.autoUpdate": true,
   "[json]": {
     "editor.defaultFormatter": "vscode.json-language-features"
   },
-  "workbench.startupEditor": "none",
   "[python]": {
     "editor.insertSpaces": true,
     "editor.tabSize": 4
@@ -58,16 +57,15 @@
   },
   "ruby.useBundler": false,
   "ruby.format": "standard",
+  "ruby.intellisense": "rubyLocate",
+  "ruby.codeCompletion": "rcodetools",
   "ruby.useLanguageServer": true,
-  "solargraph.formatting": false,
-  "solargraph.diagnostics": false,
+  "solargraph.definitions": false,
   "editor.insertSpaces": true,
   "editor.wordWrap": "off",
   "editor.autoIndent": "full",
-  "workbench.colorCustomizations": {
-    "tab.activeModifiedBorder": "#ff00ff"
-  },
   "workbench.editor.showTabs": true,
+  "workbench.startupEditor": "none",
   "files.trimTrailingWhitespace": true,
   "editor.minimap.enabled": false,
   "editor.rulers": [
@@ -79,12 +77,12 @@
     "editor.defaultFormatter": "vscode.html-language-features"
   },
   "cSpell.userWords": [
-    "Amplemarket",
+    "amplemarket",
     "concat",
-    "Hubspot",
-    "LinkedIn",
-    "Numericality",
-    "Titlebar"
+    "hubspot",
+    "linkedIn",
+    "numericality",
+    "titlebar"
   ],
   "notebook.cellToolbarLocation": {
     "default": "right",
@@ -106,7 +104,6 @@
   "editor.accessibilitySupport": "off",
   "prettier.printWidth": 120,
   "window.openFoldersInNewWindow": "on",
-  "window.menuBarVisibility": "toggle",
   "files.associations": {
     "*.gohtml": "html",
     "*.erb": "html"
@@ -115,8 +112,6 @@
     "haml",
     "ruby"
   ],
-  "workbench.statusBar.visible": true,
-  "terminal.integrated.copyOnSelection": true,
   "remote.SSH.remotePlatform": {
     "ack": "linux"
   },
@@ -129,8 +124,11 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[ruby]": {
-    "editor.formatOnSave": false,
-    "editor.formatOnSaveMode": "modificationsIfAvailable"
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "rebornix.ruby"
+  },
+  "[rust]": {
+    "editor.formatOnSave": true
   },
   "diffEditor.ignoreTrimWhitespace": false,
   "editor.inlineSuggest.enabled": true,
@@ -138,7 +136,14 @@
     "*": true,
     "yaml": false,
     "plaintext": false,
-    "markdown": false
+    "markdown": false,
+    "ruby": false
   },
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "terminal.integrated.copyOnSelection": true,
   "terminal.integrated.defaultLocation": "editor",
+  "terminal.integrated.fontFamily": "'JetBrainsMono NF', 'JetBrainsMono Nerd Font', 'FiraMono Nerd Font', 'CaskaydiaCove Nerd Font Mono', monospace",
+  "terminal.integrated.fontSize": 14,
+  "workbench.layoutControl.enabled": false,
+  "workbench.editor.enablePreview": false,
 }
