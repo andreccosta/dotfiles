@@ -91,3 +91,6 @@ if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
 [[ -s "/home/acosta/.gvm/scripts/gvm" ]] && source "/home/acosta/.gvm/scripts/gvm"
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+# add Pulumi to the PATH
+[ -d $HOME/.pulumi/bin ] && export PATH=$PATH:$HOME/.pulumi/bin
