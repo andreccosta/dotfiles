@@ -31,6 +31,9 @@ if filereadable(expand("~/.vim/autoload/plug.vim"))
 	" Plug 'joshdick/onedark.vim', { 'as': 'onedark' }
 	Plug 'haishanh/night-owl.vim'
 
+	Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+	Plug 'junegunn/fzf.vim'
+
 	call plug#end()
 
 	colorscheme night-owl
@@ -48,3 +51,4 @@ let g:netrw_banner = 0
 
 set laststatus=2
 
+nmap <C-p> :FZF<CR>
