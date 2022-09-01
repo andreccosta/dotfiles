@@ -14,6 +14,7 @@
 	cmm = commit -m
 	co = checkout
 	d = diff --color
+        ds = diff --staged --color
 	nb = switch -c
 	sw = switch
 	l = log --pretty='format:%C(green)%h%C(reset) %C(bold blue)%ar%C(reset) %an : %s' --graph
