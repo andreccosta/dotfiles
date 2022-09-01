@@ -24,6 +24,7 @@ if filereadable(expand("~/.vim/autoload/plug.vim"))
 	Plug 'leafgarland/typescript-vim'
 	
 	Plug 'tpope/vim-fugitive'
+	Plug 'tpope/vim-endwise'
 
 	Plug 'vim-airline/vim-airline'
 	Plug 'vim-airline/vim-airline-themes'
