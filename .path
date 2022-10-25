@@ -3,3 +3,6 @@
 # go
 export GOPATH="$HOME/code/go"
 export PATH="$PATH:$GOPATH/bin"
+
+# user bin
+export PATH="$PATH:$HOME/bin"
