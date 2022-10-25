@@ -5,7 +5,7 @@ set -euo pipefail
 help() {
   echo "A script to easily perform local development common tasks"
   echo ""
-  echo "Usage: dev <command>"
+  echo "Usage: dev [-c container] <command>"
   echo ""
   echo "Commands:"
   echo "  up"
@@ -17,16 +17,31 @@ help() {
   exit 1
 }
 
+container="web"
+
+OPTIND=1
+while getopts 'c:' flag; do
+  case "$flag" in
+    c)
+      container="$OPTARG"
+    ;;
+    *)
+      echo "Unexpected flag"
+    ;;
+  esac
+done
+shift $((OPTIND-1))
+
 up() {
   docker compose up -d $@
 }
 
 console() {
-  docker compose exec -it web rails console
+  docker compose exec -it $container rails console
 }
 
 migrate() {
-  docker compose exec -it web rails db:migrate
+  docker compose exec -it $container rails db:migrate
 }
 
 stop() {
@@ -34,11 +49,11 @@ stop() {
 }
 
 terminal() {
-  docker compose exec -it web bash
+  docker compose exec -it $container bash
 }
 
 test() {
-  docker compose exec -it web bin/rspec $@
+  docker compose exec -it $container bin/rspec $@
 }
 
 case "$1" in
