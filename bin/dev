@@ -1,0 +1,69 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+help() {
+  echo "A script to easily perform local development common tasks"
+  echo ""
+  echo "Usage: dev <command>"
+  echo ""
+  echo "Commands:"
+  echo "  up"
+  echo "  console"
+  echo "  migrate"
+  echo "  stop"
+  echo "  terminal"
+  echo "  test"
+  exit 1
+}
+
+up() {
+  docker compose up -d $@
+}
+
+console() {
+  docker compose exec -it web rails console
+}
+
+migrate() {
+  docker compose exec -it web rails db:migrate
+}
+
+stop() {
+  docker compose stop $@
+}
+
+terminal() {
+  docker compose exec -it web bash
+}
+
+test() {
+  docker compose exec -it web bin/rspec $@
+}
+
+case "$1" in
+  up)
+    up "${@:2}"
+  ;;
+  console|c)
+    console
+  ;;
+  migrate)
+    migrate
+  ;;
+  stop)
+     stop "${@:2}"
+  ;;
+  bash|terminal|term|t)
+    terminal
+  ;;
+  test|rspec|spec)
+    test "${@:2}"
+  ;;
+  *)
+    help
+    exit 1
+  ;;
+esac
+
+exit 0
