@@ -63,3 +63,6 @@ alias slp='pmset displaysleepnow'
 
 # add coreutils to path
 export PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
+
+# homebrew
+export PATH="$PATH:/opt/homebrew/bin"
