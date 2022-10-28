@@ -2,18 +2,16 @@
     border: none;
     border-radius: 0;
     font-family: "JetBrainsMono Nerd Font";
-    font-size: 12px;
+    font-size: 14px;
     min-height: 0;
 }
 
 window#waybar {
     background: #282a36;
     color: #f8f8f2;
-    opacity: 0.9;
 }
 
 #window {
-    font-weight: normal;
 }
 
 #workspaces {
@@ -24,17 +22,28 @@ window#waybar {
     padding: 0 5px;
     background: transparent;
     color: #f8f8f2;
-    border-top: 2px solid transparent;
+    border-top: solid 2px transparent;
+}
+
+#workspaces button:hover {
+    border-top: solid 2px #c3e88d;
+    box-shadow: inherit;
+    text-shadow: inherit;
 }
 
 #workspaces button.focused {
-    color: #f8f8f2;
-    border-top: 2px solid #f8f8f2;
+    color: #c3e88d;
+    border-top: solid 2px #c3e88d;
+}
+
+#workspaces button.urgent {
+    color: #ff98a4;
+    border-top: solid 2px #ff98a4;
 }
 
 #mode {
     background: #64727D;
-    border-bottom: 3px solid #f8f8f2;
+    border-bottom: solid 2px #f8f8f2;
 }
 
 #clock, #battery, #cpu, #memory, #network, #pulseaudio, #temperature, #backlight, #keyboard-state, #custom-spotify, #tray, #mode, #custom-wofi-power {
@@ -43,7 +52,6 @@ window#waybar {
 }
 
 #clock {
-    font-weight: normal;
 }
 
 #battery {
