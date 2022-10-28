@@ -126,7 +126,7 @@ unset file
 
 # rbenv
 [[ -d $HOME/.rbenv/bin ]] && export PATH="$HOME/.rbenv/bin:$PATH"
-if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
+if which rbenv &> /dev/null; then eval "$(rbenv init -)"; fi
 [[ -d $HOME/.rbenv/plugins/ruby-build/bin ]] && export PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"
 
 # nvm
@@ -138,6 +138,6 @@ if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
 [ -s ~/code/src/github.com/andreccosta/dotfiles/z.sh ] && source ~/code/src/github.com/andreccosta/dotfiles/z.sh
 
 # cargo
-[ -d $HOME/.cargo ] && source "$HOME/.cargo/env"
+[ -f $HOME/.cargo/env ] && source "$HOME/.cargo/env"
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
