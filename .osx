@@ -66,3 +66,7 @@ export PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
 
 # homebrew
 export PATH="$PATH:/opt/homebrew/bin"
+
+# zsh
+source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
