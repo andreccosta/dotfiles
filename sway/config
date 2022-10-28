@@ -38,8 +38,8 @@ include /etc/sway/config-vars.d/*
 
 ### Idle configuration
 exec swayidle -w \
-    timeout 300 'swaylock --screenshots --clock --indicator --indicator-radius 100 --indicator-thickness 7 --effect-blur 7x5 --grace 2 --fade-in 0.2' \
-    timeout 600 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
+    timeout 180 'swaylock --screenshots --clock --indicator --indicator-radius 100 --indicator-thickness 7 --effect-blur 7x5 --grace 2 --fade-in 0.2' \
+    timeout 300 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
     before-sleep 'swaylock -f -c 000000'
 
 ### Output configuration
@@ -239,4 +239,10 @@ bar {
     }
 }
 
+set $highlight #3e68d7
+
+client.focused		#4c7899 #285577 #ffffff $highlight  $highlight
+client.focused_inactive	#333333 #5f676a #ffffff #484e50	    #5f676a
+client.unfocused	#333333 #222222 #888888 #292d2e     #222222
+client.urgent		#2f343a #900000 #ffffff #900000     #900000
 include /etc/sway/config.d/*
