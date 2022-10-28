@@ -1,5 +1,6 @@
 ### Services
 
+# Notifications
 exec mako
 
 ### Variables
@@ -17,7 +18,7 @@ set $up k
 set $right l
 
 # Your preferred terminal emulator
-set $term kitty
+set $term alacritty
 
 # Your preferred application launcher
 # Note: pass the final command to swaymsg so that the resulting window can be opened
@@ -27,38 +28,31 @@ set $menu wofi --show run
 
 # Should only use gaps when more than one? Meh
 gaps inner 5
+smart_gaps on
 
 # No title bars
 default_border pixel 2
-
-# Only show gaps when there is at least one container
-smart_gaps on
+hide_edge_borders smart
 
 include /etc/sway/config-vars.d/*
 
 ### Idle configuration
 exec swayidle -w \
-    timeout 300 'swaylock -f -c 000000' \
+    timeout 300 'swaylock --screenshots --clock --indicator --indicator-radius 100 --indicator-thickness 7 --effect-blur 7x5 --grace 2 --fade-in 0.2' \
     timeout 600 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
     before-sleep 'swaylock -f -c 000000'
 
 ### Output configuration
 
-# Default wallpaper (more resolutions are available in /usr/share/backgrounds/sway/)
-#output * bg /usr/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png fill
-output * bg ~/wallpapers/tj-holowaychuk-dMxqP4jTpo4-unsplash.jpg fill
-
 ### Input configuration
-
-input type:keyboard {
-    xkb_layout pt
-}
 
 input type:touchpad {
     dwt disabled
     tap enabled
     natural_scroll enabled
     middle_emulation enabled
+    scroll_factor 1
+    scroll_method two_finger
 }
 
 ### Key bindings
@@ -220,13 +214,13 @@ bindsym $mod+r mode "resize"
 # Read `man 5 sway-bar` for more information about this section.
 bar {
     position top
-    font FiraMono Nerd Font Mono
+    font JetBrainsMono Nerd Font Mono
 
     swaybar_command waybar
 
     # When the status_command prints a new line to stdout, swaybar updates.
     # The default just shows the current date and time.
-    #status_command while date +'%d-%m-%Y %H:%M:%S'; do sleep 1; done
+    status_command while date +'%d-%m-%Y %H:%M:%S'; do sleep 1; done
 
     colors {
         #statusline #ffffff
