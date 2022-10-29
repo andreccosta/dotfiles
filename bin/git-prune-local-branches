@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+branches=$(git branch --merged | egrep -v "(^\*|master|main|develop|dev)")
+
+if [ -z "$branches" ]; then
+  echo "no branches to prune"
+  exit 0
+else
+  echo "$branches"
+fi
+
+read -p "Remove these branches? (y/n) " yn
+
+case $yn in
+  [yY] )
+    "$branches" | xargs git branch -d
+  ;;
+  * )
+    exit 0
+  ;;
+esac
+
+exit 0
