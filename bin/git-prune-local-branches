@@ -15,7 +15,7 @@ read -p "Remove these branches? (y/n) " yn
 
 case $yn in
   [yY] )
-    "$branches" | xargs git branch -d
+    echo "$branches" | xargs git branch -d
   ;;
   * )
     exit 0
