@@ -65,7 +65,11 @@ alias slp='pmset displaysleepnow'
 export PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
 
 # homebrew
-eval "$(brew shellenv)"
+if [ -x "$(command -v brew)" ]; then
+  eval "$(brew shellenv)"
+else
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+fi
 
 # zsh
 source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
