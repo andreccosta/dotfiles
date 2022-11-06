@@ -28,8 +28,8 @@ if filereadable(expand("~/.vim/autoload/plug.vim"))
 
 	Plug 'vim-airline/vim-airline'
 	Plug 'vim-airline/vim-airline-themes'
-	" Plug 'dracula/vim', { 'as': 'dracula' }
-	" Plug 'joshdick/onedark.vim', { 'as': 'onedark' }
+	"Plug 'dracula/vim', { 'as': 'dracula' }
+	"Plug 'joshdick/onedark.vim', { 'as': 'onedark' }
 	Plug 'haishanh/night-owl.vim'
 
 	Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
