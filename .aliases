@@ -65,6 +65,11 @@ alias nrt='npm run test'
 
 # cat
 if command -v batcat &>/dev/null; then
-  alias bat="batcat"
+  alias bat='batcat'
+  alias bat='bat --theme="base16"'
 fi
-alias bat='bat --theme="base16"'
+
+# gh
+if command -v gh &>/dev/null; then
+  alias gist='gh gist create'
+fi
