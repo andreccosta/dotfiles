@@ -1,6 +1,8 @@
 add_newline = false
 
-# disable gcloud
+[aws]
+disabled = true
+
 [gcloud]
 disabled = true
 
@@ -14,16 +16,9 @@ stashed = " "
 staged = " "
 renamed = " "
 untracked = " "
-
-# prompt
-#[character]
-#error_symbol = "[](bold red)"
-#success_symbol = "[](bold green)"
+ignore_submodules = true
 
 # nerd font symbols
-[aws]
-symbol = "  "
-
 [conda]
 symbol = " "
 
