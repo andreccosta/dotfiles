@@ -6,6 +6,9 @@ disabled = true
 [gcloud]
 disabled = true
 
+[docker_context]
+disabled = true
+
 # git
 [git_status]
 format = '([$all_status$ahead_behind]($style))'
@@ -27,9 +30,6 @@ symbol = " "
 
 [directory]
 read_only = " "
-
-[docker_context]
-symbol = " "
 
 [elixir]
 symbol = " "
