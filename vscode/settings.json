@@ -13,13 +13,12 @@
     "editor.insertSpaces": true,
     "editor.tabSize": 4
   },
-  "workbench.colorTheme": "Moonlight II",
   "workbench.iconTheme": "material-icon-theme",
   "workbench.editor.enablePreview": false,
   "workbench.layoutControl.enabled": false,
   "prettier.singleQuote": true,
   "prettier.semi": false,
-  "editor.fontSize": 13,
+  "editor.fontSize": 14,
   "editor.tabSize": 2,
   "editor.fontLigatures": true,
   "window.openFilesInNewWindow": "on",
@@ -153,4 +152,5 @@
   },
   "window.menuBarVisibility": "compact",
   "editor.semanticHighlighting.enabled": true,
+  "workbench.colorTheme": "Tokyo Night",
 }

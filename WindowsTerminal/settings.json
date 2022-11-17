@@ -1,10 +1,10 @@
 {
     "$help": "https://aka.ms/terminal-documentation",
     "$schema": "https://aka.ms/terminal-profiles-schema",
-    "actions": 
+    "actions":
     [
         {
-            "command": 
+            "command":
             {
                 "action": "switchToTab",
                 "index": 0
@@ -12,7 +12,7 @@
             "keys": "ctrl+1"
         },
         {
-            "command": 
+            "command":
             {
                 "action": "switchToTab",
                 "index": 4
@@ -20,7 +20,7 @@
             "keys": "ctrl+5"
         },
         {
-            "command": 
+            "command":
             {
                 "action": "switchToTab",
                 "index": 7
@@ -28,7 +28,7 @@
             "keys": "ctrl+8"
         },
         {
-            "command": 
+            "command":
             {
                 "action": "switchToTab",
                 "index": 1
@@ -40,7 +40,7 @@
             "keys": "ctrl+w"
         },
         {
-            "command": 
+            "command":
             {
                 "action": "switchToTab",
                 "index": 2
@@ -48,7 +48,7 @@
             "keys": "ctrl+3"
         },
         {
-            "command": 
+            "command":
             {
                 "action": "switchToTab",
                 "index": 8
@@ -56,7 +56,7 @@
             "keys": "ctrl+9"
         },
         {
-            "command": 
+            "command":
             {
                 "action": "switchToTab",
                 "index": 5
@@ -64,7 +64,7 @@
             "keys": "ctrl+6"
         },
         {
-            "command": 
+            "command":
             {
                 "action": "switchToTab",
                 "index": 3
@@ -72,7 +72,7 @@
             "keys": "ctrl+4"
         },
         {
-            "command": 
+            "command":
             {
                 "action": "switchToTab",
                 "index": 6
@@ -80,7 +80,7 @@
             "keys": "ctrl+7"
         },
         {
-            "command": 
+            "command":
             {
                 "action": "switchToTab",
                 "index": 9
@@ -88,21 +88,21 @@
             "keys": "ctrl+0"
         },
         {
-            "command": 
+            "command":
             {
                 "action": "newTab"
             },
             "keys": "ctrl+t"
         },
         {
-            "command": 
+            "command":
             {
                 "action": "closeTab"
             },
             "keys": "ctrl+shift+w"
         },
         {
-            "command": 
+            "command":
             {
                 "action": "splitPane",
                 "split": "auto",
@@ -120,12 +120,12 @@
     "copyOnSelect": true,
     "defaultProfile": "{58ad8b0c-3ef8-5f4d-bc6f-13e4c00f2530}",
     "initialRows": 30,
-    "profiles": 
+    "profiles":
     {
-        "defaults": 
+        "defaults":
         {
             "colorScheme": "Catppuccin Macchiato",
-            "font": 
+            "font":
             {
                 "face": "CaskaydiaCove Nerd Font Mono",
                 "size": 10
@@ -134,7 +134,7 @@
             "padding": "0",
             "useAcrylic": true
         },
-        "list": 
+        "list":
         [
             {
                 "colorScheme": "Dracula",
@@ -157,7 +157,7 @@
             {
                 "colorScheme": "Catppuccin Macchiato",
                 "commandline": "C:\\Program Files\\PowerShell\\7\\pwsh.exe -NoLogo",
-                "font": 
+                "font":
                 {
                     "face": "JetBrainsMono NF",
                     "weight": "medium"
@@ -169,7 +169,7 @@
             },
             {
                 "colorScheme": "Catppuccin Macchiato",
-                "font": 
+                "font":
                 {
                     "face": "JetBrainsMono NF",
                     "weight": "medium"
@@ -183,7 +183,7 @@
             }
         ]
     },
-    "schemes": 
+    "schemes":
     [
         {
             "background": "#0C0C0C",
@@ -483,6 +483,29 @@
             "selectionBackground": "#FFFFFF",
             "white": "#C0C0C0",
             "yellow": "#808000"
+        },
+        {
+            "name": "Tokyo Night",
+            "foreground": "#a9b1dc",
+            "background": "#1a1b2c",
+            "cursorColor": "#c0caf5",
+            "selectionBackground": "#28344a",
+            "black": "#414868",
+            "red": "#f7768e",
+            "green": "#73daca",
+            "yellow": "#e0af68",
+            "blue": "#7aa2f7",
+            "purple": "#bb9af7",
+            "cyan": "#7dcfff",
+            "white": "#c0caf5",
+            "brightBlack": "#414868",
+            "brightRed": "#f7768e",
+            "brightGreen": "#73daca",
+            "brightYellow": "#e0af68",
+            "brightBlue": "#7aa2f7",
+            "brightPurple": "#bb9af7",
+            "brightCyan": "#7dcfff",
+            "brightWhite": "#c0caf5"
         }
     ],
     "showTabsInTitlebar": true,
