@@ -10,13 +10,13 @@ scrolling:
 
 font:
   normal:
-    family: JetBrainsMono NF
+    family: JetBrainsMono Nerd Font
     style: Medium
   bold:
-    family: JetBrainsMono NF
+    family: JetBrainsMono Nerd Font
     style: Bold
   italic:
-    family: JetBrainsMono NF
+    family: JetBrainsMono Nerd Font
     style: MediumItalic
   size: 10
 
