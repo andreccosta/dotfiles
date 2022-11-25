@@ -1,0 +1,9 @@
+#!/usr/bin/sh
+
+mkdir -p "$HOME/.config/fish/conf.d"
+ln -sf $PWD/conf.d/* $HOME/.config/fish/conf.d/.
+
+mkdir -p "$HOME/.config/fish/functions"
+ln -sf $PWD/functions/* $HOME/.config/fish/functions/.
+
+ln -sf "$PWD/config.fish" "$HOME/.config/fish/config.fish"
