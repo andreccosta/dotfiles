@@ -19,7 +19,6 @@
   "prettier.singleQuote": true,
   "prettier.semi": false,
   "editor.fontSize": 14,
-  "editor.tabSize": 2,
   "editor.fontLigatures": true,
   "window.openFilesInNewWindow": "on",
   "telemetry.telemetryLevel": "off",
@@ -42,7 +41,6 @@
     "files.insertFinalNewline": false,
     "editor.wordWrap": "on"
   },
-  "editor.renderWhitespace": "none",
   "[csharp]": {
     "editor.insertSpaces": true,
     "editor.tabSize": 4
@@ -63,7 +61,6 @@
   "solargraph.definitions": false,
   "editor.insertSpaces": true,
   "editor.wordWrap": "off",
-  "editor.autoIndent": "full",
   "workbench.editor.showTabs": true,
   "workbench.startupEditor": "none",
   "files.trimTrailingWhitespace": true,
@@ -134,7 +131,7 @@
   "diffEditor.ignoreTrimWhitespace": false,
   "editor.inlineSuggest.enabled": true,
   "github.copilot.enable": {
-    "*": false,
+    "*": true,
     "yaml": false,
     "plaintext": false,
     "markdown": false,
@@ -152,5 +149,12 @@
   },
   "window.menuBarVisibility": "compact",
   "editor.semanticHighlighting.enabled": true,
-  "workbench.colorTheme": "Tokyo Night",
+  "workbench.colorTheme": "One Monokai",
+  "editor.tabSize": 2,
+  "settingsSync.ignoredExtensions": [
+    "rust-lang.rust-analyzer",
+    "ms-dotnettools.csharp",
+    "golang.go",
+    "xdebug.php-debug"
+  ],
 }
