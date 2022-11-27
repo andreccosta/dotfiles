@@ -149,7 +149,7 @@
   },
   "window.menuBarVisibility": "compact",
   "editor.semanticHighlighting.enabled": true,
-  "workbench.colorTheme": "One Monokai",
+  "workbench.colorTheme": "Horizon",
   "editor.tabSize": 2,
   "settingsSync.ignoredExtensions": [
     "rust-lang.rust-analyzer",
