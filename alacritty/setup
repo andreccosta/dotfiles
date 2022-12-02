@@ -1,0 +1,2 @@
+#!/usr/bin/sh
+ln -sf "$PWD" "$HOME/.config/alacritty"
