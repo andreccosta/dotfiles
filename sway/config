@@ -68,6 +68,13 @@ input type:touchpad {
     # Start your launcher
     bindsym $mod+d exec $menu
 
+    # Lock now
+    bindsym $mod+Escape exec swaylock --screenshots --clock --indicator --indicator-radius 100 --indicator-thickness 7 --effect-blur 7x5 --grace 0 --fade-in 0.2
+
+    # Workspace navigation
+    bindsym $mod+Tab workspace next
+    bindsym $mod+Shift+Tab workspace prev
+
     # Drag floating windows by holding down $mod and left mouse button.
     # Resize them with right mouse button + $mod.
     # Despite the name, also works for non-floating windows.
@@ -108,10 +115,12 @@ input type:touchpad {
     bindsym $mod+Shift+Right move right
 
 # Workspaces:
+set $ws1 1:dev
+set $ws2 2:web
 
     # Switch to workspace
-    bindsym $mod+1 workspace number 1
-    bindsym $mod+2 workspace number 2
+    bindsym $mod+1 workspace $ws1
+    bindsym $mod+2 workspace $ws2
     bindsym $mod+3 workspace number 3
     bindsym $mod+4 workspace number 4
     bindsym $mod+5 workspace number 5
@@ -122,8 +131,8 @@ input type:touchpad {
     bindsym $mod+0 workspace number 10
 
     # Move focused container to workspace
-    bindsym $mod+Shift+1 move container to workspace number 1
-    bindsym $mod+Shift+2 move container to workspace number 2
+    bindsym $mod+Shift+1 move container to workspace $ws1
+    bindsym $mod+Shift+2 move container to workspace $ws2
     bindsym $mod+Shift+3 move container to workspace number 3
     bindsym $mod+Shift+4 move container to workspace number 4
     bindsym $mod+Shift+5 move container to workspace number 5
