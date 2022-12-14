@@ -147,9 +147,9 @@
   "[jsonc]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "window.menuBarVisibility": "compact",
+  "window.menuBarVisibility": "toggle",
   "editor.semanticHighlighting.enabled": true,
-  "workbench.colorTheme": "Horizon",
+  "workbench.colorTheme": "One Monokai",
   "editor.tabSize": 2,
   "settingsSync.ignoredExtensions": [
     "rust-lang.rust-analyzer",
