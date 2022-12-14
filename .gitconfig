@@ -13,8 +13,8 @@
 
 [alias]
 	c = commit
-	cm = commit
-	cmm = commit -m
+	ca = !git add -u && git commit -m
+	cm = commit -m
 	co = checkout
 	d = diff --color
 	ds = diff --staged --color
@@ -44,6 +44,9 @@
 	smudge = git-lfs smudge %f
 	required = true
 	clean = git-lfs clean %f
+
+[include]
+	path = ~/.gitconfig.local
 
 [includeIf "gitdir:~/code/src/github.com/amplemarket/"]
 	path = ~/code/src/github.com/amplemarket/.gitconfig
