@@ -58,11 +58,6 @@ alias rmdir='rm -ri'
 # random
 alias weather='curl -4 http://wttr.in/Porto,Portugal'
 
-# npm
-alias n='npm'
-alias nrd='npm run dev'
-alias nrt='npm run test'
-
 # cat
 if command -v batcat &>/dev/null; then
   alias bat='batcat'
@@ -73,3 +68,6 @@ fi
 if command -v gh &>/dev/null; then
   alias gist='gh gist create'
 fi
+
+# bundler
+alias bx="bundler exec"
