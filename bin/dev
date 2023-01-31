@@ -12,6 +12,7 @@ help() {
   echo "  console"
   echo "  migrate"
   echo "  run"
+  echo "  restart"
   echo "  stop"
   echo "  terminal"
   echo "  test"
@@ -45,6 +46,10 @@ migrate() {
   docker compose exec -it $container rails db:migrate
 }
 
+restart() {
+  docker compose restart $@
+}
+
 run() {
   docker compose exec -it $container $@
 }
@@ -70,6 +75,9 @@ case "$1" in
   ;;
   migrate)
     migrate
+  ;;
+  restart)
+    restart "${@:2}"
   ;;
   run)
     run "${@:2}"
