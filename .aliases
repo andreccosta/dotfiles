@@ -70,4 +70,4 @@ if command -v gh &>/dev/null; then
 fi
 
 # bundler
-alias bx="bundler exec"
+alias bx='bundler exec'
