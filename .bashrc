@@ -125,12 +125,12 @@ done
 unset file
 
 # rbenv
-[[ -d $HOME/.rbenv/bin ]] && export PATH="$HOME/.rbenv/bin:$PATH"
+[ -d $HOME/.rbenv/bin ] && export PATH="$HOME/.rbenv/bin:$PATH"
 if which rbenv &> /dev/null; then eval "$(rbenv init -)"; fi
-[[ -d $HOME/.rbenv/plugins/ruby-build/bin ]] && export PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"
+[ -d $HOME/.rbenv/plugins/ruby-build/bin ] && export PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"
 
 # nvm
-[[ -d $HOME/.nvm ]] && export NVM_DIR="$HOME/.nvm"
+[ -d $HOME/.nvm ] && export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
@@ -140,4 +140,5 @@ if which rbenv &> /dev/null; then eval "$(rbenv init -)"; fi
 # cargo
 [ -f $HOME/.cargo/env ] && source "$HOME/.cargo/env"
 
-[ -f ~/.fzf.bash ] && source ~/.fzf.bash
+# fzf
+[ -f $HOME/.fzf.bash ] && source "$HOME/.fzf.bash"
