@@ -149,7 +149,6 @@
   },
   "window.menuBarVisibility": "toggle",
   "editor.semanticHighlighting.enabled": true,
-  "workbench.colorTheme": "One Monokai",
   "editor.tabSize": 2,
   "settingsSync.ignoredExtensions": [
     "rust-lang.rust-analyzer",
@@ -157,4 +156,5 @@
     "golang.go",
     "xdebug.php-debug"
   ],
+  "workbench.colorTheme": "One Monokai",
 }
