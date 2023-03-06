@@ -80,6 +80,7 @@
     "hubspot",
     "linkedIn",
     "numericality",
+    "timespan",
     "titlebar"
   ],
   "notebook.cellToolbarLocation": {
@@ -122,8 +123,8 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[ruby]": {
-    "editor.formatOnSave": false,
-    "editor.defaultFormatter": "rebornix.ruby"
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "testdouble.vscode-standard-ruby"
   },
   "[rust]": {
     "editor.formatOnSave": true
@@ -156,5 +157,5 @@
     "golang.go",
     "xdebug.php-debug"
   ],
-  "workbench.colorTheme": "One Monokai",
+  "workbench.colorTheme": "Moonlight II",
 }
