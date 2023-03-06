@@ -12,22 +12,31 @@
 	defaultBranch = main
 
 [alias]
+	br = branch --format='%(HEAD) %(color:yellow)%(refname:short)%(color:reset) - %(contents:subject) %(color:green)(%(committerdate:relative)) [%(authorname)]' --sort=-committerdate
 	c = commit
 	ca = !git add -u && git commit -m
 	cm = commit -m
 	co = checkout
 	d = diff --color
 	ds = diff --staged --color
+	del = branch -D
 	fo = fetch origin
 	fom = fetch origin master
+	fum = fetch upstream master
+	rom = !git fetch origin master && git rebase origin/master
+	rum = !git fetch upstream master && git rebase upstream/master
 	nb = switch master -c
 	sw = switch
-	l = log --pretty='format:%C(green)%h%C(reset) %C(bold blue)%ar%C(reset) %an : %s' --graph
+	l = log --pretty='format:%C(green)%h%C(reset) %C(bold blue)%ar%C(reset) %an : %s' -n 20 --graph
 	last = log - 1 HEAD
+	s = switch
+	ss = status -sb
 	st = status
 	diffs = diff --cached
 	review = diff origin/master...
 	review-files = diff origin/master... --name-only
+	undo = reset --soft HEAD^
+	rbi = !sh -c \"git rebase -i `git merge-base $1 HEAD`\" -
 
 [fetch]
 	prune = true
