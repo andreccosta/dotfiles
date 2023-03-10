@@ -10,6 +10,7 @@ help() {
   echo "Commands:"
   echo "  up"
   echo "  console"
+  echo "  debug"
   echo "  migrate"
   echo "  run"
   echo "  restart"
@@ -42,6 +43,10 @@ console() {
   docker compose exec -it $container rails console
 }
 
+debug() {
+  docker compose -f docker-compose.yml -f docker-compose.debug.yml up -d $@
+}
+
 migrate() {
   docker compose exec -it $container rails db:migrate
 }
@@ -72,6 +77,9 @@ case "$1" in
   ;;
   console|c)
     console
+  ;;
+  debug)
+    debug "${@:2}"
   ;;
   migrate)
     migrate
