@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+set -eou pipefail
+
+mkdir -p ~/.config/skhd
+ln -s $PWD/skhdrc ~/.config/skhd/skhdrc
