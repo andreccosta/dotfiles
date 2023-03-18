@@ -1,8 +1,9 @@
 window:
+  decorations: buttonless
   padding:
-    x: 5
-    y: 5
-  opacity: 1
+    x: 10
+    y: 10
+  opacity: 0.9
 
 scrolling:
   history: 10000
@@ -18,7 +19,7 @@ font:
   italic:
     family: JetBrainsMono Nerd Font
     style: MediumItalic
-  size: 10
+  size: 13
 
 draw_bold_text_with_bright_colors: true
 
@@ -26,4 +27,4 @@ selection:
   save_to_clipboard: true
 
 import:
-  - ~/.config/alacritty/catppuccin/catppuccin-macchiato.yml
+  - ~/.config/alacritty/catppuccin/tokyo-night.yml
