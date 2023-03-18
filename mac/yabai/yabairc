@@ -2,7 +2,7 @@
 
 yabai -m config                                 \
     mouse_follows_focus          off            \
-    focus_follows_mouse          on             \
+    focus_follows_mouse          off            \
     window_origin_display        default        \
     window_placement             second_child   \
     window_zoom_persist          on             \
@@ -12,9 +12,9 @@ yabai -m config                                 \
     window_animation_frame_rate  120            \
     window_opacity_duration      0.0            \
     active_window_opacity        1.0            \
-    normal_window_opacity        0.80           \
+    normal_window_opacity        0.9            \
     window_opacity               on             \
-    window_border                on             \
+    window_border                off            \
     window_border_radius         12             \
     window_border_blur           off            \
     window_border_hidpi          on             \
