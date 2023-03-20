@@ -25,7 +25,7 @@
 	fum = fetch upstream master
 	rom = !git fetch origin master && git rebase origin/master
 	rum = !git fetch upstream master && git rebase upstream/master
-	nb = switch origin/main --no-track -c
+	nb = switch origin/master --no-track -c
 	sw = switch
 	l = log --pretty='format:%C(green)%h%C(reset) %C(bold blue)%ar%C(reset) %an : %s' -n 20 --graph
 	last = log - 1 HEAD
