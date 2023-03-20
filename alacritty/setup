@@ -1,2 +1,2 @@
-#!/usr/bin/sh
+#!/usr/bin/env sh
 ln -sf "$PWD" "$HOME/.config/alacritty"
