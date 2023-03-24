@@ -37,9 +37,10 @@ yabai -m config                                 \
     mouse_drop_action            swap
 
 # ignored apps
-yabai -m rule --add app="^Calculator$" manage=off
-yabai -m rule --add app="^System Preferences$" manage=off
+yabai -m rule --add app="^1Password$" manage=off
 yabai -m rule --add app="^Archive Utility$" manage=off
-yabai -m rule --add app="^The Unarchiver$" manage=off
-yabai -m rule --add app="^Movist$" manage=off
+yabai -m rule --add app="^Calculator$" manage=off
 yabai -m rule --add app="^IINA$" manage=off
+yabai -m rule --add app="^Movist$" manage=off
+yabai -m rule --add app="^System Preferences$" manage=off
+yabai -m rule --add app="^The Unarchiver$" manage=off
