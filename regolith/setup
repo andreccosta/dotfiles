@@ -1,2 +1,9 @@
 #!/usr/bin/sh
+
+set -e
+
+# link configuration
 ln -sf "$PWD/Xresources" "$HOME/.config/regolith2/Xresources"
+
+# remove blocks
+sudo apt-get remove -y --purge i3xrocks-focused-window-name i3xrocks-info i3xrocks-app-launcher i3xrocks-next-workspace

@@ -3,7 +3,7 @@ gtk.document_font_name: Sans 12
 gtk.monospace_font_name: JetBrainsMono Nerd Font 12
 
 i3-wm.binding.exit_app: q
-i3-wm.binding.launcher.app: d
+i3-wm.binding.launcher.app: space
 i3-wm.binding.display: Shift+d
 i3-wm.binding.sleep: F13
 
