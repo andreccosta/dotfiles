@@ -12,6 +12,7 @@
 	defaultBranch = main
 
 [alias]
+	b = symbolic-ref --short HEAD
 	br = branch --format='%(HEAD) %(color:yellow)%(refname:short)%(color:reset) - %(contents:subject) %(color:green)(%(committerdate:relative)) [%(authorname)]' --sort=-committerdate
 	c = commit
 	ca = !git add -u && git commit -m
