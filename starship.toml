@@ -1,5 +1,4 @@
 add_newline = false
-command_timeout = 2000
 
 [aws]
 disabled = true
@@ -11,7 +10,6 @@ disabled = true
 [docker_context]
 disabled = true
 
-# git
 [git_status]
 format = '([$all_status$ahead_behind]($style))'
 conflicted = " "
