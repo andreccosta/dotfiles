@@ -1,5 +1,8 @@
 add_newline = false
 
+[username]
+disabled = true
+
 [aws]
 disabled = true
 symbol = "  "
