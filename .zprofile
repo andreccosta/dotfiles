@@ -8,3 +8,6 @@ for file in ~/.{prompt,aliases,functions,path,linux,osx,extra,exports}; do
 	fi
 done
 unset file
+
+# orbstack
+source ~/.orbstack/shell/init.zsh 2>/dev/null || :

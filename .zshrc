@@ -30,21 +30,18 @@ bindkey "\e[3;6~" kill-line
 # urxvt
 bindkey "\e[3@" kill-line
 
-
 # edit command line
 autoload -z edit-command-line
 zle -N edit-command-line
 bindkey "^X^E" edit-command-line
 
-# starship
-eval "$(starship init zsh)"
-
 # options
 SAVEHIST=10000
 HISTFILE=~/.zsh_history
-setopt AUTO_PUSHD	# push old dir to stack
-setopt CDABLE_VARS	# expand (allow 'cd -2/tmp')
-setopt histignorespace  # ignore history for commands starting with space
+setopt AUTO_PUSHD	 # push old dir to stack
+setopt CDABLE_VARS	 # expand (allow 'cd -2/tmp')
+setopt SHARE_HISTORY     # share history between sessions
+setopt HIST_IGNORE_SPACE # ignore history for commands starting with space
 
 # syntax highlighting
 [ -d "/usr/share/zsh-syntax-highlighting" ] && source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
@@ -71,11 +68,11 @@ fi
 [ -f $HOME/.asdf/asdf.sh ] && source $HOME/.asdf/asdf.sh
 [ -f $HOMEBREW_PREFIX/opt/asdf/libexec/asdf.sh ] && source $HOMEBREW_PREFIX/opt/asdf/libexec/asdf.sh
 
-# go version manager
-[[ -s "/home/acosta/.gvm/scripts/gvm" ]] && source "/home/acosta/.gvm/scripts/gvm"
-
 # fzf
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 # add Pulumi to the PATH
 [ -d $HOME/.pulumi/bin ] && export PATH=$PATH:$HOME/.pulumi/bin
+
+# starship
+eval "$(starship init zsh)"
