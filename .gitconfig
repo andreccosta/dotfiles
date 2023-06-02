@@ -31,6 +31,7 @@
 	l = log --pretty='format:%C(green)%h%C(reset) %C(bold blue)%ar%C(reset) %an : %s' -n 20 --graph
 	last = log - 1 HEAD
 	s = switch
+	sb = !git switch $(git branch | fzf)
 	ss = status -sb
 	st = status
 	diffs = diff --cached
