@@ -27,4 +27,4 @@ selection:
   save_to_clipboard: true
 
 import:
-  - ~/.config/alacritty/tokyo-night.yaml
+  - ~/.config/alacritty/tokyonight_storm.yml
