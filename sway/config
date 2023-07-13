@@ -44,7 +44,14 @@ exec swayidle -w \
 
 ### Output configuration
 
+output * bg ~/Images/wallpaper.jpg fill
+
 ### Input configuration
+
+input type:keyboard {
+    xkb_layout "us"
+    xkb_variant "altgr-weur"
+}
 
 input type:touchpad {
     dwt disabled
