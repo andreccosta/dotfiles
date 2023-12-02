@@ -90,6 +90,9 @@ wx() {
     spec | specs)
       find . -maxdepth 10 -type f -name "*_spec.rb" | entr -cc bundle exec rspec \/_
     ;;
+    zig)
+      ls *.zig | entr -ccnp zig run \/_
+    ;;
   esac
 }
 
