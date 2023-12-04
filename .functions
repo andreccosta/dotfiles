@@ -76,7 +76,7 @@ wx() {
       ls *.js | entr -cp node \/_
     ;;
     rb | ruby)
-      ls *.rb | entr -ccnp ruby \/_
+      ls *.rb | entr -ccnp ruby -rdebug \/_
     ;;
     rr)
       ls *.rb | entr -cnp rescue \/_
