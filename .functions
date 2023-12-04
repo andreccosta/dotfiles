@@ -76,10 +76,7 @@ wx() {
       ls *.js | entr -cp node \/_
     ;;
     rb | ruby)
-      ls *.rb | entr -ccnp ruby -rdebug \/_
-    ;;
-    rr)
-      ls *.rb | entr -cnp rescue \/_
+      ls *.rb | entr -ccp ruby -rdebug \/_
     ;;
     cr | crystal)
       ls *.cr | entr -c crystal run \/_
