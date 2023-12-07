@@ -1,0 +1,40 @@
+font-size = 14
+font-family = JetBrainsMono Nerd Font
+background-opacity = 0.95
+background-blur-radius = 20
+macos-non-native-fullscreen = visible-menu
+macos-option-as-alt = left
+mouse-hide-while-typing = true
+
+# theme
+background = 1a1b26
+foreground = c0caf5
+
+# black
+palette = 0=#414868
+palette = 8=#414868
+# red
+palette = 1=#f7768e
+palette = 9=#f7768e
+# green
+palette = 2=#73daca
+palette = 10=#73daca
+# yellow
+palette = 3=#e0af68
+palette = 11=#e0af68
+# blue
+palette = 4=#7aa2f7
+palette = 12=#7aa2f7
+# purple
+palette = 5=#bb9af7
+palette = 13=#bb9af7
+# aqua
+palette = 6=#7dcfff
+palette = 14=#7dcfff
+# white
+palette = 7=#7982a9
+palette = 15=#a9b1d6
+
+# default window size
+window-width = 100
+window-height = 25
