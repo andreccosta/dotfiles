@@ -30,6 +30,13 @@ bindkey "\e[3;6~" kill-line
 # urxvt
 bindkey "\e[3@" kill-line
 
+# more key binds
+bindkey '^[3~' kill-word # option-backspace
+bindkey '^[[1;3D' backward-word # option-left
+bindkey '^[[1;3C' forward-word # option-right
+bindkey '^[[1;9D' beginning-of-line # cmd-left
+bindkey '^[[1;9C' end-of-line # cmd-right
+
 # edit command line
 autoload -z edit-command-line
 zle -N edit-command-line
