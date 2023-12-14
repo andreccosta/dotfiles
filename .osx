@@ -51,8 +51,8 @@ hide_icons() {
 # clipboard
 alias clip='pbcopy'
 
-# lock screen
-alias lock='/System/Library/CoreServices/"Menu Extras"/User.menu/Contents/Resources/CGSession -suspend'
+# sleep
+alias lock='open -a ScreenSaverEngine'
 alias slp='pmset displaysleepnow'
 
 ## links
