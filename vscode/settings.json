@@ -3,6 +3,7 @@
     "*.ipynb": "jupyter-notebook"
   },
   "editor.wordWrapColumn": 120,
+  "editor.stickyScroll.enabled": true,
   "git.autofetch": true,
   "search.exclude": {
     "**\/node_modules": true,
@@ -20,6 +21,7 @@
   "prettier.semi": false,
   "editor.fontSize": 14,
   "editor.fontLigatures": true,
+  "editor.fontFamily": "'JetBrains Mono', 'Fira Code', Menlo, sans-serif",
   "window.openFilesInNewWindow": "on",
   "telemetry.telemetryLevel": "off",
   "editor.tabCompletion": "on",
@@ -46,7 +48,6 @@
     "editor.tabSize": 4
   },
   "explorer.compactFolders": false,
-  "explorer.openEditors.visible": 0,
   "git.confirmSync": false,
   "git.enableSmartCommit": true,
   "go.useLanguageServer": true,
@@ -58,10 +59,10 @@
   "ruby.intellisense": "rubyLocate",
   "ruby.codeCompletion": "rcodetools",
   "ruby.useLanguageServer": true,
-  "solargraph.definitions": false,
+  "solargraph.definitions": true,
   "editor.insertSpaces": true,
   "editor.wordWrap": "off",
-  "workbench.editor.showTabs": true,
+  "workbench.editor.showTabs": "multiple",
   "workbench.startupEditor": "none",
   "files.trimTrailingWhitespace": true,
   "files.insertFinalNewline": true,
@@ -87,7 +88,6 @@
     "default": "right",
     "jupyter-notebook": "left"
   },
-  "editor.fontFamily": "'JetBrains Mono', 'Fira Code', Menlo, sans-serif",
   "javascript.updateImportsOnFileMove.enabled": "always",
   "go.toolsManagement.autoUpdate": true,
   "[javascript]": {
@@ -129,11 +129,13 @@
   "[rust]": {
     "editor.formatOnSave": true
   },
-  "diffEditor.ignoreTrimWhitespace": false,
+  "[plaintext]": {
+    "files.insertFinalNewline": false,
+  },
   "editor.inlineSuggest.enabled": true,
   "github.copilot.enable": {
     "*": true,
-    "yaml": false,
+    "yaml": true,
     "plaintext": false,
     "markdown": false,
     "ruby": true,
@@ -157,5 +159,49 @@
     "golang.go",
     "xdebug.php-debug"
   ],
+  "workbench.colorCustomizations": {
+    "[Tokyo Night Storm]": {
+      "sideBar.background": "#1c2032",
+      "sideBar.foreground": "#959cbd",
+      "panel.background": "#1c2032",
+      "editor.background": "#202435",
+      "tab.activeForeground": "#bdc7f0",
+      "breadcrumb.activeSelectionForeground": "#bdc7f0",
+      "list.focusForeground": "#bdc7f0",
+      "list.hoverForeground": "#bdc7f0",
+      "list.activeSelectionForeground": "#bdc7f0",
+      "dropdown.foreground": "#959cbd",
+      "menu.foreground":"#bdc7f0",
+      "menubar.selectionForeground":"#bdc7f0",
+      "input.foreground": "#959cbd",
+      "activityBar.foreground": "#bdc7f0",
+    },
+  },
+  "rubyLsp.enabledFeatures": {
+    "codeActions": true,
+    "diagnostics": false,
+    "documentHighlights": true,
+    "documentLink": true,
+    "documentSymbols": true,
+    "foldingRanges": true,
+    "formatting": false,
+    "hover": true,
+    "inlayHint": true,
+    "onTypeFormatting": true,
+    "selectionRanges": true,
+    "semanticHighlighting": true,
+    "completion": true,
+    "codeLens": true,
+    "definition": true,
+    "workspaceSymbol": true,
+    "references": true
+  },
+  "rubyLsp.formatter": "none",
+  "rubyTestExplorer.rspecCommand": "dev test",
+  "rubyTestExplorer.logpanel": true,
+  "rubyTestExplorer.testFramework": "rspec",
+  "rubyTestExplorer.formatterPath": "/app/.vscode/custom_formatter.rb",
+  "window.commandCenter": false,
   "workbench.colorTheme": "Moonlight II",
+  "workbench.activityBar.location": "top",
 }
