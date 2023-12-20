@@ -39,6 +39,7 @@
 	review-files = diff origin/master... --name-only
 	undo = reset --soft HEAD^
 	rbi = !sh -c \"git rebase -i `git merge-base $1 HEAD`\" -
+        rs = restore --staged
 
 [fetch]
 	prune = true
