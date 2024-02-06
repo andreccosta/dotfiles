@@ -81,3 +81,12 @@ goto() {
   fi
 }
 
+until_fail () {
+  "$@"
+  local exit_status="$?"
+  while [ $exit_status -eq "0" ]
+  do
+    "$@"
+    exit_status="$?"
+  done
+}
