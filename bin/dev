@@ -68,7 +68,7 @@ terminal() {
 }
 
 test() {
-  docker compose exec -it $container bin/rspec --no-profile $@
+  docker compose exec $container bin/rspec --no-profile $@
 }
 
 case "$1" in
