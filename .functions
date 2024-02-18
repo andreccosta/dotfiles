@@ -59,28 +59,6 @@ wx() {
   esac
 }
 
-# curl redirects
-resolve_redirect() {
-  curl -w "%{url_effective}\n" -I -L -s -S $1 -o /dev/null
-}
-
-# goto
-goto() {
-  declare -A paths=(
-    aoc ~/code/src/github.com/andreccosta/advent-of-code
-    code ~/code
-    dot ~/code/src/github.com/andreccosta/dotfiles
-    tmp ~/code/tmp
-  )
-
-  # partial matches
-  matches=(${(Mk)paths:#$1*})
-
-  if [[ ${#matches[@]} -ne ${#paths[@]} &&  ${#matches[@]} -gt 0 ]]; then
-    cd $paths[$matches[1]]
-  fi
-}
-
 until_fail () {
   "$@"
   local exit_status="$?"
