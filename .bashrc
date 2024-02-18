@@ -128,3 +128,6 @@ unset file
 
 # fzf
 [ -f $HOME/.fzf.bash ] && source "$HOME/.fzf.bash"
+
+# z
+eval "$(zoxide init --cmd cd bash)"

@@ -87,3 +87,6 @@ fi
 
 # starship
 eval "$(starship init zsh)"
+
+# z
+eval "$(zoxide init --cmd cd zsh)"
