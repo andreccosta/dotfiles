@@ -15,13 +15,12 @@
     "editor.tabSize": 4
   },
   "workbench.iconTheme": "material-icon-theme",
-  "workbench.editor.enablePreview": false,
   "workbench.layoutControl.enabled": false,
   "prettier.singleQuote": true,
   "prettier.semi": false,
   "editor.fontSize": 14,
   "editor.fontLigatures": true,
-  "editor.fontFamily": "'JetBrains Mono', 'Fira Code', Menlo, sans-serif",
+  "editor.fontFamily": "'JetBrainsMono Nerd Font', 'Fira Code', Menlo, sans-serif",
   "window.openFilesInNewWindow": "on",
   "telemetry.telemetryLevel": "off",
   "editor.tabCompletion": "on",
@@ -62,7 +61,6 @@
   "solargraph.definitions": true,
   "editor.insertSpaces": true,
   "editor.wordWrap": "off",
-  "workbench.editor.showTabs": "multiple",
   "workbench.startupEditor": "none",
   "files.trimTrailingWhitespace": true,
   "files.insertFinalNewline": true,
@@ -81,6 +79,7 @@
     "hubspot",
     "linkedIn",
     "numericality",
+    "perseverant",
     "timespan",
     "titlebar"
   ],
@@ -145,12 +144,11 @@
   "typescript.updateImportsOnFileMove.enabled": "always",
   "terminal.integrated.copyOnSelection": true,
   "terminal.integrated.defaultLocation": "editor",
-  "terminal.integrated.fontFamily": "'JetBrainsMono NF', 'JetBrainsMono Nerd Font', 'FiraMono Nerd Font', 'CaskaydiaCove Nerd Font Mono', monospace",
-  "terminal.integrated.fontSize": 13,
+  "terminal.integrated.fontFamily": "'JetBrainsMono Nerd Font', 'FiraMono Nerd Font', 'CaskaydiaCove Nerd Font Mono', monospace",
+  "terminal.integrated.fontSize": 14,
   "[jsonc]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "window.menuBarVisibility": "toggle",
   "editor.semanticHighlighting.enabled": true,
   "editor.tabSize": 2,
   "settingsSync.ignoredExtensions": [
@@ -194,14 +192,17 @@
     "codeLens": true,
     "definition": true,
     "workspaceSymbol": true,
+    "signatureHelp": true,
     "references": true
   },
   "rubyLsp.formatter": "none",
-  "rubyTestExplorer.rspecCommand": "dev test",
-  "rubyTestExplorer.logpanel": true,
-  "rubyTestExplorer.testFramework": "rspec",
-  "rubyTestExplorer.formatterPath": "/app/.vscode/custom_formatter.rb",
+  "rubyLsp.enableExperimentalFeatures": false,
   "window.commandCenter": false,
   "workbench.colorTheme": "Moonlight II",
   "workbench.activityBar.location": "top",
+  "errorLens.excludeBySource": [
+    "cSpell"
+  ],
+  "sqltools.results.reuseTabs": "connection",
+  "window.customTitleBarVisibility": "auto",
 }
