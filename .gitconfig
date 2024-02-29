@@ -6,12 +6,20 @@
 	email = andreccosta@me.com
 
 [core]
+	autocrlf = false
 	editor = nano
+	fscache = true
+	fsmonitor = false
+	symlinks = true
 
 [init]
 	defaultBranch = main
 
 [alias]
+	a = add
+	aa = add .
+	amend = commit --amend
+	ap = add --patch
 	b = symbolic-ref --short HEAD
 	br = branch --format='%(HEAD) %(color:yellow)%(refname:short)%(color:reset) - %(contents:subject) %(color:green)(%(committerdate:relative)) [%(authorname)]' --sort=-committerdate
 	c = commit
@@ -29,17 +37,18 @@
 	nb = switch origin/master --no-track -c
 	sw = switch
 	l = log --pretty='format:%C(green)%h%C(reset) %C(bold blue)%ar%C(reset) %an : %s' -n 20 --graph
-	last = log - 1 HEAD
-	s = switch
+	last = log -1 HEAD
+	s = status
 	sb = !git switch $(git branch | fzf)
 	ss = status -sb
 	st = status
+	sw = switch
 	diffs = diff --cached
 	review = diff origin/master...
 	review-files = diff origin/master... --name-only
 	undo = reset --soft HEAD^
 	rbi = !sh -c \"git rebase -i `git merge-base $1 HEAD`\" -
-        rs = restore --staged
+	rs = restore --staged
 
 [fetch]
 	prune = true
