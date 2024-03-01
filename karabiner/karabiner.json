@@ -159,6 +159,26 @@
                                     }
                                 ],
                                 "type": "basic"
+                            },
+                            {
+                                "description": "a = Arc",
+                                "from": {
+                                    "key_code": "a",
+                                    "modifiers": {
+                                        "mandatory": [
+                                            "right_command",
+                                            "right_control",
+                                            "right_shift",
+                                            "right_option"
+                                        ]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "shell_command": "open -a Arc"
+                                    }
+                                ],
+                                "type": "basic"
                             }
                         ]
                     },
