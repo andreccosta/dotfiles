@@ -1,0 +1,32 @@
+{
+  "base_keymap": "VSCode",
+  "theme": "Tokyo Night Storm",
+  "buffer_font_size": 13,
+  "buffer_font_family": "JetBrainsMono Nerd Font",
+  "ui_font_family": "JetBrainsMono Nerd Font",
+  "ui_font_size": 14,
+  "terminal": {
+    "dock": "bottom",
+    "font_family": "JetBrainsMono Nerd Font"
+  },
+  "ensure_final_newline_on_save": true,
+  "language_overrides": {
+    "Ruby": {
+      "format_on_save": "on",
+      "formatter": {
+        "external": {
+          "command": "standardrb",
+          "arguments": ["--fix", "--stdin", "ignored", "--stderr"]
+        }
+      }
+    }
+  },
+  "lsp": {
+    "solargraph": {
+      "initialization_options": {
+        "diagnostics": false,
+        "formatting": false
+      }
+    }
+  }
+}
