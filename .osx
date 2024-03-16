@@ -34,6 +34,8 @@ hide_icons() {
 
 # clipboard
 alias clip='pbcopy'
+alias copy='pbcopy'
+alias paste='pbpaste'
 
 # sleep
 alias lock='open -a ScreenSaverEngine'
