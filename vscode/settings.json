@@ -198,7 +198,7 @@
   "rubyLsp.formatter": "none",
   "rubyLsp.enableExperimentalFeatures": false,
   "window.commandCenter": false,
-  "workbench.colorTheme": "Moonlight II",
+  "workbench.colorTheme": "Tokyo Night Storm",
   "workbench.activityBar.location": "top",
   "errorLens.excludeBySource": [
     "cSpell"
