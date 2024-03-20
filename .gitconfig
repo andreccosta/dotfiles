@@ -18,7 +18,7 @@
 [alias]
 	a = add
 	aa = add .
-	amend = commit --amend
+	amend = commit --amend --no-edit
 	ap = add --patch
 	b = symbolic-ref --short HEAD
 	br = branch --format='%(HEAD) %(color:yellow)%(refname:short)%(color:reset) - %(contents:subject) %(color:green)(%(committerdate:relative)) [%(authorname)]' --sort=-committerdate
@@ -35,7 +35,6 @@
 	rom = !git fetch origin master && git rebase origin/master
 	rum = !git fetch upstream master && git rebase upstream/master
 	nb = switch origin/master --no-track -c
-	sw = switch
 	l = log --pretty='format:%C(green)%h%C(reset) %C(bold blue)%ar%C(reset) %an : %s' -n 20 --graph
 	last = log -1 HEAD
 	s = status
@@ -48,6 +47,7 @@
 	review-files = diff origin/master... --name-only
 	undo = reset --soft HEAD^
 	rbi = !sh -c \"git rebase -i `git merge-base $1 HEAD`\" -
+	r = restore
 	rs = restore --staged
 
 [fetch]
