@@ -50,6 +50,9 @@
 	r = restore
 	rs = restore --staged
 
+[branch]
+	sort = -comitterdate
+
 [fetch]
 	prune = true
 
