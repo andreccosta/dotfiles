@@ -21,34 +21,39 @@
 	amend = commit --amend --no-edit
 	ap = add --patch
 	b = symbolic-ref --short HEAD
+	bl = blame -w -C -C -C
 	br = branch --format='%(HEAD) %(color:yellow)%(refname:short)%(color:reset) - %(contents:subject) %(color:green)(%(committerdate:relative)) [%(authorname)]' --sort=-committerdate
 	c = commit
 	ca = !git add -u && git commit -m
 	cm = commit -m
 	co = checkout
 	d = diff --color
-	ds = diff --staged --color
 	del = branch -D
+	diffs = diff --cached
+	ds = diff --staged --color
+	fix = commit --fixup
 	fo = fetch origin
 	fom = fetch origin master
 	fum = fetch upstream master
-	rom = !git fetch origin master && git rebase origin/master
-	rum = !git fetch upstream master && git rebase upstream/master
-	nb = switch origin/master --no-track -c
 	l = log --pretty='format:%C(green)%h%C(reset) %C(bold blue)%ar%C(reset) %an : %s' -n 20 --graph
 	last = log -1 HEAD
+	nb = switch origin/master --no-track -c
+	p = push
+	pf = push --force-with-lease
+	rom = !git fetch origin master && git rb origin/master
+	rum = !git fetch upstream master && git rb upstream/master
 	s = status
 	sb = !git switch $(git branch | fzf)
 	ss = status -sb
 	st = status
 	sw = switch
-	diffs = diff --cached
 	review = diff origin/master...
 	review-files = diff origin/master... --name-only
-	undo = reset --soft HEAD^
-	rbi = !sh -c \"git rebase -i `git merge-base $1 HEAD`\" -
+	rb= rebase --autosquash
+	rbi = !sh -c \"git rebase -i --autosquash `git merge-base $1 HEAD`\" -
 	r = restore
 	rs = restore --staged
+	undo = reset --soft HEAD^
 
 [branch]
 	sort = -comitterdate
