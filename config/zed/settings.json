@@ -1,6 +1,6 @@
 {
   "base_keymap": "VSCode",
-  "theme": "Tokyo Night Storm",
+  "theme": "Catppuccin Macchiato",
   "buffer_font_size": 13,
   "buffer_font_family": "JetBrainsMono Nerd Font",
   "ui_font_family": "JetBrainsMono Nerd Font",
@@ -28,5 +28,9 @@
         "formatting": false
       }
     }
+  },
+  "telemetry": {
+    "diagnostics": false,
+    "metrics": false
   }
 }
