@@ -5,22 +5,27 @@
   "editor.wordWrapColumn": 120,
   "editor.stickyScroll.enabled": true,
   "git.autofetch": true,
+  "search.useIgnoreFiles": true,
   "search.exclude": {
-    "**\/node_modules": true,
     "**\/*.code-search": true,
-    "**\/bower_components": true
+    "**\/node_modules": true,
+    "**\/bower_components": true,
+    "**/.next": true,
+    "**/dist": true,
+    "**debug": true,
+    "**/package-lock.json": true,
+    "**/data": true,
   },
   "[php]": {
     "editor.insertSpaces": true,
     "editor.tabSize": 4
   },
   "workbench.iconTheme": "material-icon-theme",
-  "workbench.layoutControl.enabled": false,
   "prettier.singleQuote": true,
   "prettier.semi": false,
   "editor.fontSize": 14,
   "editor.fontLigatures": true,
-  "editor.fontFamily": "'JetBrainsMono Nerd Font', 'Fira Code', Menlo, sans-serif",
+  "editor.fontFamily": "JetBrainsMono Nerd Font",
   "window.openFilesInNewWindow": "on",
   "telemetry.telemetryLevel": "off",
   "editor.tabCompletion": "on",
@@ -61,6 +66,7 @@
   "solargraph.definitions": true,
   "editor.insertSpaces": true,
   "editor.wordWrap": "off",
+  "editor.cursorSmoothCaretAnimation": "on",
   "workbench.startupEditor": "none",
   "files.trimTrailingWhitespace": true,
   "files.insertFinalNewline": true,
@@ -101,7 +107,6 @@
   },
   "editor.accessibilitySupport": "off",
   "prettier.printWidth": 120,
-  "window.openFoldersInNewWindow": "on",
   "files.associations": {
     "*.gohtml": "html",
     "*.erb": "html"
@@ -144,7 +149,7 @@
   "typescript.updateImportsOnFileMove.enabled": "always",
   "terminal.integrated.copyOnSelection": true,
   "terminal.integrated.defaultLocation": "editor",
-  "terminal.integrated.fontFamily": "'JetBrainsMono Nerd Font', 'FiraMono Nerd Font', 'CaskaydiaCove Nerd Font Mono', monospace",
+  "terminal.integrated.fontFamily": "JetBrainsMono Nerd Font",
   "terminal.integrated.fontSize": 14,
   "[jsonc]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
@@ -159,7 +164,7 @@
   ],
   "workbench.colorCustomizations": {
     "[Tokyo Night Storm]": {
-      "sideBar.background": "#1c2032",
+      "sideBar.background": "#1c203280",
       "sideBar.foreground": "#959cbd",
       "panel.background": "#1c2032",
       "editor.background": "#202435",
@@ -174,6 +179,9 @@
       "input.foreground": "#959cbd",
       "activityBar.foreground": "#bdc7f0",
     },
+    "activityBar.background": "#1c203280",
+    "sideBar.background": "#1c203280",
+    "statusBar.background": "#1c203280"
   },
   "rubyLsp.enabledFeatures": {
     "codeActions": true,
@@ -195,14 +203,42 @@
     "signatureHelp": true,
     "references": true
   },
+  "window.commandCenter": false,
   "rubyLsp.formatter": "none",
   "rubyLsp.enableExperimentalFeatures": false,
-  "window.commandCenter": false,
   "workbench.colorTheme": "Tokyo Night Storm",
-  "workbench.activityBar.location": "top",
+  "errorLens.enabled": true,
   "errorLens.excludeBySource": [
     "cSpell"
   ],
   "sqltools.results.reuseTabs": "connection",
-  "window.customTitleBarVisibility": "auto",
+  "rewrap.autoWrap.enabled": true,
+  "rewrap.wrappingColumn": 80,
+  "zig.initialSetupDone": true,
+  "editor.lineHeight": 1.6,
+  "window.titleBarStyle": "native",
+  "window.customTitleBarVisibility": "never",
+  "apc.electron": {
+		"titleBarStyle": "hiddenInset",
+		"backgroundColor": "#00000000",
+		"transparent": true,
+    "vibrancy": "under-window"
+	},
+  "apc.font.family": "JetBrainsMono Nerd Font",
+  "apc.statusBar": {
+		"height": 34
+	},
+	"apc.header": {
+		"height": 42
+	},
+	"apc.activityBar": {
+		"size": 40,
+		"itemSize": 36,
+    "itemMargin": 0,
+		"position": "top"
+  },
+  "apc.stylesheet": {
+    ".activitybar.left .content": "-webkit-app-region: none !important",
+    ".activitybar.left .composite-bar .monaco-action-bar": "margin-left: 10px"
+  },
 }
