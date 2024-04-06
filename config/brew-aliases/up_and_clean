@@ -2,5 +2,5 @@
 # alias: brew up-and-clean
 #:  * `up-and-clean` [args...]
 #:    `brew up-and-clean` is an alias for `brew update && brew upgrade && brew autoremove && brew clean`
-brew update && brew upgrade && brew autoremove && brew clean $*
+brew update && brew upgrade && brew autoremove && brew clean "$@"
 

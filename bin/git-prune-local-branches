@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-branches=$(git branch --merged | egrep -v "(^\*|master|main|develop|dev)")
+branches=$(git branch --merged | grep -Ev "(^\*|master|main|develop|dev)")
 
 if [ -z "$branches" ]; then
   echo "no branches to prune"
@@ -11,7 +11,7 @@ else
   echo "$branches"
 fi
 
-read -p "Remove these branches? (y/n) " yn
+read -r -p "Remove these branches? (y/n) " yn
 
 case $yn in
   [yY] )

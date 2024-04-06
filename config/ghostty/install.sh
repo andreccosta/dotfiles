@@ -1,5 +1,6 @@
-#!/bin/bash
-set -e
+#!/usr/bin/env bash
+
+set -euo pipefail
 
 mkdir -p ~/.config/ghostty
-ln -s $PWD/config ~/.config/ghostty/config
+ln -snf "$PWD"/config ~/.config/ghostty/config

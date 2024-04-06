@@ -36,39 +36,39 @@ done
 shift $((OPTIND-1))
 
 up() {
-  docker compose up -d $@
+  docker compose up -d "$@"
 }
 
 console() {
-  docker compose exec -it $container rails console
+  docker compose exec -it "$container" rails console
 }
 
 debug() {
-  docker compose -f docker-compose.yml -f docker-compose.debug.yml up -d $@
+  docker compose -f docker-compose.yml -f docker-compose.debug.yml up -d "$@"
 }
 
 migrate() {
-  docker compose exec -it $container rails db:migrate
+  docker compose exec -it "$container" rails db:migrate
 }
 
 restart() {
-  docker compose restart $@
+  docker compose restart "$@"
 }
 
 run() {
-  docker compose exec -it $container $@
+  docker compose exec -it "$container" "$@"
 }
 
 stop() {
-  docker compose stop $@
+  docker compose stop "$@"
 }
 
 terminal() {
-  docker compose exec -it $container bash
+  docker compose exec -it "$container" bash
 }
 
 test() {
-  docker compose exec $container bin/rspec --no-profile $@
+  docker compose exec "$container" bin/rspec --no-profile "$@"
 }
 
 case "$1" in
@@ -101,7 +101,6 @@ case "$1" in
   ;;
   *)
     help
-    exit 1
   ;;
 esac
 
