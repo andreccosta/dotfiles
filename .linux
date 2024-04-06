@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # detect platform
 platform=$("uname")
@@ -6,12 +6,8 @@ if [ "$platform" != "Linux" ]; then
     return;
 fi
 
+# .local/bin
+export PATH="$PATH:$HOME/.local/bin"
+
 # alias clip for clipboard
 alias clip='xclip -sel clip'
-
-# load zsh syntax highlighting
-source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-
-# symbolic link vscode config
-#ln -sf ~/.dotfiles/vscode/settings.json ~/.config/Code/User/settings.json
-#ln -sf ~/.dotfiles/vscode/keybindings.json ~/.config/Code/User/keybindings.json

@@ -111,7 +111,7 @@ fi
 
 # load the shell dotfiles, and then some:
 # * ~/.extra can be used for other settings you dont want to commit.
-for file in ~/.{aliases,functions,prompt,osx,extra,exports}; do
+for file in ~/.{aliases,linux,functions,prompt,osx,extra,exports}; do
 	if [[ -r "$file" ]] && [[ -f "$file" ]]; then
 		# shellcheck source=/dev/null
 		source "$file"
