@@ -1,4 +1,6 @@
-import = ["/home/acosta/.config/alacritty/tokyonight_storm.toml"]
+import = [
+  "~/.config/alacritty/themes/tokyonight_storm.toml"
+]
 
 [colors]
 draw_bold_text_with_bright_colors = true
