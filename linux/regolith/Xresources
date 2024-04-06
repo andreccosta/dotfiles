@@ -2,15 +2,17 @@ gtk.font_name: Sans 12
 gtk.document_font_name: Sans 12
 gtk.monospace_font_name: JetBrainsMono Nerd Font 12
 
-i3-wm.binding.exit_app: q
-i3-wm.binding.launcher.app: space
-i3-wm.binding.display: Shift+d
-i3-wm.binding.sleep: F13
+wm.binding.exit_app: q
+wm.binding.launcher.app: space
+wm.binding.display: Shift+d
+wm.binding.sleep: F13
 
-i3-wm.gaps.inner.size: 0
-i3-wm.gaps.outer.size: 0
-i3-wm.gaps.focus_follows_mouse: yes
-i3-wm.gaps.smart: on
+wm.gaps.inner.size: 0
+wm.gaps.outer.size: 0
+wm.gaps.focus_follows_mouse: yes
+wm.gaps.smart: on
 
 i3xrocks.memory.display: "used"
 i3xrocks.memory.percentage: true
+
+regolith.look.path: /usr/share/regolith-look/lascaille
