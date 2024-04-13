@@ -42,13 +42,24 @@ autoload -z edit-command-line
 zle -N edit-command-line
 bindkey "^X^E" edit-command-line
 
-# options
-SAVEHIST=10000
+# history
 HISTFILE=~/.zsh_history
+HISTSIZE=10000000
+SAVEHIST=10000000
+
+setopt INC_APPEND_HISTORY
+setopt EXTENDED_HISTORY
+setopt HIST_EXPIRE_DUPS_FIRST
+setopt HIST_IGNORE_DUPS
+setopt HIST_IGNORE_ALL_DUPS
+setopt HIST_FIND_NO_DUPS
+setopt HIST_IGNORE_SPACE # ignore history for commands starting with space
+setopt HIST_SAVE_NO_DUPS
+setopt SHARE_HISTORY # share history between sessions
+
+# options
 setopt AUTO_PUSHD	 # push old dir to stack
 setopt CDABLE_VARS	 # expand (allow 'cd -2/tmp')
-setopt SHARE_HISTORY     # share history between sessions
-setopt HIST_IGNORE_SPACE # ignore history for commands starting with space
 
 # syntax highlighting
 [ -d "/usr/share/zsh-syntax-highlighting" ] && source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
