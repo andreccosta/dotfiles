@@ -178,6 +178,8 @@
       "menubar.selectionForeground":"#bdc7f0",
       "input.foreground": "#959cbd",
       "activityBar.foreground": "#bdc7f0",
+      "activityBar.background": "#1c203280",
+      "statusBar.background": "#1c203280"
     },
     "activityBar.background": "#1c203280",
     "sideBar.background": "#1c203280",
@@ -213,7 +215,9 @@
   ],
   "sqltools.results.reuseTabs": "connection",
   "rewrap.autoWrap.enabled": true,
-  "rewrap.wrappingColumn": 80,
+  "rewrap.wrappingColumn": 120,
+  "zig.path": "",
+  "zig.zls.path": "/Users/acosta/Library/Application Support/Code/User/globalStorage/ziglang.vscode-zig/zls_install/zls",
   "zig.initialSetupDone": true,
   "editor.lineHeight": 1.6,
   "window.titleBarStyle": "native",
@@ -226,13 +230,13 @@
 	},
   "apc.font.family": "JetBrainsMono Nerd Font",
   "apc.statusBar": {
-		"height": 34
+		"height": 32
 	},
 	"apc.header": {
 		"height": 42
 	},
 	"apc.activityBar": {
-		"size": 40,
+		"size": 42,
 		"itemSize": 36,
     "itemMargin": 0,
 		"position": "top"
@@ -241,4 +245,5 @@
     ".activitybar.left .content": "-webkit-app-region: none !important",
     ".activitybar.left .composite-bar .monaco-action-bar": "margin-left: 10px"
   },
+  "standardRuby.mode": "enableViaGemfile",
 }
