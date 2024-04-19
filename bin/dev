@@ -8,6 +8,7 @@ help() {
   echo "Usage: dev [-c container] <command>"
   echo ""
   echo "Commands:"
+  echo "  alias"
   echo "  up"
   echo "  console"
   echo "  debug"
@@ -34,6 +35,14 @@ while getopts 'c:' flag; do
   esac
 done
 shift $((OPTIND-1))
+
+alias() {
+  docker compose exec "$container" bash -c \
+    "grep -q 'rspec' ~/.bashrc || tee -a ~/.bashrc << END
+alias r='bin/rspec --no-profile --progress'
+alias c='bin/rails c'
+END"
+}
 
 up() {
   docker compose up -d "$@"
@@ -72,6 +81,9 @@ test() {
 }
 
 case "$1" in
+  alias)
+    alias
+  ;;
   up)
     up "${@:2}"
   ;;
