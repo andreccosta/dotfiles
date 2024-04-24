@@ -1,13 +1,14 @@
 {
   "base_keymap": "VSCode",
   "theme": "Catppuccin Macchiato",
-  "buffer_font_size": 13,
+  "buffer_font_size": 14,
   "buffer_font_family": "JetBrainsMono Nerd Font",
   "ui_font_family": "JetBrainsMono Nerd Font",
   "ui_font_size": 14,
   "terminal": {
     "dock": "bottom",
-    "font_family": "JetBrainsMono Nerd Font"
+    "font_family": "JetBrainsMono Nerd Font",
+    "font_size": 13
   },
   "ensure_final_newline_on_save": true,
   "language_overrides": {
@@ -20,6 +21,9 @@
         }
       }
     }
+  },
+  "tab_bar": {
+    "show_nav_history_buttons": false
   },
   "lsp": {
     "solargraph": {

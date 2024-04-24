@@ -1,0 +1,26 @@
+[
+  {
+    "label": "ruby: test suite",
+    "command": "docker compose exec web bin/rspec",
+    "args": ["--no-profile", "--format progress"]
+  },
+  {
+    "label": "ruby: test file",
+    "command": "docker compose exec web bin/rspec",
+    "args": ["--no-profile", "--format progress", "$ZED_FILE"]
+  },
+  {
+    "label": "ruby: test one",
+    "command": "docker compose exec web bin/rspec",
+    "args": ["--no-profile", "--format progress", "$ZED_FILE:$ZED_ROW"]
+  },
+  {
+    "label": "ruby: test file, fail fast",
+    "command": "docker compose exec web bin/rspec",
+    "args": ["--no-profile", "--format progress", "--fail-fast", "$ZED_FILE"]
+  },
+  {
+    "label": "ruby: guard",
+    "command": "docker compose exec web bin/guard"
+  }
+]
