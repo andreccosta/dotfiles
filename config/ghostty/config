@@ -1,9 +1,12 @@
-font-size = 14
-font-family = JetBrainsMono Nerd Font
+font-size = 15
+font-family = JetBrains Mono
 font-style = Medium
 background-opacity = 0.90
 background-blur-radius = 20
-copy-on-select = clipboard
+macos-titlebar-tabs = true
+mouse-hide-while-typing = false
+window-save-state = never
+window-inherit-font-size = false
 
 # theme
 theme = tokyonight-storm
