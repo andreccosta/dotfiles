@@ -38,8 +38,9 @@
 	l = log --pretty='format:%C(green)%h%C(reset) %C(bold blue)%ar%C(reset) %an : %s' -n 20 --graph
 	last = log -1 HEAD
 	nb = switch origin/master --no-track -c
-	p = push
+	pl = pull
 	pf = push --force-with-lease
+	ps = push
 	rom = !git fetch origin master && git rb origin/master
 	rum = !git fetch upstream master && git rb upstream/master
 	s = status
