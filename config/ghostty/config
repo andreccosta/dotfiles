@@ -9,7 +9,7 @@ window-save-state = never
 window-inherit-font-size = false
 
 # theme
-theme = tokyonight-storm
+theme = tokyonight
 
 # default window size
 window-width = 100
