@@ -180,10 +180,7 @@
       "activityBar.foreground": "#bdc7f0",
       "activityBar.background": "#1c203280",
       "statusBar.background": "#1c203280"
-    },
-    "activityBar.background": "#1c203280",
-    "sideBar.background": "#1c203280",
-    "statusBar.background": "#1c203280"
+    }
   },
   "rubyLsp.enabledFeatures": {
     "codeActions": true,
@@ -208,7 +205,6 @@
   "window.commandCenter": false,
   "rubyLsp.formatter": "none",
   "rubyLsp.enableExperimentalFeatures": false,
-  "workbench.colorTheme": "Tokyo Night Storm",
   "errorLens.enabled": true,
   "errorLens.excludeBySource": [
     "cSpell"
@@ -216,18 +212,8 @@
   "sqltools.results.reuseTabs": "connection",
   "rewrap.autoWrap.enabled": true,
   "rewrap.wrappingColumn": 120,
-  "zig.path": "",
-  "zig.zls.path": "/Users/acosta/Library/Application Support/Code/User/globalStorage/ziglang.vscode-zig/zls_install/zls",
   "zig.initialSetupDone": true,
   "editor.lineHeight": 1.6,
-  "window.titleBarStyle": "native",
-  "window.customTitleBarVisibility": "never",
-  "apc.electron": {
-		"titleBarStyle": "hiddenInset",
-		"backgroundColor": "#00000000",
-		"transparent": true,
-    "vibrancy": "under-window"
-	},
   "apc.font.family": "JetBrainsMono Nerd Font",
   "apc.statusBar": {
 		"height": 32
@@ -241,9 +227,8 @@
     "itemMargin": 0,
 		"position": "top"
   },
-  "apc.stylesheet": {
-    ".activitybar.left .content": "-webkit-app-region: none !important",
-    ".activitybar.left .composite-bar .monaco-action-bar": "margin-left: 10px"
-  },
   "standardRuby.mode": "enableViaGemfile",
+  "editor.smoothScrolling": true,
+  "terminal.integrated.smoothScrolling": true,
+  "workbench.colorTheme": "Tokyo Night Storm"
 }
