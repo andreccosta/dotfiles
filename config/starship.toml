@@ -2,25 +2,41 @@ format = """\
 $hostname\
 $directory\
 $git_branch\
+$git_state\
 $git_status\
+$fill\
 $cmd_duration\
+$battery\
 $line_break\
 $jobs\
-$battery\
 $status\
 $character\
 """
 
 add_newline = false
 
+[battery]
+format = ' [$symbol$percentage]($style)'
+
+[[battery.display]]
+threshold = 10
+style = 'bold red'
+
+[[battery.display]]
+threshold = 30
+style = 'bold yellow'
+
 [character]
 error_symbol = "[✖](bold red)"
 
 [cmd_duration]
-format = "[$duration]($style) "
+format = " [$duration]($style)"
 
 [directory]
 format = "[$path]($style) "
+
+[fill]
+symbol = ' '
 
 [git_branch]
 format = "[$symbol$branch]($style) "
