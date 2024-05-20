@@ -15,6 +15,7 @@ window-width = 100
 window-height = 25
 
 # keybinds
+keybind = cmd+l=text:\x0c
 keybind = cmd+left=text:\x01
 keybind = cmd+right=text:\x05
 
