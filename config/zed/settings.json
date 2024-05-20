@@ -1,8 +1,8 @@
 {
   "base_keymap": "VSCode",
-  "theme": "Catppuccin Macchiato",
-  "buffer_font_size": 14,
+  "theme": "Tokyo Night",
   "buffer_font_family": "JetBrainsMono Nerd Font",
+  "buffer_font_size": 13,
   "ui_font_family": "JetBrainsMono Nerd Font",
   "ui_font_size": 14,
   "terminal": {
@@ -11,6 +11,11 @@
     "font_size": 13
   },
   "ensure_final_newline_on_save": true,
+  "languages": {
+    "Ruby": {
+      "language_servers": ["ruby-lsp", "!solargraph"]
+    }
+  },
   "language_overrides": {
     "Ruby": {
       "format_on_save": "on",
@@ -26,6 +31,13 @@
     "show_nav_history_buttons": false
   },
   "lsp": {
+    "ruby-lsp": {
+      "initialization_options": {
+        "enabledFeatures": {
+          "diagnostics": false
+        }
+      }
+    },
     "solargraph": {
       "initialization_options": {
         "diagnostics": false,
