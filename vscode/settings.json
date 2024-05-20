@@ -230,5 +230,5 @@
   "standardRuby.mode": "enableViaGemfile",
   "editor.smoothScrolling": true,
   "terminal.integrated.smoothScrolling": true,
-  "workbench.colorTheme": "Tokyo Night Storm"
+  "workbench.colorTheme": "Tokyo Night"
 }
