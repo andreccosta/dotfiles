@@ -33,6 +33,7 @@ hide_icons() {
 ## aliases
 
 # clipboard
+alias clear='clear -x'
 alias clip='pbcopy'
 alias copy='pbcopy'
 alias paste='pbpaste'
@@ -43,6 +44,9 @@ alias slp='pmset displaysleepnow'
 
 # coreutils
 export PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
+
+# newer ncurses
+export PATH="/opt/homebrew/opt/ncurses/bin:$PATH"
 
 # homebrew
 if [ -x "$(command -v brew)" ]; then
