@@ -110,4 +110,4 @@ fi
 eval "$(starship init zsh)"
 
 # z
-eval "$(zoxide init --cmd cd zsh)"
+eval "$(zoxide init zsh)"
