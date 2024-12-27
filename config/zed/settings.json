@@ -6,47 +6,154 @@
   "ui_font_family": "JetBrainsMono Nerd Font",
   "ui_font_size": 14,
   "terminal": {
-    "dock": "bottom",
+    "dock": "right",
     "font_family": "JetBrainsMono Nerd Font",
     "font_size": 13
   },
   "ensure_final_newline_on_save": true,
-  "languages": {
-    "Ruby": {
-      "language_servers": ["ruby-lsp", "!solargraph"]
-    }
-  },
   "language_overrides": {
     "Ruby": {
       "format_on_save": "on",
-      "formatter": {
-        "external": {
-          "command": "standardrb",
-          "arguments": ["--fix", "--stdin", "ignored", "--stderr"]
-        }
-      }
+      "language_servers": ["ruby-lsp", "!solargraph"]
     }
   },
+  "remove_trailing_whitespace_on_save": true,
+  "semantic_index": {
+    "enabled": true
+  },
+  "show_inline_completions": false,
+  "show_completions_on_input": true,
+  "show_completion_documentation": true,
+  "soft_wrap": "editor_width",
+  "inlay_hints": {
+    "enabled": true,
+    "show_type_hints": true,
+    "show_parameter_hints": true,
+    "show_other_hints": true
+  },
   "tab_bar": {
-    "show_nav_history_buttons": false
+    "show_nav_history_buttons": false,
+    "show": true
+  },
+  "auto_install_extensions": {
+    "cue": true,
+    "docker-compose": true,
+    "dockerfile": true,
+    "earthfile": true,
+    "elixir": true,
+    "erlang": true,
+    "git-firefly": true,
+    "gleam": true,
+    "html": true,
+    "just": true,
+    "log": true,
+    "lua": true,
+    "make": true,
+    "nginx": true,
+    "proto": true,
+    "rainbow-csv": true,
+    "ruby": true,
+    "scss": true,
+    "sql": true,
+    "templ": true,
+    "terraform": true,
+    "toml": true,
+    "typst": true,
+    "xml": true,
+    "zedokai": true,
+    "zig": true
   },
   "lsp": {
     "ruby-lsp": {
       "initialization_options": {
+        "experimentalFeaturesEnabled": true,
+        "formatter": "standard",
+        "linters": ["standard"],
         "enabledFeatures": {
-          "diagnostics": false
+          "codeActions": true,
+          "codeLens": true,
+          "completion": true,
+          "definition": true,
+          "diagnostics": true,
+          "documentHighlights": true,
+          "documentLink": true,
+          "documentSymbols": true,
+          "foldingRanges": true,
+          "formatting": true,
+          "hover": true,
+          "inlayHint": true,
+          "onTypeFormatting": true,
+          "selectionRanges": true,
+          "semanticHighlighting": true,
+          "signatureHelp": true,
+          "typeHierarchy": true,
+          "workspaceSymbol": true
+        },
+        "featuresConfiguration": {
+          "inlayHint": {
+            "implicitHashValue": true,
+            "implicitRescue": true
+          }
+        },
+        "indexing": {
+          "excludedPatterns": ["**/spec/**/*.rb"],
+          "excludedGems": []
         }
       }
+    }
+  },
+  "languages": {
+    "Ruby": {
+      "show_inline_completions": true,
+      "format_on_save": "on",
+      "language_servers": ["ruby-lsp", "!solargraph", "!rubocop", "..."]
     },
-    "solargraph": {
-      "initialization_options": {
-        "diagnostics": false,
-        "formatting": false
-      }
+    "TypeScript": {
+      "language_servers": [
+        "!typescript-language-server",
+        "!eslint",
+        "vtsls",
+        "..."
+      ]
+    },
+    "JavaScript": {
+      "language_servers": [
+        "!typescript-language-server",
+        "!eslint",
+        "vtsls",
+        "..."
+      ]
     }
   },
   "telemetry": {
     "diagnostics": false,
     "metrics": false
+  },
+  "preview_tabs": {
+    "enabled": false
+  },
+  "language_models": {
+    "anthropic": {
+      "version": "1"
+    }
+  },
+  "assistant": {
+    "default_model": {
+      "provider": "anthropic",
+      "model": "claude-3-5-sonnet-latest"
+    },
+    "version": "2",
+    "enable_experimental_live_diffs": true
+  },
+  "features": {
+    "copilot": true,
+    "inline_completion_provider": "copilot"
+  },
+  "git": {
+    "git_gutter": "tracked_files",
+    "inline_blame": {
+      "enabled": true,
+      "show_commit_summary": true
+    }
   }
 }
