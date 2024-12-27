@@ -1,6 +1,6 @@
 font-size = 15
 font-family = JetBrains Mono
-font-style = Medium
+font-style = Regular
 background-opacity = 0.90
 background-blur-radius = 20
 mouse-hide-while-typing = false
@@ -11,8 +11,8 @@ window-inherit-font-size = false
 theme = tokyonight
 
 # default window size
-window-width = 100
-window-height = 25
+window-width = 120
+window-height = 30
 
 # keybinds
 keybind = cmd+l=text:\x0c
