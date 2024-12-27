@@ -96,9 +96,8 @@ if which keychain > /dev/null; then
 	source $HOME/.keychain/$HOST-sh
 fi
 
-# asdf
-[ -f $HOME/.asdf/asdf.sh ] && source $HOME/.asdf/asdf.sh
-[ -f $HOMEBREW_PREFIX/opt/asdf/libexec/asdf.sh ] && source $HOMEBREW_PREFIX/opt/asdf/libexec/asdf.sh
+# mise
+eval "$(/opt/homebrew/bin/mise activate zsh)"
 
 # fzf
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
