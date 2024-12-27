@@ -1,5 +1,5 @@
 [tools]
 node = "lts"
-python = "prefix:3.14"
+python = "prefix:3.13"
 ruby = "latest"
 zig = "latest"
