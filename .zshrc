@@ -24,48 +24,41 @@ setopt AUTO_PUSHD # push old dir to stack
 setopt CDABLE_VARS # expand (allow 'cd -2/tmp')
 
 # completion
-autoload -Uz compinit && compinit
+autoload -Uz compinit
+for dump in ~/.zcompdump(N.mh+24); do
+  compinit
+done
+compinit -C
+
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
 zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
 
-# syntax highlighting
-[ -d "/usr/share/zsh-syntax-highlighting" ] && source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-[ -d "/usr/local/share/zsh-syntax-highlighting" ] && source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-
-# auto suggestions
-[ -d "/usr/share/zsh-autosuggestions" ] && source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
-[ -d "/usr/local/share/zsh-autosuggestions" ] && source /usr/local/share/zsh-autosuggestions/zsh-autosuggestions.zsh
-
-if [ -x "$(command -v brew)" ]; then
-  source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
-  source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+# auto suggestions & syntax highlighting
+if type brew &> /dev/null; then
+ source $HOMEBREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+ source $HOMEBREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 fi
 
-if [[ -f $HOME/.zshrc.local ]]; then
-  source $HOME/.zshrc.local
-fi
-
-# keychain
-if which keychain > /dev/null; then
-  [[ -f $HOME/.ssh/id_rsa ]] && /usr/bin/keychain -q --nogui $HOME/.ssh/id_rsa
-  [[ -f $HOME/.ssh/id_ed25519 ]] && /usr/bin/keychain -q --nogui $HOME/.ssh/id_ed25519
-
-  source $HOME/.keychain/$HOST-sh
-fi
+# local
+[[ -f "$HOME/.zshrc.local" ]] && source "$HOME/.zshrc.local"
 
 # mise
-eval "$(/opt/homebrew/bin/mise activate zsh)"
+if type mise &> /dev/null; then
+  eval "$(mise activate zsh)"
+fi
 
 # fzf
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+[[ -f "$HOME/.fzf.zsh" ]] && source "$HOME/.fzf.zsh"
 
-# add Pulumi to the PATH
-[ -d $HOME/.pulumi/bin ] && export PATH=$PATH:$HOME/.pulumi/bin
+# pulumi
+[[ -d "$HOME/.pulumi/bin" ]] && export PATH="$PATH:$HOME/.pulumi/bin"
 
 # starship
 eval "$(starship init zsh)"
 
 # z
-eval "$(zoxide init zsh)"
+if type zoxide &> /dev/null; then
+  eval "$(zoxide init zsh)"
+fi
