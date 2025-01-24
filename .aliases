@@ -36,6 +36,7 @@ alias rmdir='rm -ri'
 
 # random
 alias weather='curl -4 http://wttr.in/Porto,Portugal'
+alias sft='sftp -R 128 -B 65536'
 
 # cat
 if command -v batcat &>/dev/null; then
