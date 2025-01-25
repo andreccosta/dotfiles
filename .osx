@@ -1,10 +1,7 @@
 #!/bin/bash
 
 # detect platform
-platform=$("uname")
-if [ "$platform" != "Darwin" ]; then
-    return;
-fi
+[ "$(uname)" != "Darwin" ] && return
 
 ## functions
 
@@ -38,19 +35,12 @@ alias clip='pbcopy'
 alias copy='pbcopy'
 alias paste='pbpaste'
 
-# sleep
-alias lock='open -a ScreenSaverEngine'
-alias slp='pmset displaysleepnow'
-
-# coreutils
-export PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
-
-# newer ncurses
-export PATH="/opt/homebrew/opt/ncurses/bin:$PATH"
-
 # homebrew
-if [ -x "$(command -v brew)" ]; then
+if type brew &> /dev/null; then
   eval "$(brew shellenv)"
 else
   eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
+
+# newer ncurses
+export PATH="$HOMEBREW_PREFIX/opt/ncurses/bin:$PATH"

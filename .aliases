@@ -10,8 +10,6 @@ alias ~='cd ~'
 alias c='clear'
 alias g='git'
 alias h='history'
-alias r='. ranger'
-alias v='vim'
 alias ll='ls -lpah'
 
 # colors
@@ -26,9 +24,6 @@ alias untar='tar xvf'
 
 # docker
 alias compose='docker compose'
-alias ds='docker ps'
-alias dcu='docker compose up -d'
-alias dce='docker compose exec'
 
 # utils
 alias rm='rm -i'
@@ -39,15 +34,17 @@ alias weather='curl -4 http://wttr.in/Porto,Portugal'
 alias sft='sftp -R 128 -B 65536'
 
 # cat
-if command -v batcat &>/dev/null; then
+if type batcat &>/dev/null; then
   alias bat='batcat'
   alias batcat='batcat --theme="base16"'
 fi
 
 # gh
-if command -v gh &>/dev/null; then
+if type gh &>/dev/null; then
   alias gist='gh gist create'
 fi
 
 # bundler
-alias bx='bundler exec'
+if type bundle &>/dev/null; then
+  alias bx='bundler exec'
+fi

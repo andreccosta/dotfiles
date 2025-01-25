@@ -30,13 +30,12 @@ for dump in ~/.zcompdump(N.mh+24); do
 done
 compinit -C
 
+zstyle ':completion:*' menu select
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
-zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
-zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
 
 # auto suggestions & syntax highlighting
-if type brew &> /dev/null; then
+if [[ -n "$HOMEBREW_PREFIX" ]]; then
  source $HOMEBREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh
  source $HOMEBREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 fi
@@ -50,7 +49,9 @@ if type mise &> /dev/null; then
 fi
 
 # fzf
-[[ -f "$HOME/.fzf.zsh" ]] && source "$HOME/.fzf.zsh"
+if type fzf &> /dev/null; then
+ source <(fzf --zsh)
+fi
 
 # pulumi
 [[ -d "$HOME/.pulumi/bin" ]] && export PATH="$PATH:$HOME/.pulumi/bin"

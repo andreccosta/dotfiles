@@ -1,10 +1,7 @@
 #!/usr/bin/env bash
 
 # detect platform
-platform=$("uname")
-if [ "$platform" != "Linux" ]; then
-    return;
-fi
+[ "$(uname)" != "Linux" ] && return
 
 # .local/bin
 export PATH="$PATH:$HOME/.local/bin"
