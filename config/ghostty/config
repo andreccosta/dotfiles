@@ -14,8 +14,3 @@ theme = tokyonight
 window-width = 120
 window-height = 30
 
-# keybinds
-keybind = cmd+l=text:\x0c
-keybind = cmd+left=text:\x01
-keybind = cmd+right=text:\x05
-
