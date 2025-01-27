@@ -40,12 +40,9 @@ if [[ -n "$HOMEBREW_PREFIX" ]]; then
  source $HOMEBREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 fi
 
-# local
-[[ -f "$HOME/.zshrc.local" ]] && source "$HOME/.zshrc.local"
-
 # mise
 if type mise &> /dev/null; then
-  eval "$(mise activate zsh)"
+  source <(mise activate zsh)
 fi
 
 # fzf
