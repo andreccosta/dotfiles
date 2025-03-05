@@ -1,84 +1,70 @@
 {
-  "workbench.editorAssociations": {
-    "*.ipynb": "jupyter-notebook"
+  "[csharp]": {
+    "editor.insertSpaces": true,
+    "editor.tabSize": 4
   },
-  "editor.wordWrapColumn": 120,
-  "editor.stickyScroll.enabled": true,
-  "git.autofetch": true,
-  "search.useIgnoreFiles": true,
-  "search.exclude": {
-    "**\/*.code-search": true,
-    "**\/node_modules": true,
-    "**\/bower_components": true,
-    "**/.next": true,
-    "**/dist": true,
-    "**debug": true,
-    "**/package-lock.json": true,
-    "**/data": true,
+  "[go]": {
+    "editor.insertSpaces": false
+  },
+  "[html]": {
+    "editor.defaultFormatter": "vscode.html-language-features"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[json]": {
+    "editor.defaultFormatter": "vscode.json-language-features"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[markdown]": {
+    "editor.quickSuggestions": {
+      "comments": "off",
+      "other": "off",
+      "strings": "off"
+    },
+    "editor.wordWrap": "on",
+    "files.insertFinalNewline": false,
+    "files.trimTrailingWhitespace": false
   },
   "[php]": {
     "editor.insertSpaces": true,
     "editor.tabSize": 4
   },
-  "workbench.iconTheme": "material-icon-theme",
-  "prettier.singleQuote": true,
-  "prettier.semi": false,
-  "editor.fontSize": 14,
-  "editor.fontLigatures": true,
-  "editor.fontFamily": "JetBrainsMono Nerd Font",
-  "window.openFilesInNewWindow": "on",
-  "telemetry.telemetryLevel": "off",
-  "editor.tabCompletion": "on",
-  "extensions.autoUpdate": true,
-  "[json]": {
-    "editor.defaultFormatter": "vscode.json-language-features"
+  "[plaintext]": {
+    "files.insertFinalNewline": false
   },
   "[python]": {
     "editor.insertSpaces": true,
     "editor.tabSize": 4
   },
-  "[markdown]": {
-    "files.trimTrailingWhitespace": false,
-    "editor.quickSuggestions": {
-      "comments": "off",
-      "strings": "off",
-      "other": "off"
-    },
-    "files.insertFinalNewline": false,
-    "editor.wordWrap": "on"
+  "[ruby]": {
+    "editor.defaultFormatter": "Shopify.ruby-lsp",
+    "editor.formatOnSave": true
   },
-  "[csharp]": {
-    "editor.insertSpaces": true,
-    "editor.tabSize": 4
+  "[rust]": {
+    "editor.formatOnSave": true
   },
-  "explorer.compactFolders": false,
-  "git.confirmSync": false,
-  "git.enableSmartCommit": true,
-  "go.useLanguageServer": true,
-  "ruby.lint": {
-    "standard": true
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
   },
-  "ruby.useBundler": false,
-  "ruby.format": "standard",
-  "ruby.intellisense": "rubyLocate",
-  "ruby.codeCompletion": "rcodetools",
-  "ruby.useLanguageServer": true,
-  "solargraph.definitions": true,
-  "editor.insertSpaces": true,
-  "editor.wordWrap": "off",
-  "editor.cursorSmoothCaretAnimation": "on",
-  "workbench.startupEditor": "none",
-  "files.trimTrailingWhitespace": true,
-  "files.insertFinalNewline": true,
-  "editor.minimap.enabled": false,
-  "editor.rulers": [
-    80,
-    120,
-    160
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "cSpell.enabledFileTypes": {
+    "markdown": false
+  },
+  "cSpell.enableFiletypes": [
+    "haml",
+    "ruby"
   ],
-  "[html]": {
-    "editor.defaultFormatter": "vscode.html-language-features"
-  },
   "cSpell.userWords": [
     "amplemarket",
     "concat",
@@ -89,146 +75,154 @@
     "timespan",
     "titlebar"
   ],
+  "editor.accessibilitySupport": "off",
+  "editor.cursorSmoothCaretAnimation": "on",
+  "editor.fontFamily": "JetBrainsMono Nerd Font",
+  "editor.fontLigatures": true,
+  "editor.fontSize": 14,
+  "editor.inlineSuggest.enabled": true,
+  "editor.insertSpaces": true,
+  "editor.lineHeight": 1.6,
+  "editor.minimap.enabled": false,
+  "editor.rulers": [
+    80,
+    120,
+    160
+  ],
+  "editor.semanticHighlighting.enabled": true,
+  "editor.smoothScrolling": true,
+  "editor.tabCompletion": "on",
+  "editor.tabSize": 2,
+  "editor.wordWrap": "off",
+  "editor.wordWrapColumn": 120,
+  "errorLens.enabled": true,
+  "errorLens.excludeBySource": [
+    "cSpell"
+  ],
+  "explorer.compactFolders": false,
+  "extensions.autoUpdate": true,
+  "files.associations": {
+    "*.erb": "html",
+    "*.gohtml": "html"
+  },
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true,
+  "git.autofetch": true,
+  "git.confirmSync": false,
+  "git.enableSmartCommit": true,
+  "git.openRepositoryInParentFolders": "always",
+  "github.copilot.editor.enableAutoCompletions": true,
+  "github.copilot.enable": {
+    "*": true,
+    "javascript": false,
+    "javascriptreact": true,
+    "markdown": false,
+    "plaintext": false,
+    "ruby": true,
+    "yaml": true
+  },
+  "gitlens.launchpad.indicator.enabled": false,
+  "gitlens.launchpad.indicator.polling.enabled": false,
+  "go.toolsManagement.autoUpdate": true,
+  "go.useLanguageServer": true,
+  "javascript.updateImportsOnFileMove.enabled": "always",
   "notebook.cellToolbarLocation": {
     "default": "right",
     "jupyter-notebook": "left"
   },
-  "javascript.updateImportsOnFileMove.enabled": "always",
-  "go.toolsManagement.autoUpdate": true,
-  "[javascript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[go]": {
-    "editor.insertSpaces": false,
-  },
-  "[javascriptreact]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.formatOnSave": true
-  },
-  "editor.accessibilitySupport": "off",
   "prettier.printWidth": 120,
-  "files.associations": {
-    "*.gohtml": "html",
-    "*.erb": "html"
-  },
-  "cSpell.enableFiletypes": [
-    "haml",
-    "ruby"
-  ],
+  "prettier.semi": false,
+  "prettier.singleQuote": true,
   "remote.SSH.remotePlatform": {
     "ack": "linux"
   },
-  "[typescript]": {
-    "editor.formatOnSave": true,
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  "rewrap.autoWrap.enabled": true,
+  "rewrap.wrappingColumn": 120,
+  "rubyLsp.enabledFeatures": {
+    "codeActions": true,
+    "codeLens": true,
+    "completion": true,
+    "definition": true,
+    "diagnostics": true,
+    "documentHighlights": true,
+    "documentLink": true,
+    "documentSymbols": true,
+    "foldingRanges": true,
+    "formatting": true,
+    "hover": true,
+    "inlayHint": true,
+    "onTypeFormatting": true,
+    "references": true,
+    "selectionRanges": true,
+    "semanticHighlighting": true,
+    "signatureHelp": true,
+    "typeHierarchy": true,
+    "workspaceSymbol": true
   },
-  "[typescriptreact]": {
-    "editor.formatOnSave": true,
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  "rubyLsp.formatter": "standard",
+  "rubyLsp.linters": [
+    "standard"
+  ],
+  "rubyLsp.rubyVersionManager": {
+    "identifier": "mise"
   },
-  "[ruby]": {
-    "editor.formatOnSave": true,
-    "editor.defaultFormatter": "testdouble.vscode-standard-ruby"
+  "search.exclude": {
+    "**/.next": true,
+    "**\/*.code-search": true,
+    "**\/bower_components": true,
+    "**/data": true,
+    "**/dist": true,
+    "**\/node_modules": true,
+    "**/package-lock.json": true,
+    "**debug": true
   },
-  "[rust]": {
-    "editor.formatOnSave": true
-  },
-  "[plaintext]": {
-    "files.insertFinalNewline": false,
-  },
-  "editor.inlineSuggest.enabled": true,
-  "github.copilot.enable": {
-    "*": true,
-    "yaml": true,
-    "plaintext": false,
-    "markdown": false,
-    "ruby": true,
-    "javascriptreact": true,
-    "javascript": false
-  },
-  "typescript.updateImportsOnFileMove.enabled": "always",
-  "terminal.integrated.copyOnSelection": true,
-  "terminal.integrated.defaultLocation": "editor",
-  "terminal.integrated.fontFamily": "JetBrainsMono Nerd Font",
-  "terminal.integrated.fontSize": 14,
-  "[jsonc]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "editor.semanticHighlighting.enabled": true,
-  "editor.tabSize": 2,
+  "search.useIgnoreFiles": true,
   "settingsSync.ignoredExtensions": [
     "rust-lang.rust-analyzer",
     "ms-dotnettools.csharp",
     "golang.go",
     "xdebug.php-debug"
   ],
+  "solargraph.definitions": true,
+  "sqltools.results.reuseTabs": "connection",
+  "standardRuby.mode": "enableViaGemfile",
+  "telemetry.telemetryLevel": "off",
+  "terminal.integrated.copyOnSelection": true,
+  "terminal.integrated.defaultLocation": "editor",
+  "terminal.integrated.fontFamily": "JetBrainsMono Nerd Font",
+  "terminal.integrated.fontSize": 14,
+  "terminal.integrated.smoothScrolling": true,
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "vscode-run-rspec-file.custom-command": "bin/rspec --no-profile",
+  "window.commandCenter": false,
+  "window.openFilesInNewWindow": "on",
+  "workbench.activityBar.location": "top",
   "workbench.colorCustomizations": {
     "[Tokyo Night Storm]": {
-      "sideBar.background": "#1c203280",
-      "sideBar.foreground": "#959cbd",
-      "panel.background": "#1c2032",
-      "editor.background": "#202435",
-      "tab.activeForeground": "#bdc7f0",
+      "activityBar.background": "#1c203280",
+      "activityBar.foreground": "#bdc7f0",
       "breadcrumb.activeSelectionForeground": "#bdc7f0",
+      "dropdown.foreground": "#959cbd",
+      "editor.background": "#202435",
+      "input.foreground": "#959cbd",
+      "list.activeSelectionForeground": "#bdc7f0",
       "list.focusForeground": "#bdc7f0",
       "list.hoverForeground": "#bdc7f0",
-      "list.activeSelectionForeground": "#bdc7f0",
-      "dropdown.foreground": "#959cbd",
-      "menu.foreground":"#bdc7f0",
-      "menubar.selectionForeground":"#bdc7f0",
-      "input.foreground": "#959cbd",
-      "activityBar.foreground": "#bdc7f0",
-      "activityBar.background": "#1c203280",
-      "statusBar.background": "#1c203280"
+      "menu.foreground": "#bdc7f0",
+      "menubar.selectionForeground": "#bdc7f0",
+      "panel.background": "#1c2032",
+      "sideBar.background": "#1c203280",
+      "sideBar.foreground": "#959cbd",
+      "statusBar.background": "#1c203280",
+      "tab.activeForeground": "#bdc7f0"
     }
   },
-  "rubyLsp.enabledFeatures": {
-    "codeActions": true,
-    "diagnostics": false,
-    "documentHighlights": true,
-    "documentLink": true,
-    "documentSymbols": true,
-    "foldingRanges": true,
-    "formatting": false,
-    "hover": true,
-    "inlayHint": true,
-    "onTypeFormatting": true,
-    "selectionRanges": true,
-    "semanticHighlighting": true,
-    "completion": true,
-    "codeLens": true,
-    "definition": true,
-    "workspaceSymbol": true,
-    "signatureHelp": true,
-    "references": true
+  "workbench.colorTheme": "Tokyo Night",
+  "workbench.editorAssociations": {
+    "*.ipynb": "jupyter-notebook"
   },
-  "window.commandCenter": false,
-  "rubyLsp.formatter": "none",
-  "rubyLsp.enableExperimentalFeatures": false,
-  "errorLens.enabled": true,
-  "errorLens.excludeBySource": [
-    "cSpell"
-  ],
-  "sqltools.results.reuseTabs": "connection",
-  "rewrap.autoWrap.enabled": true,
-  "rewrap.wrappingColumn": 120,
-  "zig.initialSetupDone": true,
-  "editor.lineHeight": 1.6,
-  "apc.font.family": "JetBrainsMono Nerd Font",
-  "apc.statusBar": {
-		"height": 32
-	},
-	"apc.header": {
-		"height": 42
-	},
-	"apc.activityBar": {
-		"size": 42,
-		"itemSize": 36,
-    "itemMargin": 0,
-		"position": "top"
-  },
-  "standardRuby.mode": "enableViaGemfile",
-  "editor.smoothScrolling": true,
-  "terminal.integrated.smoothScrolling": true,
-  "workbench.colorTheme": "Tokyo Night"
+  "workbench.iconTheme": "material-icon-theme",
+  "workbench.layoutControl.enabled": false,
+  "workbench.startupEditor": "none",
+  "zig.initialSetupDone": true
 }
