@@ -10,7 +10,7 @@ set number
 set cursorline
 set showmatch
 set incsearch
-
+set ignorecase
 set colorcolumn=80,120
 
 " load plugins if Plug is detected
