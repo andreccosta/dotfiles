@@ -2,24 +2,28 @@
 
 set -euo pipefail
 
-branches=$(git branch --merged | grep -Ev "(^\*|master|main|develop|dev)")
+# switch to master branch
+git checkout -q master
 
-if [ -z "$branches" ]; then
-  echo "no branches to prune"
-  exit 0
-else
-  echo "$branches"
-fi
+# iterate through all local branches
+git for-each-ref refs/heads/ "--format=%(refname:short)" | while read branch; do
+    # find the merge base between the branch and master
+    mergeBase=$(git merge-base master "$branch")
 
-read -r -p "Remove these branches? (y/n) " yn
+    # check if the branch is squash merged into master
+    if [[ $(git cherry master $(git commit-tree $(git rev-parse "$branch^{tree}") -p "$mergeBase" -m _)) == "-"* ]]; then
+        # ask for confirmation to delete the branch
+        read -r -p "Are you sure you want to delete the branch '$branch'? (y/n) " yn
 
-case $yn in
-  [yY] )
-    echo "$branches" | xargs git branch -d
-  ;;
-  * )
-    exit 0
-  ;;
-esac
-
-exit 0
+        case $yn in
+            [yY] )
+                # Delete the branch if confirmed
+                git branch -D "$branch"
+                echo "Branch '$branch' deleted."
+                ;;
+            * )
+                echo "Skipping branch '$branch'."
+                ;;
+        esac
+    fi
+done
