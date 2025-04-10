@@ -1,4 +1,4 @@
-import = [
+general.import = [
   "~/.config/alacritty/themes/tokyonight_storm.toml"
 ]
 
