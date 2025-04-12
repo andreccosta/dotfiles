@@ -5,23 +5,11 @@
     "spacing": 5,
     // Choose the order of the modules
     "modules-left": ["hyprland/workspaces", "persistent-workspaces"],
-    //"modules-right": ["pulseaudio", "network", "backlight", "keyboard-state", "battery", "battery#bat2", "clock", "tray"],
-    "modules-right": ["pulseaudio", "network", "backlight", "keyboard-state", "battery", "clock", "tray"],
+    "modules-center": ["hyprland/window"],
+    "modules-right": ["pulseaudio", "network", "backlight", "keyboard-state", "battery", "battery#bat2", "clock", "tray"],
     // Modules configuration
     "hyprland/workspaces": {
-    //     "disable-scroll": true,
-    //     "all-outputs": true,
-         "format": "{name}",
-    //     "format-icons": {
-    //         "1": "",
-    //         "2": "",
-    //         "3": "",
-    //         "4": "",
-    //         "5": "",
-    //         "urgent": "",
-    //         "focused": "",
-    //         "default": ""
-         }
+         "format": "{name}"
     },
     "keyboard-state": {
         "numlock": true,
@@ -31,32 +19,6 @@
             "locked": "",
             "unlocked": ""
         }
-    },
-    "mpd": {
-        "format": "{stateIcon} {consumeIcon}{randomIcon}{repeatIcon}{singleIcon}{artist} - {album} - {title} ({elapsedTime:%M:%S}/{totalTime:%M:%S}) ⸨{songPosition}|{queueLength}⸩ {volume}% ",
-        "format-disconnected": "Disconnected ",
-        "format-stopped": "{consumeIcon}{randomIcon}{repeatIcon}{singleIcon}Stopped ",
-        "unknown-tag": "N/A",
-        "interval": 2,
-        "consume-icons": {
-            "on": " "
-        },
-        "random-icons": {
-            "off": "<span color=\"#f53c3c\"></span> ",
-            "on": " "
-        },
-        "repeat-icons": {
-            "on": " "
-        },
-        "single-icons": {
-            "on": "1 "
-        },
-        "state-icons": {
-            "paused": "",
-            "playing": ""
-        },
-        "tooltip-format": "MPD (connected)",
-        "tooltip-format-disconnected": "MPD (disconnected)"
     },
     "idle_inhibitor": {
         "format": "{icon}",
@@ -95,9 +57,8 @@
         "format-icons": ["", ""]
     },
     "battery": {
-        // "bat": "BAT0",
+        "bat": "BAT0",
         "states": {
-            // "good": 95,
             "warning": 30,
             "critical": 15
         },
@@ -105,12 +66,19 @@
         "format-charging": "{capacity}% ",
         "format-plugged": "{capacity}% ",
         "format-alt": "{time} {icon}",
-        // "format-good": "", // An empty format will hide the module
-        // "format-full": "",
         "format-icons": [" ", " ", " ", " ", " "]
     },
     "battery#bat2": {
-	"bat": "BAT1"
+	"bat": "BAT1",
+        "states": {
+            "warning": 30,
+            "critical": 15
+        },
+        "format": "{capacity}% {icon}",
+        "format-charging": "{capacity}% ",
+        "format-plugged": "{capacity}% ",
+        "format-alt": "{time} {icon}",
+        "format-icons": [" ", " ", " ", " ", " "]
     },
     "network": {
         // "interface": "wlp2*", // (Optional) To force the use of this interface
