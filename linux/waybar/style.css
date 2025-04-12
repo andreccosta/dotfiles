@@ -53,6 +53,11 @@ window#waybar {
   color: #f8f8f2;
 }
 
+#workspaces button.visible {
+  font-weight: bold;
+}
+
+#workspaces button.visible,
 #workspaces button.focused {
   border-top: solid 2px #c3e88d;
 }
@@ -62,7 +67,7 @@ window#waybar {
   font-weight: bold;
 }
 
-#worksapces button.urgent {
+#workspaces button.urgent {
   border-top: solid 2px #ff98a4;
 }
 
