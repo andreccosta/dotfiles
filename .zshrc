@@ -1,9 +1,3 @@
-# export
-export CLICOLOR=1
-export LANG=en_US.UTF-8
-export LSCOLORS=exfxcxdxbxegedabagacad
-export LS_COLORS="di=34:ln=35:so=32:pi=33:ex=31:bd=34;46:cd=34;43:su=30;41:sg=30;46:tw=30;42:ow=30;43"
-
 # history
 HISTFILE=~/.zsh_history
 HISTSIZE=10000000
@@ -65,10 +59,11 @@ fi
 
 # completion
 autoload -Uz compinit
-for dump in ~/.zcompdump(N.mh+24); do
-  compinit
-done
-compinit -C
+if [[ -n ${ZDOTDIR}/.zcompdump(#qN.mh+24) ]]; then
+	compinit;
+else
+	compinit -C;
+fi;
 
 zstyle ':completion:*' menu select
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
