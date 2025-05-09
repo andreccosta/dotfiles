@@ -36,12 +36,12 @@
 
 (deflayer base
   brdn  brup  _    _    _    _   prev  pp  next  mute  vold  volu
-  @escctrl @a @s @d @f @j @k @l @;
+  @escsuper @a @s @d @f @j @k @l @;
   @fnl
 )
 
 (deflayer fn
   f1   f2   f3   f4   f5   f6   f7   f8   f9   f10   f11   f12
-  @escctrl _ _ _ _ _ _ _ _
+  @escsuper _ _ _ _ _ _ _ _
   fn
 )
