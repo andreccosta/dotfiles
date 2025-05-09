@@ -21,7 +21,8 @@
 )
 
 (defalias
-  escctrl (tap-hold 100 100 esc lctl)
+  hyper (multi lalt lctl lsft lmet)
+  escsuper (tap-hold 100 $hold-time esc @hyper)
   a (tap-hold $tap-time $hold-time a lmet)
   s (tap-hold $tap-time $hold-time s lalt)
   d (tap-hold $tap-time $hold-time d lsft)
