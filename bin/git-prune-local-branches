@@ -2,16 +2,21 @@
 
 set -euo pipefail
 
-# switch to master branch
-git checkout -q master
+main_branch="${1:-main}"
+
+# switch to main branch
+git checkout -q "$main_branch"
 
 # iterate through all local branches
-git for-each-ref refs/heads/ "--format=%(refname:short)" | while read branch; do
-    # find the merge base between the branch and master
-    mergeBase=$(git merge-base master "$branch")
+git for-each-ref refs/heads/ "--format=%(refname:short)" | while read -r branch; do
+    # skip the main branch itself
+    [[ "$branch" == "$main_branch" ]] && continue
 
-    # check if the branch is squash merged into master
-    if [[ $(git cherry master $(git commit-tree $(git rev-parse "$branch^{tree}") -p "$mergeBase" -m _)) == "-"* ]]; then
+    # find the merge base between the branch and main
+    mergeBase=$(git merge-base "$main_branch" "$branch")
+
+    # check if the branch is squash merged into main
+    if [[ $(git cherry "$main_branch" "$(git commit-tree "$(git rev-parse "$branch^{tree}")" -p "$mergeBase" -m _ )") == "-"* ]]; then
         # ask for confirmation to delete the branch
         read -r -p "Are you sure you want to delete the branch '$branch'? (y/n) " yn
 
