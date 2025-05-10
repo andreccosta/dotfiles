@@ -1,3 +1,0 @@
-#!/usr/bin/sh
-ln -sf "$PWD/kitty.conf" "$HOME/.config/kitty/kitty.conf"
-ln -sf "$PWD/nord.conf" "$HOME/.config/kitty/nord.conf"
