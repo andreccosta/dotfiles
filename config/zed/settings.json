@@ -1,6 +1,6 @@
 {
   "base_keymap": "VSCode",
-  "theme": "Tokyo Night",
+  "theme": "Tokyo Night Storm",
   "buffer_font_family": "JetBrainsMono Nerd Font",
   "buffer_font_size": 13,
   "ui_font_family": "JetBrainsMono Nerd Font",
@@ -21,7 +21,7 @@
   "semantic_index": {
     "enabled": true
   },
-  "show_inline_completions": false,
+  "show_edit_predictions": false,
   "show_completions_on_input": true,
   "show_completion_documentation": true,
   "soft_wrap": "editor_width",
@@ -103,7 +103,7 @@
   },
   "languages": {
     "Ruby": {
-      "show_inline_completions": true,
+      "show_edit_predictions": true,
       "format_on_save": "on",
       "language_servers": ["ruby-lsp", "!solargraph", "!rubocop", "..."]
     },
@@ -136,7 +136,7 @@
       "version": "1"
     }
   },
-  "assistant": {
+  "agent": {
     "default_model": {
       "provider": "anthropic",
       "model": "claude-3-5-sonnet-latest"
@@ -146,7 +146,7 @@
   },
   "features": {
     "copilot": true,
-    "inline_completion_provider": "copilot"
+    "edit_prediction_provider": "copilot"
   },
   "git": {
     "git_gutter": "tracked_files",
