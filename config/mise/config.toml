@@ -1,9 +1,10 @@
 [tools]
+go = "latest"
 node = "lts"
 python = "prefix:3.13"
 ruby = "3.4.3"
+rust = "latest"
 zig = "latest"
-go = "latest"
 
 [settings]
 idiomatic_version_file_enable_tools = ["ruby"]
