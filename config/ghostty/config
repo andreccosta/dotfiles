@@ -6,6 +6,7 @@ background-blur-radius = 20
 mouse-hide-while-typing = false
 window-save-state = never
 window-inherit-font-size = false
+macos-option-as-alt = true
 
 # theme
 theme = tokyonight
