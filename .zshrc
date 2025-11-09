@@ -60,9 +60,9 @@ fi
 # completion
 autoload -Uz compinit
 if [[ -n ${ZDOTDIR}/.zcompdump(#qN.mh+24) ]]; then
-	compinit;
+	compinit -u;
 else
-	compinit -C;
+	compinit -u -C;
 fi;
 
 zstyle ':completion:*' menu select
