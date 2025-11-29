@@ -1,3 +1,15 @@
+# performance optimizations
+ZSH_DISABLE_COMPFIX=true
+_ZSH_CACHE_DIR="$HOME/.zsh_cache"
+mkdir -p "$_ZSH_CACHE_DIR"
+
+# lazy loading infrastructure
+_lazy_load() {
+  local cmd=$1
+  local init_cmd=$2
+  eval "$cmd() { unset -f $cmd; $init_cmd; $cmd \"\$@\"; }"
+}
+
 # history
 HISTFILE=~/.zsh_history
 HISTSIZE=10000000
@@ -16,6 +28,11 @@ setopt SHARE_HISTORY # share history between sessions
 # options
 setopt AUTO_PUSHD # push old dir to stack
 setopt CDABLE_VARS # expand (allow 'cd -2/tmp')
+setopt AUTO_CD # cd without typing cd
+setopt COMPLETE_IN_WORD # better completion
+setopt GLOB_DOTS # include dotfiles in completions
+setopt NO_BEEP # disable annoying beeps
+setopt NOTIFY # report background job status immediately
 
 # key bindings
 typeset -g -A key
@@ -68,24 +85,52 @@ fi;
 zstyle ':completion:*' menu select
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
+zstyle ':completion:*' use-cache on
+zstyle ':completion:*' cache-path "$_ZSH_CACHE_DIR/zcompcache"
 
-# auto suggestions & syntax highlighting
-if [[ -n "$HOMEBREW_PREFIX" ]]; then
- source $HOMEBREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh
- source $HOMEBREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-elif [[ -d /usr/share/zsh/plugins ]]; then
-  source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
-  source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+# lazy load auto suggestions & syntax highlighting
+_load_autosuggestions() {
+  if [[ -n "$HOMEBREW_PREFIX" ]]; then
+    source $HOMEBREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+  elif [[ -d /usr/share/zsh/plugins ]]; then
+    source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+  fi
+}
+
+_load_syntax_highlighting() {
+  if [[ -n "$HOMEBREW_PREFIX" ]]; then
+    source $HOMEBREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+  elif [[ -d /usr/share/zsh/plugins ]]; then
+    source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+  fi
+}
+
+# defer loading until first prompt via hook
+_lazy_plugin_precmd() {
+  if [[ -z "$_AUTOSUGGESTIONS_LOADED" ]]; then
+    _load_autosuggestions
+    _AUTOSUGGESTIONS_LOADED=1
+  fi
+  if [[ -z "$_SYNTAX_HIGHLIGHTING_LOADED" ]]; then
+    _load_syntax_highlighting
+    _SYNTAX_HIGHLIGHTING_LOADED=1
+  fi
+  if [[ -n "$_AUTOSUGGESTIONS_LOADED" && -n "$_SYNTAX_HIGHLIGHTING_LOADED" ]]; then
+    add-zsh-hook -d precmd _lazy_plugin_precmd
+  fi
+}
+
+autoload -Uz add-zsh-hook
+add-zsh-hook precmd _lazy_plugin_precmd
+
+# lazy load mise
+if command -v mise > /dev/null 2>&1; then
+  _lazy_load mise 'source <(mise activate zsh)'
 fi
 
-# mise
-if type mise &> /dev/null; then
-  source <(mise activate zsh)
-fi
-
-# fzf
-if type fzf &> /dev/null; then
- source <(fzf --zsh)
+# lazy load fzf
+if command -v fzf > /dev/null 2>&1; then
+  _lazy_load fzf 'source <(fzf --zsh)'
 fi
 
 # pulumi
@@ -94,7 +139,8 @@ fi
 # starship
 eval "$(starship init zsh)"
 
-# z
-if type zoxide &> /dev/null; then
-  eval "$(zoxide init zsh)"
+# lazy load zoxide
+if command -v zoxide > /dev/null 2>&1; then
+  _lazy_load z 'eval "$(zoxide init zsh)"'
+  alias cd='z'
 fi
