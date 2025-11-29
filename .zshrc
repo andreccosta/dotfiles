@@ -66,11 +66,15 @@ key[Shift-Tab]="${terminfo[kcbt]}"
 
 # completion
 autoload -Uz compinit
-if [[ -n ${ZDOTDIR}/.zcompdump(#qN.mh+24) ]]; then
-	compinit -u;
+ZCD=~/.zcompdump
+
+# if file missing OR older than 1 day
+if [[ ! -f $ZCD || -z $ZCD(#qNm-1) ]]; then
+  compinit
+  zcompile $ZCD
 else
-	compinit -u -C;
-fi;
+  compinit -C
+fi
 
 zstyle ':completion:*' menu select
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
@@ -127,7 +131,7 @@ fi
 [[ -d "$HOME/.pulumi/bin" ]] && export PATH="$PATH:$HOME/.pulumi/bin"
 
 # starship
-eval "$(starship init zsh)"
+source ~/.config/starship/init.zsh
 
 # lazy load zoxide
 if command -v zoxide > /dev/null 2>&1; then
