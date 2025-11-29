@@ -1,6 +1,0 @@
-#! /bin/bash
-# alias: brew clean
-#:  * `clean` [args...]
-#:    `brew clean` is an alias for `brew cleanup -v -s --prune=all "$@"`
-brew cleanup -v -s --prune=all "$@" "$*"
-
