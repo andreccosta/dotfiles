@@ -15,5 +15,10 @@ for file in ~/.{aliases,functions,path,linux,osx,extra,exports}; do
 done
 unset file
 
+# cargo
+if [[ -r ~/.cargo/env ]]; then
+  source ~/.cargo/env
+fi
+
 # added by OrbStack
 source ~/.orbstack/shell/init.zsh 2>/dev/null || :
