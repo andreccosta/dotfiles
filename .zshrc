@@ -84,8 +84,6 @@ if [[ -f ~/.antidote/antidote.zsh ]]; then
   antidote load ~/code/src/github.com/andreccosta/dotfiles/.zsh_plugins.txt
 fi
 
-# mise and fzf are loaded by antidote
-
 # pulumi
 [[ -d "$HOME/.pulumi/bin" ]] && export PATH="$PATH:$HOME/.pulumi/bin"
 
