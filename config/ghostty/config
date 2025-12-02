@@ -1,5 +1,5 @@
 font-size = 15
-font-family = JetBrains Mono
+font-family = JetBrainsMono Nerd Font
 font-style = Regular
 background-opacity = 0.90
 background-blur-radius = 20
@@ -15,3 +15,5 @@ theme = tokyonight
 window-width = 120
 window-height = 30
 
+# update channel
+auto-update-channel = tip

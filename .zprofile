@@ -1,8 +1,13 @@
-# env
+# env - colors and locale
 export CLICOLOR=1
 export LANG=en_US.UTF-8
-export LSCOLORS=exfxcxdxbxegedabagacad
-export LS_COLORS="di=34:ln=35:so=32:pi=33:ex=31:bd=34;46:cd=34;43:su=30;41:sg=30;46:tw=30;42:ow=30;43"
+export LSCOLORS="exfxcxdxbxegedabagacad"
+export PATH="/opt/homebrew/opt/coreutils/libexec/gnubin:/opt/homebrew/bin:$PATH"
+
+# Use vivid for modern LS_COLORS themes - change 'tokyonight-night' to any theme: vivid themes
+if command -v vivid >/dev/null 2>&1; then
+  export LS_COLORS="$(vivid generate tokyonight-night)"
+fi
 
 # load the shell dotfiles, and then some:
 # * ~/.path can be used to extend `$PATH`.

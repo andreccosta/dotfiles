@@ -1,6 +1,10 @@
-.PHONY: all dotfiles test shellcheck
+.PHONY: all dotfiles install test shellcheck
 
 all: dotfiles
+
+install:
+	@echo "Running dotfiles installation..."
+	@./install.sh
 
 dotfiles:
 	# adding symbolic links to dotfiles in ~

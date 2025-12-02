@@ -1,0 +1,20 @@
+# Antidote plugins configuration
+# Syntax: repo/plugin [branch] [source...]
+
+# Zsh completions and enhancements
+zsh-users/zsh-completions
+
+# Auto suggestions
+zsh-users/zsh-autosuggestions
+
+# Syntax highlighting
+zsh-users/zsh-syntax-highlighting
+
+# Mise version manager
+wintermi/zsh-mise
+
+# Enhanced cd with zoxide integration
+ajeetdsouza/zoxide
+
+# Fuzzy finder integration (manually sourced since fzf doesn't have a proper plugin file)
+# junegunn/fzf

@@ -43,7 +43,7 @@ wx() {
       find . -maxdepth 10 -type f -name "*.sh" | entr -cp bash /_
     ;;
     js | node)
-      find . -maxdepth 10 -type f -name "*.j"s | entr -cp node /_
+      find . -maxdepth 10 -type f -name "*.js" | entr -cp node /_
     ;;
     rb | ruby)
       find . -maxdepth 10 -type f -name "*.rb" | entr -ccp ruby -rdebug /_
