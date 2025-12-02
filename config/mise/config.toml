@@ -2,7 +2,7 @@
 go = "latest"
 node = "lts"
 python = "prefix:3.13"
-ruby = "3.4.4"
+ruby = "latest"
 rust = "latest"
 zig = "latest"
 
