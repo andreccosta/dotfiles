@@ -88,8 +88,8 @@ fi
 [[ -d "$HOME/.pulumi/bin" ]] && export PATH="$PATH:$HOME/.pulumi/bin"
 
 # starship - load immediately for prompt visibility
-if [[ -f ~/.config/starship/init.zsh ]]; then
-  source ~/.config/starship/init.zsh
+if command -v starship > /dev/null 2>&1; then
+  eval "$(starship init zsh)"
 fi
 
 # zoxide is now loaded by antidote
