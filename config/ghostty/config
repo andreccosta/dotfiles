@@ -17,3 +17,6 @@ window-height = 30
 
 # update channel
 auto-update-channel = tip
+
+# ssh
+shell-integration-features = sudo, ssh-terminfo
