@@ -1,0 +1,30 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "theme": "tokyonight",
+  "lsp": {
+    "rubocop": {
+      "disabled": true
+    },
+    "ruby-lsp": {
+      "disabled": false,
+      "command": ["bundle", "exec", "ruby-lsp"],
+      "extensions": [".rb", ".rake", ".gemspec"]
+    }
+  },
+  "formatter": {
+    "rubocop": {
+      "disabled": true
+    },
+    "standardrb": {
+      "disabled": false,
+      "extensions": [".rb", ".rake", ".gemspec"]
+    }
+  },
+  "permission": {
+    "*": "ask",
+    "bash": {
+      "*": "ask",
+      "git status": "allow"
+    }
+  },
+}
