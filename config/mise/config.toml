@@ -1,7 +1,7 @@
 [tools]
 go = "latest"
 node = "lts"
-python = "prefix:3.13"
+python = "prefix:3.14"
 ruby = "latest"
 rust = "latest"
 zig = "latest"
