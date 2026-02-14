@@ -78,24 +78,43 @@ zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
 zstyle ':completion:*' use-cache on
 zstyle ':completion:*' cache-path "$_ZSH_CACHE_DIR/zcompcache"
 
-# antidote plugin manager - load synchronously for reliability
-if [[ -f ~/.antidote/antidote.zsh ]]; then
-  source ~/.antidote/antidote.zsh
-  antidote load ~/code/src/github.com/andreccosta/dotfiles/.zsh_plugins.txt
+# Package manager plugins (Linux then macOS paths)
+# zsh-autosuggestions
+if [[ -r "/usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]]; then
+  source "/usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+elif [[ -r "/opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]]; then
+  source "/opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+fi
+
+# zsh-syntax-highlighting
+if [[ -r "/usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]]; then
+  source "/usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+elif [[ -r "/opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]]; then
+  source "/opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 fi
 
 # pulumi
 [[ -d "$HOME/.pulumi/bin" ]] && export PATH="$PATH:$HOME/.pulumi/bin"
 
-# starship - load immediately for prompt visibility
+# mise version manager
+if command -v mise > /dev/null 2>&1; then
+  eval "$(mise activate zsh)"
+fi
+
+# starship prompt
 if command -v starship > /dev/null 2>&1; then
   eval "$(starship init zsh)"
 fi
 
-# zoxide is now loaded by antidote
-alias cd='z'
-
-# fzf integration - conditional load for reliability
-if [[ -n "$PS1" ]] && command -v fzf > /dev/null 2>&1; then
-  source <(fzf --zsh)
+# zoxide smart cd
+if command -v zoxide > /dev/null 2>&1; then
+  eval "$(zoxide init zsh)"
+  alias cd='z'
 fi
+
+# fzf integration with caching
+FZF_ZSH_CACHE="$HOME/.cache/fzf-zsh"
+if [[ ! -f "$FZF_ZSH_CACHE" ]] && command -v fzf > /dev/null 2>&1; then
+  fzf --zsh > "$FZF_ZSH_CACHE"
+fi
+[[ -r "$FZF_ZSH_CACHE" ]] && source "$FZF_ZSH_CACHE"

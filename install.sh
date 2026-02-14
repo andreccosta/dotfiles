@@ -29,17 +29,9 @@ command_exists() {
     command -v "$1" >/dev/null 2>&1
 }
 
-# Install antidote if not present
-install_antidote() {
-    if [ ! -d "$HOME/.antidote" ]; then
-        print_status "Installing antidote plugin manager..."
-        git clone https://github.com/getantidote/antidote.git ~/.antidote
-        print_status "Antidote installed successfully"
-    else
-        print_status "Antidote already installed, updating..."
-        cd ~/.antidote && git pull origin main
-    fi
-}
+# Note: Previously installed antidote plugin manager
+# Now using package manager installed plugins directly
+# See .zshrc for plugin loading configuration
 
 # Setup zsh as default shell if available
 setup_zsh() {
@@ -89,9 +81,6 @@ main() {
     print_status "Creating symbolic links for dotfiles..."
     make dotfiles
     
-    # Install antidote
-    install_antidote
-    
     # Setup zsh
     setup_zsh
     
@@ -100,13 +89,15 @@ main() {
     echo
     print_status "Next steps:"
     echo "  1. Restart your terminal or run 'source ~/.zshrc'"
-    echo "  2. The antidote plugin manager will automatically download plugins"
-    echo "  3. Your shell environment should be fully configured"
+    echo "  2. Install required dependencies:"
+    echo "     - zsh-autosuggestions"
+    echo "     - zsh-syntax-highlighting"
+    echo "     - zoxide"
+    echo "     - fzf"
+    echo "     - vivid"
+    echo "     - starship"
+    echo "     - mise"
     echo
-    print_warning "Note: Some tools (mise, fzf, starship) may need to be installed separately:"
-    echo "  - mise: https://mise.jdx.dev/"
-    echo "  - fzf: https://github.com/junegunn/fzf"
-    echo "  - starship: https://starship.rs/"
 }
 
 # Run main function

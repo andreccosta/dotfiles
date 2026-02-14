@@ -4,9 +4,14 @@ export LANG=en_US.UTF-8
 export LSCOLORS="exfxcxdxbxegedabagacad"
 export PATH="/opt/homebrew/opt/coreutils/libexec/gnubin:/opt/homebrew/bin:$PATH"
 
-# Use vivid for modern LS_COLORS themes - change 'tokyonight-night' to any theme: vivid themes
+# Use vivid for modern LS_COLORS themes - cached for performance
 if command -v vivid >/dev/null 2>&1; then
-  export LS_COLORS="$(vivid generate tokyonight-night)"
+  VIVID_CACHE="$HOME/.cache/ls_colors"
+  if [[ ! -f "$VIVID_CACHE" ]]; then
+    mkdir -p "$HOME/.cache"
+    vivid generate tokyonight-night > "$VIVID_CACHE"
+  fi
+  export LS_COLORS="$(cat "$VIVID_CACHE")"
 fi
 
 # load the shell dotfiles, and then some:

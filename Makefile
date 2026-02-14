@@ -2,9 +2,7 @@
 
 all: dotfiles
 
-install:
-	@echo "Running dotfiles installation..."
-	@./install.sh
+install: dotfiles
 
 dotfiles:
 	# adding symbolic links to dotfiles in ~
