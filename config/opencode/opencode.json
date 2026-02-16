@@ -1,6 +1,6 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "theme": "tokyonight",
+  "theme": "system",
   "lsp": {
     "rubocop": {
       "disabled": true
@@ -22,8 +22,12 @@
   },
   "permission": {
     "*": "ask",
+    "grep": "allow",
+    "list": "allow",
+    "read": "allow",
+    "todoread": "allow",
+    "todowrite": "allow",
     "bash": {
-      "*": "ask",
       "git status": "allow"
     }
   },
