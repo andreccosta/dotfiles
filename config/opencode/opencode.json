@@ -20,6 +20,9 @@
       "extensions": [".rb", ".rake", ".gemspec"]
     }
   },
+  "instructions": [
+    "AGENTS.md"
+  },
   "permission": {
     "*": "ask",
     "grep": "allow",
