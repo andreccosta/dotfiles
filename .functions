@@ -72,3 +72,22 @@ until_fail () {
     exit_status="$?"
   done
 }
+
+wt() {
+  case "${1:-}" in
+    add)
+      shift
+      local path
+      path="$(git wt add "$@")" || return
+      cd "$path" || return
+      ;;
+    setup)
+      bundle check || bundle install
+      pnpm install
+      ;;
+    *)
+      echo "usage: wt {add|setup}"
+      return 1
+      ;;
+  esac
+}

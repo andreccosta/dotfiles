@@ -1,0 +1,82 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+repo_root() {
+  git rev-parse --show-toplevel 2>/dev/null || die "not in a git repo"
+}
+
+cmd_add() {
+  local branch="${1:-}"
+  local default_branch
+  default_branch="$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null \
+    | sed 's#refs/remotes/origin/##')" || default_branch="main"
+  local base="${2:-$default_branch}"
+  [ -n "$branch" ] || die "usage: git wt add <branch> [base]"
+
+  local root="$(repo_root)"
+  local path="$root/../${branch//\//-}"
+
+  if git show-ref --verify --quiet "refs/heads/$branch"; then
+    git worktree add "$path" "$branch"
+  else
+    git worktree add -b "$branch" "$path" "$base"
+  fi
+
+  # copy over dev files (ignore if they don't exist)
+  for f in certs .env.local; do
+    [ -e "$f" ] && cp -rn "$f" "$path/" || true
+  done
+
+  # add branch suffix to db names
+  if [ -f .env.development ]; then
+    db_suffix="$(echo "$branch" \
+      | sed -E 's#[^a-z0-9]+#_#g' \
+      | cut -c1-20)_$(openssl rand -hex 3)"
+
+    grep -E '^[A-Za-z0-9_]*_DATABASE_NAME=' .env.development \
+      | sed -E "s/=(.*)$/=\1_${db_suffix}/" \
+      >> "$path/.env.local" \
+      || true
+  fi
+
+  echo "$path"
+}
+
+cmd_rm() {
+  local branch="${1:-}"
+
+  # interactive selection when no branch given
+  if [ -z "$branch" ]; then
+    command -v fzf >/dev/null || die "usage: git wt rm <branch> (install fzf for interactive selection)"
+    branch="$(git worktree list --porcelain \
+      | grep '^branch ' \
+      | sed 's#^branch refs/heads/##' \
+      | fzf --prompt='remove worktree> ')" \
+      || return 0
+  fi
+
+  [ -n "$branch" ] || return 0
+
+  local root="$(repo_root)"
+  local path="$root/../${branch//\//-}"
+
+  git worktree remove "$path"
+}
+
+
+cmd_ls() {
+  git worktree list
+}
+
+cmd_prune() {
+  git worktree prune -v
+}
+
+case "${1:-}" in
+  add)   shift; cmd_add "$@" ;;
+  rm)    shift; cmd_rm "$@" ;;
+  ls)    shift; cmd_ls ;;
+  prune) shift; cmd_prune ;;
+  *)     die "usage: git wt {add|rm|ls|prune}" ;;
+esac
