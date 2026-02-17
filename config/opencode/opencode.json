@@ -22,7 +22,7 @@
   },
   "instructions": [
     "AGENTS.md"
-  },
+  ],
   "permission": {
     "*": "ask",
     "glob": "allow",
