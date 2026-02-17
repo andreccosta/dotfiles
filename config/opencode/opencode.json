@@ -32,6 +32,10 @@
     "todoread": "allow",
     "todowrite": "allow",
     "bash": {
+      "bin/rspec *": "allow",
+      "git diff *": "allow",
+      "git log *": "allow",
+      "git show *": "allow",
       "git status": "allow"
     }
   },
