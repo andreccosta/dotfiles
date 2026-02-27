@@ -82,11 +82,19 @@ wt() {
       cd "$path" || return
       ;;
     setup)
-      bundle check || bundle install
-      pnpm install
+      if command -v bundle >/dev/null 2>&1; then
+        bundle check || bundle install
+      fi
+
+      if command -v pnpm >/dev/null 2>&1; then
+        pnpm install
+      fi
+      ;;
+    rm|ls|prune)
+      git wt "$@"
       ;;
     *)
-      echo "usage: wt {add|setup}"
+      echo "usage: wt {add|rm|ls|prune|setup}"
       return 1
       ;;
   esac
