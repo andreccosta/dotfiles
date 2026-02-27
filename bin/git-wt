@@ -14,7 +14,8 @@ cmd_add() {
   local base="${2:-$default_branch}"
   [ -n "$branch" ] || die "usage: git wt add <branch> [base]"
 
-  local root="$(repo_root)"
+  local root
+  root="$(repo_root)"
   local path="$root/../${branch//\//-}"
 
   if git show-ref --verify --quiet "refs/heads/$branch"; then
@@ -25,7 +26,9 @@ cmd_add() {
 
   # copy over dev files (ignore if they don't exist)
   for f in certs .env.local; do
-    [ -e "$f" ] && cp -rn "$f" "$path/" || true
+    if [ -e "$f" ]; then
+      cp -rn "$f" "$path/"
+    fi
   done
 
   # add branch suffix to db names
@@ -58,7 +61,8 @@ cmd_rm() {
 
   [ -n "$branch" ] || return 0
 
-  local root="$(repo_root)"
+  local root
+  root="$(repo_root)"
   local path="$root/../${branch//\//-}"
 
   git worktree remove "$path"
