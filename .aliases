@@ -51,3 +51,6 @@ fi
 
 # rails
 alias rc='bin/rails c'
+
+# rg
+alias rg='rg -i'
