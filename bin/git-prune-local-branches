@@ -2,33 +2,93 @@
 
 set -euo pipefail
 
-main_branch="${1:-main}"
+remote_name="origin"
 
-# switch to main branch
-git checkout -q "$main_branch"
+if [[ $# -gt 1 ]]; then
+    echo "Usage: $(basename "$0") [main-branch]" >&2
+    exit 1
+fi
 
-# iterate through all local branches
-git for-each-ref refs/heads/ "--format=%(refname:short)" | while read -r branch; do
-    # skip the main branch itself
-    [[ "$branch" == "$main_branch" ]] && continue
+if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    echo "Error: not inside a git repository." >&2
+    exit 1
+fi
 
-    # find the merge base between the branch and main
-    mergeBase=$(git merge-base "$main_branch" "$branch")
+detect_default_branch() {
+    local ref
 
-    # check if the branch is squash merged into main
-    if [[ $(git cherry "$main_branch" "$(git commit-tree "$(git rev-parse "$branch^{tree}")" -p "$mergeBase" -m _ )") == "-"* ]]; then
-        # ask for confirmation to delete the branch
-        read -r -p "Are you sure you want to delete the branch '$branch'? (y/n) " yn
-
-        case $yn in
-            [yY] )
-                # Delete the branch if confirmed
-                git branch -D "$branch"
-                echo "Branch '$branch' deleted."
-                ;;
-            * )
-                echo "Skipping branch '$branch'."
-                ;;
-        esac
+    if ref=$(git symbolic-ref --quiet --short "refs/remotes/${remote_name}/HEAD" 2>/dev/null); then
+        printf '%s\n' "${ref#"${remote_name}"/}"
+        return
     fi
-done
+
+    for candidate in main master; do
+        if git show-ref --verify --quiet "refs/heads/${candidate}" || git show-ref --verify --quiet "refs/remotes/${remote_name}/${candidate}"; then
+            printf '%s\n' "$candidate"
+            return
+        fi
+    done
+
+    echo "Error: unable to detect default branch. Pass it explicitly." >&2
+    exit 1
+}
+
+main_branch="${1:-$(detect_default_branch)}"
+
+if git remote get-url "$remote_name" >/dev/null 2>&1; then
+    git fetch --prune "$remote_name" >/dev/null 2>&1 || echo "Warning: failed to fetch '$remote_name'; using local refs." >&2
+fi
+
+if git show-ref --verify --quiet "refs/remotes/${remote_name}/${main_branch}"; then
+    base_ref="${remote_name}/${main_branch}"
+else
+    base_ref="$main_branch"
+fi
+
+if ! git rev-parse --verify --quiet "${base_ref}^{commit}" >/dev/null; then
+    echo "Error: branch '${base_ref}' not found." >&2
+    exit 1
+fi
+
+current_branch="$(git branch --show-current)"
+
+while IFS= read -r branch; do
+    [[ -z "$branch" ]] && continue
+    [[ "$branch" == "$main_branch" ]] && continue
+    [[ "$branch" == "$current_branch" ]] && continue
+
+    delete_mode=""
+    delete_reason=""
+
+    if git merge-base --is-ancestor "$branch" "$base_ref"; then
+        delete_mode="-d"
+        delete_reason="merged"
+    else
+        merge_base="$(git merge-base "$base_ref" "$branch")"
+        synthetic_commit="$(git commit-tree "$(git rev-parse "${branch}^{tree}")" -p "$merge_base" -m "_")"
+
+        if [[ "$(git cherry "$base_ref" "$synthetic_commit")" == "-"* ]]; then
+            delete_mode="-D"
+            delete_reason="squash-merged"
+        fi
+    fi
+
+    [[ -z "$delete_mode" ]] && continue
+
+    if [[ ! -t 0 ]]; then
+        echo "No interactive terminal available; skipping '$branch'."
+        continue
+    fi
+
+    read -r -p "Delete local branch '$branch' (${delete_reason} into ${base_ref})? [y/N] " yn </dev/tty
+
+    case $yn in
+        [yY]|[yY][eE][sS])
+            git branch "$delete_mode" "$branch"
+            echo "Branch '$branch' deleted."
+            ;;
+        *)
+            echo "Skipping branch '$branch'."
+            ;;
+    esac
+done < <(git for-each-ref refs/heads/ --format='%(refname:short)')
