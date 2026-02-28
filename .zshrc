@@ -77,6 +77,52 @@ zstyle ':completion:*' menu select
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
 zstyle ':completion:*' use-cache on
 zstyle ':completion:*' cache-path "$_ZSH_CACHE_DIR/zcompcache"
+zstyle ':completion:*:*:git:*' user-commands wt:'manage git worktrees'
+
+_wt_complete() {
+  local with_setup="$1"
+  local subcmd_index=1
+  local arg_index
+  local subcmd
+  local -a subcommands branches
+
+  if (( ${words[(I)wt]} > 0 )); then
+    subcmd_index=$(( ${words[(I)wt]} + 1 ))
+  elif [[ ${words[1]:-} == wt || ${words[1]:-} == git-wt || ${words[1]:-} == git ]]; then
+    subcmd_index=2
+  fi
+
+  if [[ "$with_setup" == "1" ]]; then
+    subcommands=(add rm ls prune setup)
+  else
+    subcommands=(add rm ls prune)
+  fi
+
+  subcmd="${words[subcmd_index]:-}"
+  arg_index=$((subcmd_index + 1))
+
+  if (( CURRENT == subcmd_index )); then
+    compadd -- "${subcommands[@]}"
+    return
+  fi
+
+  if [[ "$subcmd" == rm ]] && (( CURRENT >= arg_index )); then
+    branches=("${(@f)$(command git worktree list --porcelain 2>/dev/null | awk '$1 == "branch" { sub("^refs/heads/", "", $2); print $2 }')}")
+    (( ${#branches[@]} > 0 )) && compadd -- "${branches[@]}"
+    return
+  fi
+}
+
+_wt() {
+  _wt_complete 1
+}
+
+_git-wt() {
+  _wt_complete 0
+}
+
+compdef _wt wt
+compdef _git-wt git-wt
 
 # Package manager plugins (Linux then macOS paths)
 # zsh-autosuggestions

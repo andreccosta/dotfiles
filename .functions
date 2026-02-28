@@ -83,7 +83,7 @@ wt() {
     add)
       shift
       local path
-      path="$(git wt add "$@")" || return
+      path="$(command git wt add "$@")" || return
       cd "$path" || return
       ;;
     setup)
@@ -96,11 +96,16 @@ wt() {
       fi
       ;;
     rm|ls|prune)
-      git wt "$@"
+      command git wt "$@"
       ;;
     *)
       echo "usage: wt {add|rm|ls|prune|setup}"
       return 1
       ;;
   esac
+}
+
+wt_branches() {
+  command git worktree list --porcelain 2>/dev/null \
+    | awk '$1 == "branch" { sub("^refs/heads/", "", $2); print $2 }'
 }

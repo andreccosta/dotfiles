@@ -119,6 +119,39 @@ for file in ~/.{aliases,linux,functions,prompt,osx,extra,exports}; do
 done
 unset file
 
+_wt() {
+  local cur prev
+  cur="${COMP_WORDS[COMP_CWORD]}"
+  prev="${COMP_WORDS[COMP_CWORD-1]}"
+
+  if [[ ${COMP_CWORD} -eq 1 ]]; then
+    COMPREPLY=( $(compgen -W 'add rm ls prune setup' -- "$cur") )
+    return 0
+  fi
+
+  if [[ "$prev" == 'rm' ]]; then
+    COMPREPLY=( $(compgen -W "$(wt_branches)" -- "$cur") )
+    return 0
+  fi
+}
+
+_git_wt() {
+  local cur
+  cur="${COMP_WORDS[COMP_CWORD]}"
+
+  if [[ ${COMP_CWORD} -eq 2 ]]; then
+    COMPREPLY=( $(compgen -W 'add rm ls prune' -- "$cur") )
+    return 0
+  fi
+
+  if [[ ${COMP_CWORD} -eq 3 && "${COMP_WORDS[2]}" == 'rm' ]]; then
+    COMPREPLY=( $(compgen -W "$(wt_branches)" -- "$cur") )
+    return 0
+  fi
+}
+
+complete -o default -F _wt wt
+
 # asdf
 [ -f $HOME/.asdf/asdf.sh ] && source "$HOME/.asdf/asdf.sh"
 [ -f $HOME/.asdf/completions/asdf.bsh ] && source "$HOME/.asdf/completions/asdf.bash"
