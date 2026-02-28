@@ -25,18 +25,31 @@
   ],
   "permission": {
     "*": "ask",
+    "edit": "allow",
     "glob": "allow",
     "grep": "allow",
     "list": "allow",
     "read": "allow",
-    "todoread": "allow",
-    "todowrite": "allow",
     "bash": {
+      "git *": "ask",
       "bin/rspec *": "allow",
+      "git branch --show-current": "allow",
       "git diff *": "allow",
+      "git grep *": "allow",
+      "git ls-files *": "allow",
       "git log *": "allow",
+      "git remote -v": "allow",
+      "git rev-parse *": "allow",
       "git show *": "allow",
-      "git status": "allow"
-    }
-  },
+      "git status *": "allow",
+      "command -v *": "allow",
+      "ls *": "allow",
+      "pwd": "allow",
+      "rm *": "ask",
+      "sudo *": "deny",
+      "which *": "allow"
+    },
+    "todoread": "allow",
+    "todowrite": "allow"
+  }
 }
