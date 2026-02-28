@@ -37,6 +37,8 @@ format = " [$duration]($style)"
 
 [directory]
 format = "[$path]($style) "
+truncation_length = 2
+truncate_to_repo = true
 
 [fill]
 symbol = ' '
