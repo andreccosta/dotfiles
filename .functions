@@ -7,31 +7,36 @@ mcd() {
   if [[ $# -eq 0 ]] ; then
     echo "usage: mcd <directory>"; return 1;
   else
-    mkdir -p -- "$1" && cd -P -- "$1" || exit;
+    mkdir -p -- "$1" && cd -P -- "$1" || return 1;
   fi
 }
 
 wake() {
-  if [[ ! -a ~/.wakehosts ]]; then
-    echo ".wakehosts file not found"; return 1;
+  local hosts_file="$HOME/.wakehosts"
+  local wanted="${1:-}"
+  local host mac
+
+  if [[ ! -f "$hosts_file" ]]; then
+    echo ".wakehosts file not found"
+    return 1
   fi
 
-  if [ -z "$1" ]; then
-    echo "no host provided"; return 1;
+  if [[ -z "$wanted" ]]; then
+    echo "no host provided"
+    return 1
   fi
 
-  declare -A hosts
+  while IFS='=' read -r host mac; do
+    [[ -z "$host" || "$host" == \#* ]] && continue
 
-  while read -r line; do
-    split=("${(s/=/)line}")
-    hosts[${split[1]}]=${split[2]}
-  done <~/.wakehosts
-  
-  if [ -z "${hosts[$1]}" ]; then
-    echo "unknown host"; return 1;
-  else
-    wakeonlan "${hosts[$1]}"
-  fi
+    if [[ "$host" == "$wanted" ]]; then
+      wakeonlan "$mac"
+      return $?
+    fi
+  done < "$hosts_file"
+
+  echo "unknown host"
+  return 1
 }
 
 wx() {
