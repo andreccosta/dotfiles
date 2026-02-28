@@ -1,4 +1,5 @@
 format = """\
+${custom.tmux}\
 $hostname\
 $directory\
 $git_branch\
@@ -27,7 +28,9 @@ threshold = 30
 style = 'bold yellow'
 
 [character]
-error_symbol = "[✖](bold red)"
+format = '$symbol '
+success_symbol = '[❯❯](bold green)'
+error_symbol = '[❯❯](bold red)'
 
 [cmd_duration]
 format = " [$duration]($style)"
@@ -52,3 +55,9 @@ staged = " "
 renamed = " "
 untracked = " "
 ignore_submodules = true
+
+[custom.tmux]
+when = 'test -n "$TMUX"'
+symbol = " "
+style = "bold blue"
+format = "[$symbol]($style) "
