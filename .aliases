@@ -10,18 +10,18 @@ alias ~='cd ~'
 alias c='clear'
 alias g='git'
 alias h='history'
-alias ll='ls -lpah'
+
+# navigation
+if type eza &>/dev/null; then
+  alias ls='eza -lh --group-directories-first --icons=auto'
+  alias ll='ls -a'
+else
+  alias ls='ls --color=auto'
+  alias ls='ls -lpah'
+fi
 
 # colors
-if ls --color=auto -d . >/dev/null 2>&1; then
-  alias ls='ls --color=auto'
-elif ls -G -d . >/dev/null 2>&1; then
-  alias ls='ls -G'
-fi
-
-if command printf 'x\n' | grep --color=auto -q x >/dev/null 2>&1; then
-  alias grep='grep --color=auto'
-fi
+alias grep='grep --color=auto'
 
 # curl
 alias curl='curl -#'
@@ -57,7 +57,6 @@ if type bundle &>/dev/null; then
 fi
 
 # rails
-alias rc='bin/rails c'
-
-# rg
-alias rg='rg -i'
+alias r='bin/rails'
+alias rc='r c'
+alias t='bin/rspec --no-profile --format progress'
