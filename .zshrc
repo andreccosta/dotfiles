@@ -5,8 +5,8 @@ mkdir -p "$_ZSH_CACHE_DIR"
 
 # history
 HISTFILE=~/.zsh_history
-HISTSIZE=10000000
-SAVEHIST=10000000
+HISTSIZE=500000
+SAVEHIST=500000
 
 setopt INC_APPEND_HISTORY
 setopt EXTENDED_HISTORY
@@ -124,42 +124,52 @@ _git-wt() {
 compdef _wt wt
 compdef _git-wt git-wt
 
-# Package manager plugins (Linux then macOS paths)
-# zsh-autosuggestions
-if [[ -r "/usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]]; then
-  source "/usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
-elif [[ -r "/usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh" ]]; then
-  source "/usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh"
-elif [[ -r "/opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]]; then
-  source "/opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
-fi
-
-# zsh-syntax-highlighting
-if [[ -r "/usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]]; then
-  source "/usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
-elif [[ -r "/usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]]; then
-  source "/usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
-elif [[ -r "/opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]]; then
-  source "/opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
-fi
-
 # pulumi
 [[ -d "$HOME/.pulumi/bin" ]] && export PATH="$PATH:$HOME/.pulumi/bin"
 
-# mise version manager
-if command -v mise > /dev/null 2>&1; then
-  eval "$(mise activate zsh)"
-fi
+# Defer heavy interactive features until first prompt for faster shell startup
+if [[ -o interactive ]]; then
+  _deferred_shell_init() {
+    # mise version manager
+    if command -v mise > /dev/null 2>&1; then
+      eval "$(mise activate zsh)"
+    fi
 
-# starship prompt
-if command -v starship > /dev/null 2>&1; then
-  eval "$(starship init zsh)"
-fi
+    # zoxide smart cd
+    if command -v zoxide > /dev/null 2>&1; then
+      eval "$(zoxide init zsh)"
+      alias cd='z'
+    fi
 
-# zoxide smart cd
-if command -v zoxide > /dev/null 2>&1; then
-  eval "$(zoxide init zsh)"
-  alias cd='z'
+    # starship prompt
+    if command -v starship > /dev/null 2>&1; then
+      eval "$(starship init zsh)"
+    fi
+
+    # Package manager plugins (Linux then macOS paths)
+    # zsh-autosuggestions
+    if [[ -r "/usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]]; then
+      source "/usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+    elif [[ -r "/usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh" ]]; then
+      source "/usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh"
+    elif [[ -r "/opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]]; then
+      source "/opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+    fi
+
+    # zsh-syntax-highlighting (load after other interactive setup)
+    if [[ -r "/usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]]; then
+      source "/usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+    elif [[ -r "/usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]]; then
+      source "/usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+    elif [[ -r "/opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]]; then
+      source "/opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+    fi
+
+    add-zsh-hook -d precmd _deferred_shell_init
+    unfunction _deferred_shell_init
+  }
+
+  add-zsh-hook precmd _deferred_shell_init
 fi
 
 # fzf integration with caching
