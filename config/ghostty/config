@@ -9,7 +9,7 @@ window-inherit-font-size = false
 macos-option-as-alt = true
 
 # theme
-theme = tokyonight
+theme = TokyoNight
 
 # default window size
 window-width = 120
@@ -20,3 +20,5 @@ auto-update-channel = tip
 
 # ssh
 shell-integration-features = sudo, ssh-terminfo
+
+config-file = ?~/.local/ghostty/config
