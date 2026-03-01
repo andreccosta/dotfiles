@@ -3,8 +3,5 @@
 # detect platform
 [ "$(uname)" != "Linux" ] && return
 
-# .local/bin
-export PATH="$PATH:$HOME/.local/bin"
-
 # alias clip for clipboard
 alias clip='xclip -sel clip'

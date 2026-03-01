@@ -34,13 +34,3 @@ alias clear='clear -x'
 alias clip='pbcopy'
 alias copy='pbcopy'
 alias paste='pbpaste'
-
-# homebrew
-if type brew &> /dev/null; then
-  eval "$(brew shellenv)"
-else
-  eval "$(/opt/homebrew/bin/brew shellenv)"
-fi
-
-# newer ncurses
-export PATH="$HOMEBREW_PREFIX/opt/ncurses/bin:$PATH"

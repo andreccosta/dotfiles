@@ -13,8 +13,15 @@ alias h='history'
 alias ll='ls -lpah'
 
 # colors
-alias ls='ls --color=auto'
-alias grep='grep --color=auto'
+if ls --color=auto -d . >/dev/null 2>&1; then
+  alias ls='ls --color=auto'
+elif ls -G -d . >/dev/null 2>&1; then
+  alias ls='ls -G'
+fi
+
+if command printf 'x\n' | grep --color=auto -q x >/dev/null 2>&1; then
+  alias grep='grep --color=auto'
+fi
 
 # curl
 alias curl='curl -#'

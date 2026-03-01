@@ -3,6 +3,34 @@ ZSH_DISABLE_COMPFIX=true
 _ZSH_CACHE_DIR="$HOME/.zsh_cache"
 mkdir -p "$_ZSH_CACHE_DIR"
 
+# interactive colors
+export CLICOLOR=1
+export LSCOLORS="exfxcxdxbxegedabagacad"
+
+# Use vivid for modern LS_COLORS themes - cached for performance
+if command -v vivid >/dev/null 2>&1; then
+  VIVID_CACHE="$HOME/.cache/ls_colors"
+  if [[ ! -f "$VIVID_CACHE" ]]; then
+    mkdir -p "$HOME/.cache"
+    vivid generate tokyonight-night > "$VIVID_CACHE"
+  fi
+  export LS_COLORS="$(<"$VIVID_CACHE")"
+fi
+
+# shared interactive shell files
+[[ -r ~/.aliases && -f ~/.aliases ]] && source ~/.aliases
+[[ -r ~/.functions && -f ~/.functions ]] && source ~/.functions
+[[ -r ~/.extra && -f ~/.extra ]] && source ~/.extra
+
+case "$OSTYPE" in
+  linux*)
+    [[ -r ~/.linux && -f ~/.linux ]] && source ~/.linux
+    ;;
+  darwin*)
+    [[ -r ~/.osx && -f ~/.osx ]] && source ~/.osx
+    ;;
+esac
+
 # history
 HISTFILE=~/.zsh_history
 HISTSIZE=500000
@@ -30,22 +58,23 @@ setopt NOTIFY # report background job status immediately
 # key bindings - optimized for speed
 typeset -g -A key
 
-# Only setup if terminfo is available
-if [[ -n "$terminfo" ]]; then
-  key[Home]="${terminfo[khome]}"
-  key[End]="${terminfo[kend]}"
-  key[Insert]="${terminfo[kich1]}"
-  key[Backspace]="${terminfo[kbs]}"
-  key[Delete]="${terminfo[kdch1]}"
-  key[Up]="${terminfo[kcuu1]}"
-  key[Down]="${terminfo[kcud1]}"
-  key[Left]="${terminfo[kcub1]}"
-  key[Right]="${terminfo[kcuf1]}"
-  key[PageUp]="${terminfo[kpp]}"
-  key[PageDown]="${terminfo[knp]}"
-  key[Shift-Tab]="${terminfo[kcbt]}"
+# Ensure terminfo is loaded before reading key capabilities.
+zmodload zsh/terminfo 2>/dev/null
 
-  # setup key accordingly
+if (( ${+terminfo} )); then
+  key[Home]="${terminfo[khome]:-}"
+  key[End]="${terminfo[kend]:-}"
+  key[Insert]="${terminfo[kich1]:-}"
+  key[Backspace]="${terminfo[kbs]:-}"
+  key[Delete]="${terminfo[kdch1]:-}"
+  key[Up]="${terminfo[kcuu1]:-}"
+  key[Down]="${terminfo[kcud1]:-}"
+  key[Left]="${terminfo[kcub1]:-}"
+  key[Right]="${terminfo[kcuf1]:-}"
+  key[PageUp]="${terminfo[kpp]:-}"
+  key[PageDown]="${terminfo[knp]:-}"
+  key[Shift-Tab]="${terminfo[kcbt]:-}"
+
   [[ -n "${key[Home]}"      ]] && bindkey -- "${key[Home]}"       beginning-of-line
   [[ -n "${key[End]}"       ]] && bindkey -- "${key[End]}"        end-of-line
   [[ -n "${key[Insert]}"    ]] && bindkey -- "${key[Insert]}"     overwrite-mode
@@ -59,6 +88,16 @@ if [[ -n "$terminfo" ]]; then
   [[ -n "${key[PageDown]}"  ]] && bindkey -- "${key[PageDown]}"   end-of-buffer-or-history
   [[ -n "${key[Shift-Tab]}" ]] && bindkey -- "${key[Shift-Tab]}"  reverse-menu-complete
 fi
+
+# Fallbacks for terminals that emit alternate Home/End sequences.
+bindkey -- $'\e[H' beginning-of-line
+bindkey -- $'\eOH' beginning-of-line
+bindkey -- $'\e[1~' beginning-of-line
+bindkey -- $'\e[7~' beginning-of-line
+bindkey -- $'\e[F' end-of-line
+bindkey -- $'\eOF' end-of-line
+bindkey -- $'\e[4~' end-of-line
+bindkey -- $'\e[8~' end-of-line
 
 # completion - optimized for speed
 autoload -Uz compinit add-zsh-hook
@@ -123,9 +162,6 @@ _git-wt() {
 
 compdef _wt wt
 compdef _git-wt git-wt
-
-# pulumi
-[[ -d "$HOME/.pulumi/bin" ]] && export PATH="$PATH:$HOME/.pulumi/bin"
 
 # Defer heavy interactive features until first prompt for faster shell startup
 if [[ -o interactive ]]; then
