@@ -12,8 +12,12 @@ export GOPATH="$HOME/code/go"
 [[ -d "$HOME/.cargo/bin" ]] && path=("$HOME/.cargo/bin" $path)
 
 if [[ "$OSTYPE" == darwin* ]]; then
+  if [[ -x /opt/homebrew/bin/brew ]]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+  elif [[ -x /usr/local/bin/brew ]]; then
+    eval "$(/usr/local/bin/brew shellenv)"
+  fi
   [[ -d "/opt/homebrew/opt/coreutils/libexec/gnubin" ]] && path=("/opt/homebrew/opt/coreutils/libexec/gnubin" $path)
-  [[ -d "/opt/homebrew/bin" ]] && path=("/opt/homebrew/bin" $path)
   [[ -d "/opt/homebrew/opt/ncurses/bin" ]] && path=("/opt/homebrew/opt/ncurses/bin" $path)
 fi
 
