@@ -163,25 +163,29 @@ _git-wt() {
 compdef _wt wt
 compdef _git-wt git-wt
 
-# Defer heavy interactive features until first prompt for faster shell startup
+# Eager interactive init — these register precmd/chpwd hooks that must be
+# active before the first prompt renders.
+if [[ -o interactive ]]; then
+  # mise version manager
+  if command -v mise > /dev/null 2>&1; then
+    eval "$(mise activate zsh)"
+  fi
+
+  # zoxide smart cd
+  if command -v zoxide > /dev/null 2>&1; then
+    eval "$(zoxide init zsh)"
+    alias cd='z'
+  fi
+
+  # starship prompt
+  if command -v starship > /dev/null 2>&1; then
+    eval "$(starship init zsh)"
+  fi
+fi
+
+# Defer heavier interactive plugins until first prompt for faster shell startup
 if [[ -o interactive ]]; then
   _deferred_shell_init() {
-    # mise version manager
-    if command -v mise > /dev/null 2>&1; then
-      eval "$(mise activate zsh)"
-    fi
-
-    # zoxide smart cd
-    if command -v zoxide > /dev/null 2>&1; then
-      eval "$(zoxide init zsh)"
-      alias cd='z'
-    fi
-
-    # starship prompt
-    if command -v starship > /dev/null 2>&1; then
-      eval "$(starship init zsh)"
-    fi
-
     # Package manager plugins (Linux then macOS paths)
     # zsh-autosuggestions
     if [[ -r "/usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]]; then
