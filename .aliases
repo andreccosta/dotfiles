@@ -17,7 +17,7 @@ if type eza &>/dev/null; then
   alias ll='ls -a'
 else
   alias ls='ls --color=auto'
-  alias ls='ls -lpah'
+  alias ll='ls -lpah'
 fi
 
 # colors
