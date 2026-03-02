@@ -82,9 +82,9 @@ wt() {
   case "${1:-}" in
     add)
       shift
-      local path
-      path="$(command git wt add "$@")" || return
-      cd "$path" || return
+      local wt_path
+      wt_path="$(command git wt add "$@")" || return
+      cd "$wt_path" || return
       ;;
     setup)
       if command -v bundle >/dev/null 2>&1; then
