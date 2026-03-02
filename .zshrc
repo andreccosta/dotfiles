@@ -132,9 +132,9 @@ _wt_complete() {
   fi
 
   if [[ "$with_setup" == "1" ]]; then
-    subcommands=(add rm ls prune setup)
+    subcommands=(add sw rm ls prune path setup)
   else
-    subcommands=(add rm ls prune)
+    subcommands=(add sw rm ls prune path)
   fi
 
   subcmd="${words[subcmd_index]:-}"
@@ -145,7 +145,7 @@ _wt_complete() {
     return
   fi
 
-  if [[ "$subcmd" == rm ]] && (( CURRENT >= arg_index )); then
+  if [[ "$subcmd" == rm || "$subcmd" == sw || "$subcmd" == switch || "$subcmd" == path ]] && (( CURRENT >= arg_index )); then
     branches=("${(@f)$(command git worktree list --porcelain 2>/dev/null | awk '$1 == "branch" { sub("^refs/heads/", "", $2); print $2 }')}")
     (( ${#branches[@]} > 0 )) && compadd -- "${branches[@]}"
     return

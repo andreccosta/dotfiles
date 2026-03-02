@@ -125,11 +125,11 @@ _wt() {
   prev="${COMP_WORDS[COMP_CWORD-1]}"
 
   if [[ ${COMP_CWORD} -eq 1 ]]; then
-    COMPREPLY=( $(compgen -W 'add rm ls prune setup' -- "$cur") )
+    COMPREPLY=( $(compgen -W 'add sw rm ls prune path setup' -- "$cur") )
     return 0
   fi
 
-  if [[ "$prev" == 'rm' ]]; then
+  if [[ "$prev" == 'rm' || "$prev" == 'sw' || "$prev" == 'switch' || "$prev" == 'path' ]]; then
     COMPREPLY=( $(compgen -W "$(wt_branches)" -- "$cur") )
     return 0
   fi
@@ -140,17 +140,18 @@ _git_wt() {
   cur="${COMP_WORDS[COMP_CWORD]}"
 
   if [[ ${COMP_CWORD} -eq 2 ]]; then
-    COMPREPLY=( $(compgen -W 'add rm ls prune' -- "$cur") )
+    COMPREPLY=( $(compgen -W 'add sw rm ls prune path' -- "$cur") )
     return 0
   fi
 
-  if [[ ${COMP_CWORD} -eq 3 && "${COMP_WORDS[2]}" == 'rm' ]]; then
+  if [[ ${COMP_CWORD} -eq 3 && ( "${COMP_WORDS[2]}" == 'rm' || "${COMP_WORDS[2]}" == 'sw' || "${COMP_WORDS[2]}" == 'switch' || "${COMP_WORDS[2]}" == 'path' ) ]]; then
     COMPREPLY=( $(compgen -W "$(wt_branches)" -- "$cur") )
     return 0
   fi
 }
 
 complete -o default -F _wt wt
+complete -o default -F _git_wt git-wt
 
 # asdf
 [ -f $HOME/.asdf/asdf.sh ] && source "$HOME/.asdf/asdf.sh"

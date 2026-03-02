@@ -21,6 +21,35 @@ worktree_path_for_branch() {
     '
 }
 
+worktree_branch_entries() {
+  git worktree list --porcelain \
+    | awk '
+      $1 == "worktree" { p = $2 }
+      $1 == "branch" {
+        b = $2
+        sub("^refs/heads/", "", b)
+        print b "\t" p
+      }
+    '
+}
+
+select_worktree_branch() {
+  local prompt="$1"
+  local current_branch selected
+
+  current_branch="$(git branch --show-current 2>/dev/null || true)"
+
+  selected="$(worktree_branch_entries \
+    | awk -F '\t' -v current="$current_branch" '{
+        marker = ($1 == current ? "*" : " ")
+        printf "%s\t%s\t%s\n", marker, $1, $2
+      }' \
+    | fzf --prompt="$prompt" --delimiter=$'\t' --with-nth=1,2,3)" || return 1
+
+  [ -n "$selected" ] || return 1
+  printf '%s\n' "$selected" | cut -f2
+}
+
 cmd_add() {
   local branch="${1:-}"
   local default_branch
@@ -77,11 +106,7 @@ cmd_rm() {
   # interactive selection when no branch given
   if [ -z "$branch" ]; then
     command -v fzf >/dev/null || die "usage: git wt rm <branch> (install fzf for interactive selection)"
-    branch="$(git worktree list --porcelain \
-      | grep '^branch ' \
-      | sed 's#^branch refs/heads/##' \
-      | fzf --prompt='remove worktree> ')" \
-      || return 0
+    branch="$(select_worktree_branch 'remove worktree> ')" || return 0
   fi
 
   [ -n "$branch" ] || return 0
@@ -101,10 +126,34 @@ cmd_prune() {
   git worktree prune -v
 }
 
+cmd_path() {
+  local branch="${1:-}"
+  [ -n "$branch" ] || die "usage: git wt path <branch>"
+
+  local path
+  path="$(worktree_path_for_branch "$branch")"
+  [ -n "$path" ] || die "no worktree found for branch '$branch'"
+  echo "$path"
+}
+
+cmd_sw() {
+  local branch="${1:-}"
+
+  if [ -z "$branch" ]; then
+    command -v fzf >/dev/null || die "usage: git wt sw <branch> (install fzf for interactive selection)"
+    branch="$(select_worktree_branch 'switch worktree> ')" || return 0
+  fi
+
+  [ -n "$branch" ] || return 0
+  cmd_path "$branch"
+}
+
 case "${1:-}" in
   add)   shift; cmd_add "$@" ;;
+  sw|switch) shift; cmd_sw "$@" ;;
   rm)    shift; cmd_rm "$@" ;;
   ls)    shift; cmd_ls ;;
   prune) shift; cmd_prune ;;
-  *)     die "usage: git wt {add|rm|ls|prune}" ;;
+  path)  shift; cmd_path "$@" ;;
+  *)     die "usage: git wt {add|sw|rm|ls|prune|path}" ;;
 esac

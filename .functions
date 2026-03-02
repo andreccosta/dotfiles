@@ -82,8 +82,17 @@ wt() {
   case "${1:-}" in
     add)
       shift
+      local branch
       local wt_path
-      wt_path="$(command git wt add "$@")" || return
+      branch="${1:-}"
+      command git wt add "$@" || return
+      wt_path="$(command git wt path "$branch")" || return
+      cd "$wt_path" || return
+      ;;
+    sw|switch)
+      shift
+      local wt_path
+      wt_path="$(command git wt sw "$@")" || return
       cd "$wt_path" || return
       ;;
     setup)
@@ -95,11 +104,11 @@ wt() {
         pnpm install
       fi
       ;;
-    rm|ls|prune)
+    rm|ls|prune|path)
       command git wt "$@"
       ;;
     *)
-      echo "usage: wt {add|rm|ls|prune|setup}"
+      echo "usage: wt {add|sw|rm|ls|prune|path|setup}"
       return 1
       ;;
   esac
