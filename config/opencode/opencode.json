@@ -32,6 +32,7 @@
     "bash": {
       "git *": "ask",
       "bin/rspec *": "allow",
+      "bin/standardrb *": "allow",
       "git branch --show-current": "allow",
       "git diff *": "allow",
       "git grep *": "allow",
@@ -42,8 +43,10 @@
       "git show *": "allow",
       "git status *": "allow",
       "command -v *": "allow",
+      "find *": "allow",
       "ls *": "allow",
       "pwd": "allow",
+      "rg *": "allow",
       "rm *": "ask",
       "sudo *": "deny",
       "which *": "allow"
