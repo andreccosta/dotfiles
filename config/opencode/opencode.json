@@ -32,6 +32,7 @@
     "list": "allow",
     "read": "allow",
     "task": "allow",
+    "skill": "allow",
     "bash": {
       "git *": "ask",
       "bin/rspec *": "allow",
