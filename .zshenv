@@ -15,6 +15,3 @@ export PATH
 
 # optional local exports
 [[ -r ~/.exports && -f ~/.exports ]] && source ~/.exports
-
-# cargo
-[[ -r ~/.cargo/env ]] && source ~/.cargo/env

@@ -102,12 +102,19 @@ bindkey -- $'\e[8~' end-of-line
 autoload -Uz compinit add-zsh-hook
 ZCD=~/.zcompdump
 
-# Fast completion: only regenerate if missing
+# Fast completion: refresh periodically so new completions are discovered.
+zmodload -F zsh/stat b:zstat 2>/dev/null
+
 if [[ ! -f $ZCD ]]; then
   compinit
-  zcompile $ZCD
-else
+elif zmodload -e zsh/stat && zstat -H zcd_stat -- "$ZCD" 2>/dev/null && (( EPOCHSECONDS - zcd_stat[mtime] < 86400 )); then
   compinit -C
+else
+  compinit
+fi
+
+if [[ -f $ZCD && ( ! -f ${ZCD}.zwc || $ZCD -nt ${ZCD}.zwc ) ]]; then
+  zcompile "$ZCD"
 fi
 
 # Minimal completion styles for performance
@@ -172,8 +179,7 @@ if [[ -o interactive ]]; then
 
   # zoxide smart cd
   if command -v zoxide > /dev/null 2>&1; then
-    eval "$(zoxide init zsh)"
-    alias cd='z'
+    eval "$(zoxide init zsh --cmd cd)"
   fi
 
   # starship prompt
@@ -211,9 +217,7 @@ if [[ -o interactive ]]; then
   add-zsh-hook precmd _deferred_shell_init
 fi
 
-# fzf integration with caching
-FZF_ZSH_CACHE="$HOME/.cache/fzf-zsh"
-if [[ ! -f "$FZF_ZSH_CACHE" ]] && command -v fzf > /dev/null 2>&1; then
-  fzf --zsh > "$FZF_ZSH_CACHE"
+# fzf integration
+if [[ -o interactive && -t 0 ]] && command -v fzf > /dev/null 2>&1; then
+  eval "$(fzf --zsh)"
 fi
-[[ -r "$FZF_ZSH_CACHE" ]] && source "$FZF_ZSH_CACHE"
