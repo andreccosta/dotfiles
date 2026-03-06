@@ -1,6 +1,9 @@
 {
+  "edit_predictions": {
+    "provider": "copilot"
+  },
   "base_keymap": "VSCode",
-  "theme": "Tokyo Night Storm",
+  "theme": "Tokyo Night",
   "buffer_font_family": "JetBrainsMono Nerd Font",
   "buffer_font_size": 13,
   "ui_font_family": "JetBrainsMono Nerd Font",
@@ -133,7 +136,6 @@
   },
   "language_models": {
     "anthropic": {
-      "version": "1"
     }
   },
   "agent": {
@@ -141,12 +143,10 @@
       "provider": "anthropic",
       "model": "claude-3-5-sonnet-latest"
     },
-    "version": "2",
     "enable_experimental_live_diffs": true
   },
   "features": {
-    "copilot": true,
-    "edit_prediction_provider": "copilot"
+    "copilot": true
   },
   "git": {
     "git_gutter": "tracked_files",
