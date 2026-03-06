@@ -39,10 +39,9 @@ SAVEHIST=500000
 setopt INC_APPEND_HISTORY
 setopt EXTENDED_HISTORY
 setopt HIST_EXPIRE_DUPS_FIRST
-setopt HIST_IGNORE_ALL_DUPS
+setopt HIST_IGNORE_DUPS
 setopt HIST_FIND_NO_DUPS
 setopt HIST_IGNORE_SPACE # ignore history for commands starting with space
-setopt HIST_SAVE_NO_DUPS
 setopt HIST_FCNTL_LOCK # safer history file locking across concurrent shells
 unsetopt SHARE_HISTORY # keep history navigation session-local
 
