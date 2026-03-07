@@ -11,6 +11,177 @@ repo_root() {
   git rev-parse --show-toplevel 2>/dev/null || die "not in a git repo"
 }
 
+trim() {
+  printf '%s\n' "$1" | sed -E 's/^[[:space:]]+//; s/[[:space:]]+$//'
+}
+
+is_blank_or_comment_line() {
+  local line="$1"
+
+  [[ "$line" =~ ^[[:space:]]*($|#) ]]
+}
+
+strip_wrapping_quotes() {
+  local value="$1"
+
+  if [ "${value#\"}" != "$value" ] && [ "${value%\"}" != "$value" ]; then
+    value="${value#\"}"
+    value="${value%\"}"
+  elif [ "${value#\'}" != "$value" ] && [ "${value%\'}" != "$value" ]; then
+    value="${value#\'}"
+    value="${value%\'}"
+  fi
+
+  printf '%s\n' "$value"
+}
+
+has_wrapping_quotes() {
+  local value="$1"
+
+  if [ "${value#\"}" != "$value" ] && [ "${value%\"}" != "$value" ]; then
+    return 0
+  fi
+
+  if [ "${value#\'}" != "$value" ] && [ "${value%\'}" != "$value" ]; then
+    return 0
+  fi
+
+  return 1
+}
+
+short_branch_name() {
+  local branch="$1"
+  local short_branch
+
+  short_branch="$(printf '%s\n' "$branch" \
+    | tr '[:upper:]' '[:lower:]' \
+    | sed -E 's#[^a-z0-9]+#_#g; s/^_+//; s/_+$//; s/_+/_/g' \
+    | cut -c1-8 \
+    | sed -E 's/^_+//; s/_+$//')"
+
+  [ -n "$short_branch" ] || short_branch="wt"
+  printf '%s\n' "$short_branch"
+}
+
+database_suffix_for_branch() {
+  local branch="$1"
+
+  printf '%s_%s\n' "$(short_branch_name "$branch")" "$(openssl rand -hex 3)"
+}
+
+env_file_value() {
+  local env_file="$1"
+  local env_name="$2"
+  local line value
+
+  [ -f "$env_file" ] || return 0
+
+  while IFS= read -r line; do
+    is_blank_or_comment_line "$line" && continue
+
+    if [[ "$line" =~ ^[[:space:]]*(export[[:space:]]+)?${env_name}[[:space:]]*= ]]; then
+      value="${line#*=}"
+      value="$(trim "$value")"
+
+      if ! has_wrapping_quotes "$value"; then
+        value="$(printf '%s\n' "$value" | sed -E 's/[[:space:]]+#.*$//')"
+        value="$(trim "$value")"
+      fi
+
+      strip_wrapping_quotes "$value"
+      return 0
+    fi
+  done < "$env_file"
+}
+
+database_config_entries() {
+  local config_file="$1"
+  local line inner env_name default_value
+
+  [ -f "$config_file" ] || return 0
+
+  while IFS= read -r line; do
+    is_blank_or_comment_line "$line" && continue
+
+    case "$line" in
+      *database:*ENV.fetch\(*)
+        ;;
+      *)
+        continue
+        ;;
+    esac
+
+    inner="${line#*ENV.fetch(}"
+    inner="${inner%%)*}"
+
+    env_name="${inner%%,*}"
+    default_value=""
+    if [ "$inner" != "$env_name" ]; then
+      default_value="${inner#*,}"
+    fi
+
+    env_name="$(strip_wrapping_quotes "$(trim "$env_name")")"
+    default_value="$(strip_wrapping_quotes "$(trim "$default_value")")"
+
+    [ -n "$env_name" ] && printf '%s\t%s\n' "$env_name" "$default_value"
+  done < "$config_file"
+}
+
+database_base_value() {
+  local env_file="$1"
+  local env_name="$2"
+  local default_value="$3"
+  local base_value
+
+  base_value="$(env_file_value "$env_file" "$env_name")"
+  if [ -n "$base_value" ]; then
+    printf '%s\n' "$base_value"
+    return 0
+  fi
+
+  printf '%s\n' "$default_value"
+}
+
+append_database_overrides() {
+  local root="$1"
+  local path="$2"
+  local branch="$3"
+  local config_file="$root/config/database.yml"
+  local env_file="$root/.env.development"
+  local env_local_file="$path/.env.local"
+  local db_suffix wrote_header env_name default_value base_value seen_env_names
+
+  [ -f "$config_file" ] || return 0
+
+  db_suffix="$(database_suffix_for_branch "$branch")"
+  wrote_header=0
+  seen_env_names=$'\n'
+
+  while IFS=$'\t' read -r env_name default_value; do
+    [ -n "$env_name" ] || continue
+
+    base_value="$(database_base_value "$env_file" "$env_name" "$default_value")"
+    [ -n "$base_value" ] || continue
+
+    case "$seen_env_names" in
+      *$'\n'"$env_name"$'\n'*)
+        continue
+        ;;
+    esac
+    seen_env_names+="$env_name"$'\n'
+
+    if [ "$wrote_header" -eq 0 ]; then
+      if [ -f "$env_local_file" ] && [ -s "$env_local_file" ]; then
+        printf '\n' >> "$env_local_file"
+      fi
+      printf '# database overrides\n' >> "$env_local_file"
+      wrote_header=1
+    fi
+
+    printf '%s=%s_%s\n' "$env_name" "$base_value" "$db_suffix" >> "$env_local_file"
+  done < <(database_config_entries "$config_file")
+}
+
 worktree_path_for_branch() {
   local branch="$1"
 
@@ -78,23 +249,12 @@ cmd_add() {
 
   # copy over dev files (ignore if they don't exist)
   for f in certs .env.local; do
-    if [ -e "$f" ]; then
-      cp -rn "$f" "$path/"
+    if [ -e "$root/$f" ]; then
+      cp -rn "$root/$f" "$path/"
     fi
   done
 
-  # add branch suffix to db names
-  if [ -f .env.development ]; then
-    local db_suffix
-    db_suffix="$(echo "$branch" \
-      | sed -E 's#[^a-z0-9]+#_#g' \
-      | cut -c1-20)_$(openssl rand -hex 3)"
-
-    grep -E '^[A-Za-z0-9_]*_DATABASE_NAME=' .env.development \
-      | sed -E "s/=(.*)$/=\1_${db_suffix}/" \
-      >> "$path/.env.local" \
-      || true
-  fi
+  append_database_overrides "$root" "$path" "$branch"
 
   echo "$path"
 }
