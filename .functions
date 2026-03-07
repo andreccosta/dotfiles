@@ -103,8 +103,41 @@ wt() {
       if command -v pnpm >/dev/null 2>&1; then
         pnpm install
       fi
+
+      if [[ -x bin/rails ]]; then
+        bin/rails db:create
+      fi
       ;;
-    rm|ls|prune|path)
+    rm)
+      shift
+      local branch
+      local wt_path
+
+      branch="${1:-}"
+
+      if [[ -z "$branch" ]]; then
+        command -v fzf >/dev/null 2>&1 || {
+          command git wt rm
+          return
+        }
+
+        branch="$(wt_branches | fzf --prompt='remove worktree> ')" || return
+      fi
+
+      [[ -n "$branch" ]] || return
+
+      wt_path="$(command git wt path "$branch")" || return
+
+      if [[ -x "$wt_path/bin/rails" ]]; then
+        (
+          cd "$wt_path" || exit 1
+          bin/rails db:drop
+        ) || return
+      fi
+
+      command git wt rm "$branch"
+      ;;
+    ls|prune|path)
       command git wt "$@"
       ;;
     *)
