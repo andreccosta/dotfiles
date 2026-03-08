@@ -122,52 +122,6 @@ zstyle ':completion:*' menu select
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
 zstyle ':completion:*' use-cache on
 zstyle ':completion:*' cache-path "$_ZSH_CACHE_DIR/zcompcache"
-zstyle ':completion:*:*:git:*' user-commands wt:'manage git worktrees'
-
-_wt_complete() {
-  local with_setup="$1"
-  local subcmd_index=1
-  local arg_index
-  local subcmd
-  local -a subcommands branches
-
-  if (( ${words[(I)wt]} > 0 )); then
-    subcmd_index=$(( ${words[(I)wt]} + 1 ))
-  elif [[ ${words[1]:-} == wt || ${words[1]:-} == git-wt || ${words[1]:-} == git ]]; then
-    subcmd_index=2
-  fi
-
-  if [[ "$with_setup" == "1" ]]; then
-    subcommands=(add sw rm ls prune path setup)
-  else
-    subcommands=(add sw rm ls prune path)
-  fi
-
-  subcmd="${words[subcmd_index]:-}"
-  arg_index=$((subcmd_index + 1))
-
-  if (( CURRENT == subcmd_index )); then
-    compadd -- "${subcommands[@]}"
-    return
-  fi
-
-  if [[ "$subcmd" == rm || "$subcmd" == sw || "$subcmd" == switch || "$subcmd" == path ]] && (( CURRENT >= arg_index )); then
-    branches=("${(@f)$(command git worktree list --porcelain 2>/dev/null | awk '$1 == "branch" { sub("^refs/heads/", "", $2); print $2 }')}")
-    (( ${#branches[@]} > 0 )) && compadd -- "${branches[@]}"
-    return
-  fi
-}
-
-_wt() {
-  _wt_complete 1
-}
-
-_git-wt() {
-  _wt_complete 0
-}
-
-compdef _wt wt
-compdef _git-wt git-wt
 
 # Eager interactive init — these register precmd/chpwd hooks that must be
 # active before the first prompt renders.
@@ -186,10 +140,13 @@ if [[ -o interactive ]]; then
   if command -v starship > /dev/null 2>&1; then
     eval "$(starship init zsh)"
   fi
-fi
 
-# Defer heavier interactive plugins until first prompt for faster shell startup
-if [[ -o interactive ]]; then
+  # worktrunk
+  if command -v wt >/dev/null 2>&1; then
+    eval "$(command wt config shell init zsh)"
+  fi
+
+  # Defer heavier interactive plugins until first prompt for faster shell startup
   _deferred_shell_init() {
     # Package manager plugins (Linux then macOS paths)
     # zsh-autosuggestions
