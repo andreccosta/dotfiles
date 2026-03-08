@@ -56,7 +56,5 @@ if type bundle &>/dev/null; then
   alias bx='bundler exec'
 fi
 
-# rails
-alias r='bin/rails'
-alias rc='r c'
-alias t='bin/rspec --no-profile --format progress'
+# z
+alias z='cd'
