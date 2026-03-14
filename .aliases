@@ -10,6 +10,8 @@ alias ~='cd ~'
 alias c='clear'
 alias g='git'
 alias h='history'
+alias t='tmux'
+alias z='cd'
 
 # navigation
 if type eza &>/dev/null; then
@@ -56,5 +58,4 @@ if type bundle &>/dev/null; then
   alias bx='bundler exec'
 fi
 
-# z
-alias z='cd'
+
