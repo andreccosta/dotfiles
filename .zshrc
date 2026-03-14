@@ -146,32 +146,22 @@ if [[ -o interactive ]]; then
     eval "$(command wt config shell init zsh)"
   fi
 
-  # Defer heavier interactive plugins until first prompt for faster shell startup
-  _deferred_shell_init() {
-    # Package manager plugins (Linux then macOS paths)
-    # zsh-autosuggestions
-    if [[ -r "/usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]]; then
-      source "/usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
-    elif [[ -r "/usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh" ]]; then
-      source "/usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh"
-    elif [[ -r "/opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]]; then
-      source "/opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
-    fi
+  # Interactive plugins
+  if [[ -r "/usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]]; then
+    source "/usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+  elif [[ -r "/usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh" ]]; then
+    source "/usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh"
+  elif [[ -r "/opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]]; then
+    source "/opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+  fi
 
-    # zsh-syntax-highlighting (load after other interactive setup)
-    if [[ -r "/usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]]; then
-      source "/usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
-    elif [[ -r "/usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]]; then
-      source "/usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
-    elif [[ -r "/opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]]; then
-      source "/opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
-    fi
-
-    add-zsh-hook -d precmd _deferred_shell_init
-    unfunction _deferred_shell_init
-  }
-
-  add-zsh-hook precmd _deferred_shell_init
+  if [[ -r "/usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]]; then
+    source "/usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+  elif [[ -r "/usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]]; then
+    source "/usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+  elif [[ -r "/opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]]; then
+    source "/opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+  fi
 fi
 
 # fzf integration
