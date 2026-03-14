@@ -106,11 +106,11 @@ ZCD="$_ZSH_CACHE_DIR/.zcompdump"
 zmodload -F zsh/stat b:zstat 2>/dev/null
 
 if [[ ! -f $ZCD ]]; then
-  compinit
+  compinit -d "$ZCD"
 elif zmodload -e zsh/stat && zstat -H zcd_stat -- "$ZCD" 2>/dev/null && (( EPOCHSECONDS - zcd_stat[mtime] < 86400 )); then
-  compinit -C
+  compinit -C -d "$ZCD"
 else
-  compinit
+  compinit -d "$ZCD"
 fi
 
 if [[ -f $ZCD && ( ! -f ${ZCD}.zwc || $ZCD -nt ${ZCD}.zwc ) ]]; then
