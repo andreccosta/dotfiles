@@ -100,7 +100,7 @@ bindkey -- $'\e[8~' end-of-line
 
 # completion - optimized for speed
 autoload -Uz compinit add-zsh-hook
-ZCD=~/.zcompdump
+ZCD="$_ZSH_CACHE_DIR/.zcompdump"
 
 # Fast completion: refresh periodically so new completions are discovered.
 zmodload -F zsh/stat b:zstat 2>/dev/null
@@ -126,6 +126,19 @@ zstyle ':completion:*' cache-path "$_ZSH_CACHE_DIR/zcompcache"
 # Eager interactive init — these register precmd/chpwd hooks that must be
 # active before the first prompt renders.
 if [[ -o interactive ]]; then
+  _source_first_readable() {
+    local file
+
+    for file in "$@"; do
+      if [[ -r "$file" ]]; then
+        source "$file"
+        return 0
+      fi
+    done
+
+    return 1
+  }
+
   # mise version manager
   if command -v mise > /dev/null 2>&1; then
     eval "$(mise activate zsh)"
@@ -147,21 +160,17 @@ if [[ -o interactive ]]; then
   fi
 
   # Interactive plugins
-  if [[ -r "/usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]]; then
-    source "/usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
-  elif [[ -r "/usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh" ]]; then
-    source "/usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh"
-  elif [[ -r "/opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]]; then
-    source "/opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
-  fi
+  _source_first_readable \
+    "/usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh" \
+    "/usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh" \
+    "/opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
 
-  if [[ -r "/usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]]; then
-    source "/usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
-  elif [[ -r "/usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]]; then
-    source "/usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
-  elif [[ -r "/opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]]; then
-    source "/opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
-  fi
+  _source_first_readable \
+    "/usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" \
+    "/usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" \
+    "/opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+
+  unfunction _source_first_readable
 fi
 
 # fzf integration
