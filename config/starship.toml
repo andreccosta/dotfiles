@@ -62,4 +62,4 @@ ignore_submodules = true
 when = 'test -n "$TMUX"'
 symbol = " "
 style = "bold blue"
-format = "[$symbol]($style) "
+format = " [$symbol]($style)"
