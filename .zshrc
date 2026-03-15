@@ -17,17 +17,20 @@ if command -v vivid >/dev/null 2>&1; then
   export LS_COLORS="$(<"$VIVID_CACHE")"
 fi
 
+# interactive editing
+WORDCHARS=${WORDCHARS/\/}
+
 # shared interactive shell files
-[[ -r ~/.aliases && -f ~/.aliases ]] && source ~/.aliases
-[[ -r ~/.functions && -f ~/.functions ]] && source ~/.functions
-[[ -r ~/.extra && -f ~/.extra ]] && source ~/.extra
+[[ -r ~/.aliases ]] && source ~/.aliases
+[[ -r ~/.functions ]] && source ~/.functions
+[[ -r ~/.extra ]] && source ~/.extra
 
 case "$OSTYPE" in
   linux*)
-    [[ -r ~/.linux && -f ~/.linux ]] && source ~/.linux
+    [[ -r ~/.linux ]] && source ~/.linux
     ;;
   darwin*)
-    [[ -r ~/.osx && -f ~/.osx ]] && source ~/.osx
+    [[ -r ~/.osx ]] && source ~/.osx
     ;;
 esac
 
