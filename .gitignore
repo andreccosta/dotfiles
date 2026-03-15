@@ -5,3 +5,7 @@
 
 # extra local aliases/functions
 .extra
+
+# slop generators
+.agent
+.pi
