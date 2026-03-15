@@ -1,5 +1,4 @@
 # performance optimizations
-ZSH_DISABLE_COMPFIX=true
 _ZSH_CACHE_DIR="$HOME/.zsh_cache"
 mkdir -p "$_ZSH_CACHE_DIR"
 

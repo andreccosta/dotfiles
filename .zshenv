@@ -14,4 +14,4 @@ export GOPATH="$HOME/code/go"
 export PATH
 
 # optional local exports
-[[ -r ~/.exports && -f ~/.exports ]] && source ~/.exports
+[[ -r ~/.exports ]] && source ~/.exports
