@@ -24,5 +24,6 @@ shell-integration-features = sudo, ssh-terminfo
 # Ensure zsh receives common Home/End CSI sequences.
 keybind = home=csi:H
 keybind = end=csi:F
+keybind = shift+enter=text:\n
 
 config-file = ?~/.local/ghostty/config
