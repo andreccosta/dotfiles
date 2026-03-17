@@ -2,7 +2,6 @@
 
 # shellcheck disable=SC2034,SC2296
 
-# utils
 mcd() {
   if [[ $# -eq 0 ]] ; then
     echo "usage: mcd <directory>"; return 1;
@@ -68,7 +67,7 @@ wx() {
   esac
 }
 
-until_fail () {
+until_fail() {
   "$@"
   local exit_status="$?"
   while [ $exit_status -eq "0" ]
@@ -76,4 +75,15 @@ until_fail () {
     "$@"
     exit_status="$?"
   done
+}
+
+tm() {
+  name=$(basename "$PWD")
+
+  # if inside a git repo, use repo root name instead
+  if git_root=$(git rev-parse --show-toplevel 2>/dev/null); then
+    name=$(basename "$git_root")
+  fi
+
+  tmux new-session -A -s "$name"
 }
