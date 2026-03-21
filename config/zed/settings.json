@@ -1,6 +1,6 @@
 {
   "edit_predictions": {
-    "provider": "copilot"
+    "provider": "copilot",
   },
   "base_keymap": "VSCode",
   "theme": "Tokyo Night",
@@ -11,19 +11,10 @@
   "terminal": {
     "dock": "right",
     "font_family": "JetBrainsMono Nerd Font",
-    "font_size": 13
+    "font_size": 13,
   },
   "ensure_final_newline_on_save": true,
-  "language_overrides": {
-    "Ruby": {
-      "format_on_save": "on",
-      "language_servers": ["ruby-lsp", "!solargraph"]
-    }
-  },
   "remove_trailing_whitespace_on_save": true,
-  "semantic_index": {
-    "enabled": true
-  },
   "show_edit_predictions": false,
   "show_completions_on_input": true,
   "show_completion_documentation": true,
@@ -32,11 +23,11 @@
     "enabled": true,
     "show_type_hints": true,
     "show_parameter_hints": true,
-    "show_other_hints": true
+    "show_other_hints": true,
   },
   "tab_bar": {
     "show_nav_history_buttons": false,
-    "show": true
+    "show": true,
   },
   "auto_install_extensions": {
     "cue": true,
@@ -64,7 +55,7 @@
     "typst": true,
     "xml": true,
     "zedokai": true,
-    "zig": true
+    "zig": true,
   },
   "lsp": {
     "ruby-lsp": {
@@ -89,70 +80,84 @@
           "semanticHighlighting": true,
           "signatureHelp": true,
           "typeHierarchy": true,
-          "workspaceSymbol": true
+          "workspaceSymbol": true,
         },
         "featuresConfiguration": {
           "inlayHint": {
             "implicitHashValue": true,
-            "implicitRescue": true
-          }
+            "implicitRescue": true,
+          },
         },
         "indexing": {
           "excludedPatterns": ["**/spec/**/*.rb"],
-          "excludedGems": []
-        }
-      }
-    }
+          "excludedGems": [],
+        },
+      },
+    },
   },
   "languages": {
     "Ruby": {
       "show_edit_predictions": true,
       "format_on_save": "on",
-      "language_servers": ["ruby-lsp", "!solargraph", "!rubocop", "..."]
+      "language_servers": [
+        "ruby-lsp",
+        "!kanayago",
+        "!steep",
+        "!sorbet",
+        "!solargraph",
+        "!rubocop",
+        "...",
+      ],
     },
     "TypeScript": {
       "language_servers": [
         "!typescript-language-server",
         "!eslint",
+        "tsgo",
         "vtsls",
-        "..."
-      ]
+        "...",
+      ],
     },
     "JavaScript": {
       "language_servers": [
         "!typescript-language-server",
         "!eslint",
+        "tsgo",
         "vtsls",
-        "..."
-      ]
-    }
+        "...",
+      ],
+    },
   },
   "telemetry": {
     "diagnostics": false,
-    "metrics": false
+    "metrics": false,
   },
   "preview_tabs": {
-    "enabled": false
+    "enabled": false,
   },
   "language_models": {
-    "anthropic": {
-    }
+    "anthropic": {},
   },
   "agent": {
-    "default_model": {
-      "provider": "anthropic",
-      "model": "claude-3-5-sonnet-latest"
+    "tool_permissions": {
+      "default": "allow",
     },
-    "enable_experimental_live_diffs": true
-  },
-  "features": {
-    "copilot": true
+    "inline_assistant_model": {
+      "provider": "openai",
+      "model": "gpt-5.4",
+      "effort": "xhigh",
+    },
+    "default_model": {
+      "provider": "openai",
+      "model": "gpt-5.4",
+      "effort": "xhigh",
+    },
   },
   "git": {
     "git_gutter": "tracked_files",
     "inline_blame": {
       "enabled": true,
-      "show_commit_summary": true
-    }
-  }
+      "show_commit_summary": true,
+    },
+  },
 }
