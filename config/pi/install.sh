@@ -15,3 +15,4 @@ if [ -e "$LINK_PATH" ] && [ ! -L "$LINK_PATH" ]; then
 fi
 
 ln -snf "$SOURCE_DIR" "$LINK_PATH"
+ln -snf "$SCRIPT_DIR/agent/AGENTS.md" "$TARGET_DIR"

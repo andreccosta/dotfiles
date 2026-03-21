@@ -1,0 +1,19 @@
+{
+  "name": "pi",
+  "type": "module",
+  "private": true,
+  "pi": {
+    "extensions": [
+      "./extensions"
+    ]
+  },
+  "dependencies": {
+    "diff": "^8.0.2",
+    "@mariozechner/pi-coding-agent": "*",
+    "@mariozechner/pi-ai": "*",
+    "@mariozechner/pi-tui": "*"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}
