@@ -1,16 +1,18 @@
 [tools]
 go = "latest"
 node = "lts"
+pnpm = "latest"
 python = "prefix:3.14"
 ruby = "latest"
 rust = "latest"
 zig = "latest"
 
 [settings]
+env_shell_expand = true
 idiomatic_version_file_enable_tools = ["ruby"]
 
 [settings.ruby]
 compile = true
 
 [env]
-RUBY_CONFIGURE_OPTS = "--with-gmp --with-jemalloc"
+RUBY_CONFIGURE_OPTS = "--with-gmp --with-jemalloc --disable-install-doc"
