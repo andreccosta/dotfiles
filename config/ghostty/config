@@ -16,7 +16,7 @@ window-width = 120
 window-height = 30
 
 # update channel
-auto-update-channel = tip
+auto-update-channel = stable
 
 # ssh
 shell-integration-features = sudo, ssh-terminfo
