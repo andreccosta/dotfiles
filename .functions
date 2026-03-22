@@ -93,3 +93,22 @@ tm() {
   fi
 }
 
+zombies() {
+  ps -eo pid,ppid,stat,command | awk '
+    NR == 1 { next }
+
+    $3 ~ /^Z/ {
+      found = 1
+      print
+      if (!seen[$2]++) {
+        system("ps -p " $2 " -o pid= -o command=")
+      }
+    }
+
+    END {
+      if (!found) {
+        print "No zombie processes found."
+      }
+    }
+  '
+}
