@@ -14,5 +14,8 @@ idiomatic_version_file_enable_tools = ["ruby"]
 [settings.ruby]
 compile = true
 
+[settings.npm]
+package_manager = "pnpm"
+
 [env]
 RUBY_CONFIGURE_OPTS = "--with-gmp --with-jemalloc --disable-install-doc"
