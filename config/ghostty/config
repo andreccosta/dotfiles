@@ -22,9 +22,10 @@ auto-update-channel = stable
 # ssh
 shell-integration-features = sudo, ssh-terminfo
 
-# Ensure zsh receives common Home/End CSI sequences.
+# binds
 keybind = home=csi:H
 keybind = end=csi:F
 keybind = shift+enter=text:\n
+keybind = cmd+enter=unbind
 
 config-file = ?~/.local/ghostty/config
