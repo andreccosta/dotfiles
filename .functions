@@ -78,12 +78,18 @@ until_fail() {
 }
 
 tm() {
+  local name
   name=$(basename "$PWD")
 
-  # if inside a git repo, use repo root name instead
+  local git_root
   if git_root=$(git rev-parse --show-toplevel 2>/dev/null); then
     name=$(basename "$git_root")
   fi
 
-  tmux new-session -A -s "$name"
+  if [ "$#" -gt 0 ]; then
+    tmux new-session -A -s "$name" "$@"
+  else
+    tmux new-session -A -s "$name"
+  fi
 }
+
