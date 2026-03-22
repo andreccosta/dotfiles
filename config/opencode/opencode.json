@@ -21,9 +21,6 @@
       "extensions": [".rb", ".rake", ".gemspec"]
     }
   },
-  "instructions": [
-    "AGENTS.md"
-  ],
   "permission": {
     "*": "ask",
     "edit": "allow",
