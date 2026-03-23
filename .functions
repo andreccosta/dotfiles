@@ -112,3 +112,9 @@ zombies() {
     }
   '
 }
+
+cr() {
+  local host="$1"
+  shift
+  code --remote "ssh-remote+${host}" "$@"
+}
