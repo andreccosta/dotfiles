@@ -1,0 +1,6 @@
+{
+  "packages": [
+    "npm:pi-terminal-theme"
+  ],
+  "theme": "terminal"
+}

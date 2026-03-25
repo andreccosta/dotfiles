@@ -16,4 +16,5 @@ fi
 
 ln -snf "$SOURCE_DIR" "$LINK_PATH"
 ln -snf "$SCRIPT_DIR/agent/AGENTS.md" "$TARGET_DIR"
+ln -snf "$SCRIPT_DIR/agent/settings.json" "$TARGET_DIR"
 ln -snf "$SCRIPT_DIR/agent/package.json" "$TARGET_DIR"
