@@ -10,6 +10,7 @@ alias ~='cd ~'
 alias c='clear'
 alias g='git'
 alias h='history'
+alias oc='opencode'
 alias t='tmux'
 alias z='cd'
 
