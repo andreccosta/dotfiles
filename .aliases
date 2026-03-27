@@ -16,7 +16,7 @@ alias z='cd'
 
 # navigation
 if type eza &>/dev/null; then
-  alias ls='eza -lh --group-directories-first --icons=auto'
+  alias ls='eza -lh --group-directories-first --icons=auto --time-style=relative'
   alias ll='ls -a'
 else
   alias ls='ls --color=auto'
