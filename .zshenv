@@ -16,4 +16,4 @@ export PATH
 [[ -r ~/.exports ]] && source ~/.exports
 
 # local env
-#[[ -r ~/.env ]] && source ~/.env
+[[ -r ~/.env ]] && source ~/.env
