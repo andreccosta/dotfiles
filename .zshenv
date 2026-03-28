@@ -13,5 +13,7 @@ export GOPATH="$HOME/code/go"
 
 export PATH
 
-# optional local exports
 [[ -r ~/.exports ]] && source ~/.exports
+
+# local env
+#[[ -r ~/.env ]] && source ~/.env
