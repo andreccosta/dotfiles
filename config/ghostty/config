@@ -10,6 +10,9 @@ window-inherit-font-size = false
 macos-option-as-alt = true
 scrollback-limit = 100000
 
+custom-shader = ~/.config/ghostty/shaders/cursor_warp.glsl
+custom-shader = ~/.config/ghostty/shaders/ripple_cursor.glsl
+
 # theme
 theme = TokyoNight
 
