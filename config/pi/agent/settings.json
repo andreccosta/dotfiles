@@ -1,0 +1,7 @@
+{
+  "lastChangelogVersion": "0.63.1",
+  "theme": "tokyonight_night",
+  "defaultProvider": "fireworks",
+  "defaultModel": "accounts/fireworks/routers/kimi-k2p5-turbo",
+  "defaultThinkingLevel": "medium"
+}
