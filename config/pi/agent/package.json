@@ -8,10 +8,10 @@
     ]
   },
   "dependencies": {
-    "diff": "^8.0.2",
-    "@mariozechner/pi-coding-agent": "*",
     "@mariozechner/pi-ai": "*",
-    "@mariozechner/pi-tui": "*"
+    "@mariozechner/pi-coding-agent": "*",
+    "@mariozechner/pi-tui": "*",
+    "diff": "^8.0.4"
   },
   "peerDependencies": {
     "typescript": "^5"
