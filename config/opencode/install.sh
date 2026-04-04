@@ -9,7 +9,6 @@ mkdir -p "$TARGET_DIR"
 
 ln -snf "$SCRIPT_DIR/commands" "$TARGET_DIR"
 ln -snf "$SCRIPT_DIR/plugins" "$TARGET_DIR"
-ln -snf "$SCRIPT_DIR/skills" "$TARGET_DIR"
 ln -snf "$SCRIPT_DIR/AGENTS.md" "$TARGET_DIR"
 ln -snf "$SCRIPT_DIR/opencode.json" "$TARGET_DIR"
 ln -snf "$SCRIPT_DIR/tui.json" "$TARGET_DIR"
