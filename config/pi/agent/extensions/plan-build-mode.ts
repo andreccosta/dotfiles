@@ -16,7 +16,7 @@ interface ModeState {
 	mode: Mode;
 }
 
-const PLAN_TOOLS = ["read", "bash"] as const;
+const PLAN_TOOLS = ["read", "bash", "todo"] as const;
 
 const DESTRUCTIVE_PATTERNS = [
 	/\brm\b/i,
@@ -148,7 +148,7 @@ export default function planBuildModeExtension(pi: ExtensionAPI) {
 		if (mode === "plan") {
 			const availablePlanTools = PLAN_TOOLS.filter((tool) => buildTools.includes(tool));
 			pi.setActiveTools(availablePlanTools);
-			if (notify) ctx.ui.notify("Plan mode enabled: read-only tools only (bash is restricted).", "info");
+			if (notify) ctx.ui.notify("Plan mode enabled: read, read-only bash, and todo management only.", "info");
 		} else {
 			pi.setActiveTools(buildTools);
 			if (notify) ctx.ui.notify("Build mode enabled: full tool access restored.", "info");
@@ -207,13 +207,6 @@ export default function planBuildModeExtension(pi: ExtensionAPI) {
 	pi.on("tool_call", async (event) => {
 		if (mode !== "plan") return;
 
-		if (event.toolName === "write" || event.toolName === "edit" || event.toolName === "todo") {
-			return {
-				block: true,
-				reason: `Plan mode is read-only. Switch to build mode first to use ${event.toolName}.`,
-			};
-		}
-
 		if (event.toolName === "bash") {
 			const command = typeof event.input.command === "string" ? event.input.command : "";
 			if (!isSafeCommand(command)) {
@@ -222,7 +215,15 @@ export default function planBuildModeExtension(pi: ExtensionAPI) {
 					reason: `Plan mode only allows read-only bash commands. Blocked: ${command}`,
 				};
 			}
+			return;
 		}
+
+		if (event.toolName === "read" || event.toolName === "todo") return;
+
+		return {
+			block: true,
+			reason: `Plan mode only allows read, read-only bash, and todo management. Blocked tool: ${event.toolName}.`,
+		};
 	});
 
 	pi.on("context", async (event) => {
@@ -240,7 +241,7 @@ export default function planBuildModeExtension(pi: ExtensionAPI) {
 		return {
 			message: {
 				customType: "plan-build-mode-context",
-				content: `[PLAN MODE ACTIVE]\nYou are in read-only plan mode.\n- Only use read and read-only bash commands.\n- Do not modify files.\n- If implementation is required, ask to switch to build mode.\n- Bash is limited to read-only inspection commands.`,
+				content: `[PLAN MODE ACTIVE]\nYou are in plan mode.\n- Only use read, read-only bash commands, and the todo tool.\n- Do not modify project files.\n- Todo management is allowed for planning and task tracking.\n- If implementation is required, ask to switch to build mode.\n- Bash is limited to read-only inspection commands.`,
 				display: false,
 			},
 		};

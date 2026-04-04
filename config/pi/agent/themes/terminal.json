@@ -18,7 +18,8 @@
     "brightBlue": 12,
     "brightMagenta": 13,
     "brightCyan": 14,
-    "brightWhite": 15
+    "brightWhite": 15,
+    "bg": 0
   },
   "colors": {
     "accent": "blue",
@@ -35,13 +36,13 @@
     "thinkingText": "brightBlack",
 
     "selectedBg": "brightBlack",
-    "userMessageBg": "brightBlack",
+    "userMessageBg": "bg",
     "userMessageText": "",
     "customMessageBg": "",
     "customMessageText": "",
     "customMessageLabel": "magenta",
     "toolPendingBg": "",
-    "toolSuccessBg": "",
+    "toolSuccessBg": "bg",
     "toolErrorBg": "",
     "toolTitle": "blue",
     "toolOutput": "",
