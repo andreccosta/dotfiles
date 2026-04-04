@@ -1,7 +1,7 @@
 {
   "lastChangelogVersion": "0.65.0",
-  "theme": "tokyonight_night",
-  "defaultProvider": "fireworks",
-  "defaultModel": "accounts/fireworks/routers/kimi-k2p5-turbo",
+  "theme": "terminal",
+  "defaultProvider": "openai-codex",
+  "defaultModel": "gpt-5.4",
   "defaultThinkingLevel": "medium"
 }
