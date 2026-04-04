@@ -2,25 +2,8 @@
   "$schema": "https://opencode.ai/config.json",
   "default_agent": "plan",
   "share": "disabled",
-  "lsp": {
-    "rubocop": {
-      "disabled": true
-    },
-    "ruby-lsp": {
-      "disabled": false,
-      "command": ["bundle", "exec", "ruby-lsp"],
-      "extensions": [".rb", ".rake", ".gemspec"]
-    }
-  },
-  "formatter": {
-    "rubocop": {
-      "disabled": true
-    },
-    "standardrb": {
-      "disabled": false,
-      "extensions": [".rb", ".rake", ".gemspec"]
-    }
-  },
+  "lsp": false,
+  "formatter": false,
   "mcp": {
     "linear": {
       "enabled": false,
