@@ -596,9 +596,12 @@ async function applyPatchOperations(
 /**
  * Apply a list of classic edits (path/oldText/newText) sequentially via a Workspace.
  *
- * When multiple edits target the same file, occurrences are matched in file order
- * (advancing a cursor after each match) so that the model can rely on positional
- * ordering instead of needing globally-unique oldText snippets.
+ * When multiple edits target the same file, they are sorted by their position in
+ * the original file content (top-to-bottom) before applying.  This makes the
+ * operation robust regardless of the order the model listed the edits.
+ *
+ * A forward cursor (`searchOffset`) advances after each replacement so that
+ * duplicate oldText snippets are disambiguated by position.
  */
 async function applyClassicEdits(
 	edits: EditItem[],
@@ -637,8 +640,27 @@ async function applyClassicEdits(
 		}
 
 		const originalContent = await workspace.readText(absPath);
+
+		// Sort same-file edits by their position in the original content so that
+		// the forward cursor always works, regardless of the order the model
+		// listed them.  Edits whose oldText is not found sort to the end and
+		// will produce an error during the apply loop below.
+		if (group.length > 1) {
+			const positions = new Map<{ index: number; edit: EditItem }, number>();
+			for (const entry of group) {
+				const pos = originalContent.indexOf(entry.edit.oldText);
+				positions.set(entry, pos === -1 ? Number.MAX_SAFE_INTEGER : pos);
+			}
+			group.sort((a, b) => positions.get(a)! - positions.get(b)!);
+		}
+
 		let content = originalContent;
 		let searchOffset = 0;
+
+		// Track successfully applied oldText→newText pairs in this file so we
+		// can detect redundant duplicate edits (model listed more replacements
+		// than actual occurrences).
+		const appliedPairs = new Set<string>();
 
 		for (const { index, edit } of group) {
 			if (signal?.aborted) {
@@ -649,6 +671,19 @@ async function applyClassicEdits(
 			const pos = content.indexOf(edit.oldText, searchOffset);
 
 			if (pos === -1) {
+				// If the exact same oldText→newText pair was already applied in
+				// this file, the model likely just over-counted occurrences.
+				// Skip gracefully instead of aborting the entire batch.
+				const pairKey = `${edit.oldText}\0${edit.newText}`;
+				if (appliedPairs.has(pairKey)) {
+					results[index] = {
+						path: edit.path,
+						success: true,
+						message: `Skipped redundant edit in ${edit.path} (already replaced all occurrences).`,
+					};
+					continue;
+				}
+
 				results[index] = {
 					path: edit.path,
 					success: false,
@@ -661,6 +696,7 @@ async function applyClassicEdits(
 
 			content = content.slice(0, pos) + edit.newText + content.slice(pos + edit.oldText.length);
 			searchOffset = pos + edit.newText.length;
+			appliedPairs.add(`${edit.oldText}\0${edit.newText}`);
 
 			results[index] = {
 				path: edit.path,
