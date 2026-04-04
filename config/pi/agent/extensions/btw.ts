@@ -5,6 +5,7 @@ import {
 	createExtensionRuntime,
 	getMarkdownTheme,
 	SessionManager,
+	type AgentMessage,
 	type AgentSession,
 	type AgentSessionEvent,
 	type ExtensionAPI,
@@ -95,8 +96,8 @@ function createBtwResourceLoader(ctx: ExtensionContext, appendSystemPrompt: stri
 		getAgentsFiles: () => ({ agentsFiles: [] }),
 		getSystemPrompt: () => systemPrompt,
 		getAppendSystemPrompt: () => appendSystemPrompt,
-		extendResources: () => {},
-		reload: async () => {},
+		extendResources: () => { },
+		reload: async () => { },
 	};
 }
 
@@ -566,7 +567,7 @@ export default function (pi: ExtensionAPI) {
 
 		const seedMessages = buildSeedMessages(ctx, thread);
 		if (seedMessages.length > 0) {
-			session.agent.replaceMessages(seedMessages as typeof session.state.messages);
+			session.agent.state.messages = seedMessages as AgentMessage[];
 		}
 
 		const unsubscribe = session.subscribe((event: AgentSessionEvent) => {
@@ -944,12 +945,11 @@ export default function (pi: ExtensionAPI) {
 		},
 	});
 
-	pi.on("session_start", async (_event, ctx) => {
-		await restoreThread(ctx);
-	});
-
-	pi.on("session_switch", async (_event, ctx) => {
-		await restoreThread(ctx);
+	pi.on("session_start", async (event, ctx) => {
+		if (event.reason === "startup" || event.reason === "new" ||
+			event.reason === "resume" || event.reason === "fork") {
+			await restoreThread(ctx);
+		}
 	});
 
 	pi.on("session_tree", async (_event, ctx) => {

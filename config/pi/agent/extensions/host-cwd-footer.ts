@@ -46,7 +46,7 @@ const setCustomFooter = (pi: ExtensionAPI, ctx: ExtensionContext) => {
 
 		return {
 			dispose,
-			invalidate() {},
+			invalidate() { },
 			render(width: number): string[] {
 				let totalInput = 0;
 				let totalOutput = 0;
@@ -162,11 +162,10 @@ const setCustomFooter = (pi: ExtensionAPI, ctx: ExtensionContext) => {
 };
 
 export default function (pi: ExtensionAPI) {
-	pi.on("session_start", async (_event, ctx) => {
-		setCustomFooter(pi, ctx);
-	});
-
-	pi.on("session_switch", async (_event, ctx) => {
-		setCustomFooter(pi, ctx);
+	pi.on("session_start", async (event, ctx) => {
+		if (event.reason === "startup" || event.reason === "new" ||
+			event.reason === "resume" || event.reason === "fork") {
+			setCustomFooter(pi, ctx);
+		}
 	});
 }
