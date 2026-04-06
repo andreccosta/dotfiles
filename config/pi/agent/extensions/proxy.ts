@@ -8,7 +8,7 @@ export default function (pi: ExtensionAPI) {
     });
   }
 
-  const codexBaseUrl = process.env.CODEX_LB_API_URL;
+  const codexBaseUrl = process.env.CODEX_LB_URL;
   if (codexBaseUrl) {
     pi.registerProvider("work", {
       baseUrl: codexBaseUrl.replace(/\/+$/, ""),
