@@ -118,3 +118,7 @@ cr() {
   shift
   code --remote "ssh-remote+${host}" "$@"
 }
+
+tsurl() {
+  tailscale status --self --json | jq -r '.Self.DNSName | rtrimstr(".")'
+}
