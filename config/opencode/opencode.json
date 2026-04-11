@@ -12,6 +12,16 @@
     }
   },
   "provider": {
+   "fireworks-ai": {
+    "models": {
+      "accounts/fireworks/routers/glm-5-fast": {
+        "name": "GLM-5 Fast"
+      },
+      "accounts/fireworks/routers/kimi-k2p5-turbo": {
+        "name": "Kimi K2.5 Turbo"
+      }
+    }
+   },
     "work": {
       "npm": "@ai-sdk/openai",
       "options": {
