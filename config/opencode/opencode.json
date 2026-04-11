@@ -79,38 +79,16 @@
     }
   },
   "permission": {
-    "*": "ask",
-    "edit": "allow",
-    "glob": "allow",
-    "grep": "allow",
-    "list": "allow",
-    "read": "allow",
-    "task": "allow",
-    "skill": "allow",
     "bash": {
-      "git *": "ask",
-      "bin/rspec *": "allow",
-      "bin/standardrb *": "allow",
-      "git branch --show-current": "allow",
-      "git commit *": "allow",
-      "git diff *": "allow",
-      "git grep *": "allow",
-      "git ls-files *": "allow",
-      "git log *": "allow",
-      "git remote -v": "allow",
-      "git rev-parse *": "allow",
-      "git show *": "allow",
-      "git status *": "allow",
-      "gh pr diff *": "allow",
-      "gh pr view *": "allow",
-      "command -v *": "allow",
-      "find *": "allow",
-      "ls *": "allow",
-      "pwd": "allow",
-      "rg *": "allow",
-      "rm *": "ask",
-      "sudo *": "deny",
-      "which *": "allow"
+      "git *": "ask"
+    },
+    "read": {
+      "*": "allow",
+      ".*.vars": "deny",
+      "*.env": "deny",
+      "*.env.*": "deny",
+      "*.envrc": "deny",
+      "secrets/*": "deny"
     },
     "todoread": "allow",
     "todowrite": "allow"
