@@ -25,6 +25,11 @@
         }
       ]
     },
+    "opencode": {
+      "baseUrl": "https://opencode.ai/zen/v1",
+      "api": "openai-completions",
+      "apiKey": "OPENCODE_ZEN_API_KEY"
+    },
     "work": {
       "baseUrl": "placeholder",
       "api": "openai-completions",
