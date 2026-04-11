@@ -6,6 +6,10 @@
       "apiKey": "FIREWORKS_API_KEY",
       "models": [
         {
+          "id": "accounts/fireworks/routers/glm-5-fast",
+          "name": "GLM-5 Fast (Fireworks)"
+        },
+        {
           "id": "accounts/fireworks/routers/kimi-k2p5-turbo",
           "name": "Kimi K2.5 Turbo (Fireworks)",
           "reasoning": true,
