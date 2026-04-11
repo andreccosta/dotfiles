@@ -35,6 +35,9 @@
                 "reasoning.encrypted_content"
               ]
             }
+          },
+          "options": {
+            "serviceTier": "priority"
           }
         },
         "gpt-5.4-mini": {
