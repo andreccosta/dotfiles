@@ -32,6 +32,5 @@ keybind = home=csi:H
 keybind = end=csi:F
 keybind = shift+enter=text:\n
 keybind = cmd+enter=unbind
-keybind = ctrl+alt+r=text:\x1b[!p
 
 config-file = ?~/.local/ghostty/config
