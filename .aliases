@@ -44,9 +44,8 @@ alias weather='curl -4 http://wttr.in/Porto,Portugal'
 alias sft='sftp -R 128 -B 65536'
 
 # cat
-if type batcat &>/dev/null; then
-  alias bat='batcat'
-  alias batcat='batcat --theme="base16"'
+if type bat &>/dev/null; then
+  alias cat='bat'
 fi
 
 # gh
