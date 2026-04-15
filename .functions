@@ -78,18 +78,18 @@ until_fail() {
 }
 
 tm() {
-  local name
-  name=$(basename "${PWD}")
+  local name git_root
+  name=$(basename "$PWD")
 
   git_root=$(git rev-parse --show-toplevel 2>/dev/null) && \
     name=$(basename "$git_root")
 
-  if [ -n "$TMUX" ]; then
-    command tmux has-session -t "$name" 2>/dev/null || \
-      command tmux new-session -d -s "$name" "$@"
-    command tmux switch-client -t "$name"
+  if tmux has-session -t "$name" 2>/dev/null; then
+    tmux attach-session -t "$name"
   else
-    command tmux new-session -A -s "$name" "$@"
+    tmux new-session -d -s "$name" -n main "$@"
+    tmux new-window -d -t "$name" -n zsh
+    tmux attach-session -t "$name"
   fi
 }
 
