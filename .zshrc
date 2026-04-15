@@ -1,6 +1,6 @@
 # performance optimizations
 _ZSH_CACHE_DIR="$HOME/.zsh_cache"
-mkdir -p "$_ZSH_CACHE_DIR"
+[[ -d "$_ZSH_CACHE_DIR" ]] || mkdir -p "$_ZSH_CACHE_DIR"
 
 # interactive colors
 export CLICOLOR=1

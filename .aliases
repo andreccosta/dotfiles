@@ -36,7 +36,7 @@ alias untar='tar xvf'
 alias compose='docker compose'
 
 # utils
-alias rm='rm -i'
+alias rm='rm -I'
 alias rmdir='rm -ri'
 
 # random
