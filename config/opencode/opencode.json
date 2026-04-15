@@ -93,7 +93,7 @@
   },
   "permission": {
     "bash": {
-      "git *": "ask"
+      "rm *": "ask"
     },
     "read": {
       "*": "allow",
