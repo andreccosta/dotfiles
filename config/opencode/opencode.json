@@ -26,7 +26,8 @@
       "npm": "@ai-sdk/openai",
       "options": {
         "baseURL": "{env:CODEX_LB_URL}",
-        "apiKey": "{env:CODEX_LB_API_KEY}"
+        "apiKey": "{env:CODEX_LB_API_KEY}",
+        "serviceTier": "priority"
       },
       "models": {
         "gpt-5.4": {
