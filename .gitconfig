@@ -48,8 +48,10 @@
 	ss = status -sb
 	st = status
 	sw = switch
-	review = diff origin/master...
-	review-files = diff origin/master... --name-only
+	review = !git diff $(git merge-base origin/master HEAD)
+	review-files = !git diff $(git merge-base origin/master HEAD) --name-only
+	review-committed = diff origin/master...
+	review-committed-files = diff origin/master... --name-only
 	rb= rebase --autosquash
 	rbi = !sh -c \"git rebase -i --autosquash `git merge-base $1 HEAD`\" -
 	r = restore
