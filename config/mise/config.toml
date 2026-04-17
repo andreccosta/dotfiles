@@ -6,6 +6,7 @@ python = "prefix:3.14"
 ruby = "latest"
 rust = "latest"
 zig = "latest"
+"npm:@mariozechner/pi-coding-agent" = "latest"
 
 [settings]
 env_shell_expand = true
