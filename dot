@@ -22,7 +22,7 @@ Usage: ./dot <command> [package...]
 Commands:
   install    Stow the default or specified dotfiles packages into $HOME
   restow     Re-stow the default or specified dotfiles packages into $HOME
-  update     Update Homebrew packages and mise tools
+  update     Update system packages and mise tools
   macos      Install macOS Brewfile packages and apply macOS defaults
   help       Show this help message
 EOF
