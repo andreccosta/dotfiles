@@ -1,17 +1,50 @@
 # dotfiles
 
+This repo uses [GNU Stow](https://www.gnu.org/software/stow/) to manage symlinks into `$HOME`. Common cross-system files live in the `home` Stow package.
+
 ## Install
 
 ```console
-$ make
+$ mkdir -p ~/code/src/github.com/andreccosta
+$ git clone https://github.com/andreccosta/dotfiles.git ~/code/src/github.com/andreccosta/dotfiles
+$ cd ~/code/src/github.com/andreccosta/dotfiles
+$ ./install.sh
 ```
 
-*Creates symlinks to home folder*
+Or directly:
+
+```console
+$ ./dot install
+```
+
+On macOS, then install Brewfile packages and apply defaults:
+
+```console
+$ ./dot macos
+```
+
+## Re-stow after changes
+
+```console
+$ ./dot restow
+```
+
+## Update tools
+
+```console
+$ ./dot update
+```
+
+## macOS bootstrap
+
+```console
+$ ./dot macos
+```
 
 ## Test
 
 ```console
-$ make test
+$ ./test.sh
 ```
 
-*Tests run in a docker container using shellcheck*
+Tests run with shellcheck.

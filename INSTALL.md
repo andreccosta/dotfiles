@@ -1,74 +1,98 @@
 # Dotfiles Installation
 
-This repository contains personal dotfiles optimized for fast zsh startup times.
+This repository uses GNU Stow to manage symlinks for shell files and application config. Common cross-system files live in the `home` Stow package.
 
 ## Quick Setup
 
-Clone and run the installation script:
+### macOS
 
 ```bash
-git clone https://github.com/andreccosta/dotfiles.git ~/dotfiles
-cd ~/dotfiles
+brew install git stow
+mkdir -p ~/code/src/github.com/andreccosta
+git clone https://github.com/andreccosta/dotfiles.git ~/code/src/github.com/andreccosta/dotfiles
+cd ~/code/src/github.com/andreccosta/dotfiles
+./install.sh
+./dot macos
+```
+
+### Linux
+
+```bash
+mkdir -p ~/code/src/github.com/andreccosta
+git clone https://github.com/andreccosta/dotfiles.git ~/code/src/github.com/andreccosta/dotfiles
+cd ~/code/src/github.com/andreccosta/dotfiles
 ./install.sh
 ```
 
-Or use the Makefile:
+Or run Stow through the repo helper directly:
 
 ```bash
-git clone https://github.com/andreccosta/dotfiles.git ~/dotfiles
-cd ~/dotfiles
-make install
+mkdir -p ~/code/src/github.com/andreccosta
+git clone https://github.com/andreccosta/dotfiles.git ~/code/src/github.com/andreccosta/dotfiles
+cd ~/code/src/github.com/andreccosta/dotfiles
+./dot install
 ```
 
-## What the installer does
+## Requirements
 
-1. **Checks dependencies** - Ensures git is available
-2. **Creates symlinks** - Links dotfiles to your home directory using the Makefile
-3. **Sets up zsh** - Makes zsh the default shell if available
+- `git`
+- `stow`
 
-## Manual Setup
-
-If you prefer manual setup:
-
-1. Clone the repository
-2. Run `make dotfiles` to create symlinks
-3. Set zsh as default shell: `chsh -s $(which zsh)`
-4. Restart your terminal
-
-## Required Tools
-
-The installer sets up the shell configuration, but you'll need to install these tools separately using your package manager:
-
-### macOS (Homebrew)
+### macOS
 
 ```bash
-brew install zsh-autosuggestions zsh-syntax-highlighting zoxide fzf vivid starship mise
+brew install stow
 ```
 
 ### Linux
 
 ```bash
 # Debian/Ubuntu
-sudo apt install zsh-autosuggestions zsh-syntax-highlighting fzf
+sudo apt install stow
 
 # Fedora
-sudo dnf install zsh-autosuggestions zsh-syntax-highlighting fzf
+sudo dnf install stow
 
 # Arch Linux
-sudo pacman -S zsh-autosuggestions zsh-syntax-highlighting fzf
+sudo pacman -S stow
 ```
 
-Note: Some tools (zoxide, vivid, starship, mise) may not be available in all package managers and might need alternative installation methods.
+## What the installer does
 
-## Plugin Configuration
+1. Ensures `git` and `stow` are installed
+2. Stows the default package set from `stow/` into `$HOME`
+3. Makes `zsh` the default shell if available
 
-Plugins are loaded directly from standard package manager installation paths (no plugin manager needed):
+## Stow commands
 
-- `zsh-autosuggestions` - Command suggestions
-- `zsh-syntax-highlighting` - Syntax highlighting  
-- `zoxide` - Smart cd replacement
-- `mise` - Runtime version manager
-- `fzf` - Fuzzy finder
-- `starship` - Customizable prompt
+Install the default package set:
 
-See `.zshrc` for the loading configuration.
+```bash
+./dot install
+```
+
+Re-stow after making changes:
+
+```bash
+./dot restow
+```
+
+Update Homebrew packages and mise tools:
+
+```bash
+./dot update
+```
+
+Install macOS Brewfile packages and apply macOS defaults:
+
+```bash
+./dot macos
+```
+
+## Notes
+
+- `dot` is a repo-local bootstrap script. Run it from the root of this repository as `./dot ...`.
+- Existing files in `$HOME` can conflict with Stow-managed symlinks. Move or back them up first if Stow reports a conflict.
+- Windows setup is still handled separately by `win/install.ps1`.
+- `./dot macos` runs `brew bundle --file mac/Brewfile` and `mac/set_defaults.sh`.
+- macOS system setup is still separate from Stow-managed symlinks.

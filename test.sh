@@ -1,16 +1,29 @@
 #!/usr/bin/env bash
 
-set -eo pipefail
+set -euo pipefail
+
+if ! command -v shellcheck >/dev/null 2>&1; then
+  echo "error: shellcheck is required" >&2
+  exit 1
+fi
+
+if ! command -v file >/dev/null 2>&1; then
+  echo "error: file is required" >&2
+  exit 1
+fi
 
 any_failed=false
 
-# find all executables and run `shellcheck`
-for f in $(find . -type f -not -iwholename '*.git*' | sort -u); do
-    if file "$f" | grep --quiet shell; then
-        shellcheck "$f" && echo "[OK]: sucessfully linted $f" || any_failed=true
+while IFS= read -r f; do
+  if file -b "$f" | grep -qi 'shell script'; then
+    if shellcheck "$f"; then
+      echo "[OK]: successfully linted $f"
+    else
+      any_failed=true
     fi
-done
+  fi
+done < <(git ls-files | sort -u)
 
-if $any_failed; then 
+if [ "$any_failed" = true ]; then
   exit 1
 fi

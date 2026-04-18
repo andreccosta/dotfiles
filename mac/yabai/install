@@ -1,6 +1,0 @@
-#!/usr/bin/env bash
-
-set -euo pipefail
-
-mkdir -p ~/.config/yabai
-ln -snf "$PWD"/yabairc ~/.config/yabai/yabairc

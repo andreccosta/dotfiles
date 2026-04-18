@@ -1,0 +1,11 @@
+{
+  "lastChangelogVersion": "0.67.68",
+  "theme": "terminal",
+  "defaultProvider": "openai-codex",
+  "defaultModel": "gpt-5.4",
+  "defaultThinkingLevel": "medium",
+  "packages": [
+    "npm:@plannotator/pi-extension"
+  ],
+  "hideThinkingBlock": false
+}

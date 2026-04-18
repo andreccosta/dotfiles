@@ -1,0 +1,208 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+SOURCE="${BASH_SOURCE[0]}"
+while [ -L "$SOURCE" ]; do
+  DIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
+  SOURCE="$(readlink "$SOURCE")"
+  case "$SOURCE" in
+    /*) ;;
+    *) SOURCE="$DIR/$SOURCE" ;;
+  esac
+done
+
+DOTFILES_DIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
+STOW_DIR="$DOTFILES_DIR/stow"
+
+usage() {
+  cat <<'EOF'
+Usage: ./dot <command>
+
+Commands:
+  install    Stow the default dotfiles packages into $HOME
+  restow     Re-stow the default dotfiles packages into $HOME
+  update     Update Homebrew packages and mise tools
+  macos      Install macOS Brewfile packages and apply macOS defaults
+  help       Show this help message
+EOF
+}
+
+command_exists() {
+  command -v "$1" >/dev/null 2>&1
+}
+
+require_command() {
+  if ! command_exists "$1"; then
+    echo "error: $1 is not installed or not on PATH" >&2
+    exit 1
+  fi
+}
+
+base_packages() {
+  cat <<'EOF'
+home
+agents
+ghostty
+kanata
+linearmouse
+nvim
+opencode
+pi
+zed
+EOF
+}
+
+os_packages() {
+  case "$(uname -s)" in
+    Darwin)
+      cat <<'EOF'
+mac-skhd
+mac-yabai
+EOF
+      ;;
+    Linux)
+      cat <<'EOF'
+linux-hypr
+linux-waybar
+linux-wofi
+EOF
+      ;;
+  esac
+}
+
+package_args() {
+  {
+    base_packages
+    os_packages
+  } | awk 'NF'
+}
+
+backup_path() {
+  local target="$1"
+  local backup
+
+  backup="$target.pre-stow-backup-$(date +%Y%m%d%H%M%S)"
+
+  echo "> mv $target $backup"
+  mv "$target" "$backup"
+}
+
+reconcile_targets() {
+  local package
+  local src
+  local target
+  local link_target
+
+  while IFS= read -r package; do
+    [ -n "$package" ] || continue
+
+    find "$STOW_DIR/$package" -mindepth 1 -maxdepth 1 | while IFS= read -r src; do
+      target="$HOME/$(basename "$src")"
+
+      if [ -L "$target" ]; then
+        link_target="$(readlink "$target")"
+        case "$link_target" in
+          "$DOTFILES_DIR"/*)
+            if [[ "$link_target" != "$STOW_DIR/"* ]]; then
+              echo "> rm $target"
+              rm -f "$target"
+            fi
+            ;;
+        esac
+      elif [ -f "$target" ] && [ -f "$src" ] && cmp -s "$src" "$target"; then
+        echo "> rm $target"
+        rm -f "$target"
+      elif [ -e "$target" ] && ! { [ -d "$src" ] && [ -d "$target" ]; }; then
+        backup_path "$target"
+      fi
+    done
+  done <<EOF
+$(package_args)
+EOF
+}
+
+run_stow() {
+  local mode="$1"
+  local packages=()
+  local package
+  require_command stow
+
+  cd "$DOTFILES_DIR"
+
+  reconcile_targets
+
+  while IFS= read -r package; do
+    [ -n "$package" ] || continue
+    packages+=("$package")
+  done <<EOF
+$(package_args)
+EOF
+
+  echo "> stow $mode -d $STOW_DIR -t $HOME ${packages[*]}"
+  stow "$mode" -d "$STOW_DIR" -t "$HOME" "${packages[@]}"
+}
+
+run_install() {
+  run_stow -S
+}
+
+run_restow() {
+  run_stow -R
+}
+
+run_update() {
+  require_command brew
+  require_command mise
+
+  echo "> brew update && brew upgrade"
+  brew update && brew upgrade
+
+  echo
+  echo "> mise up"
+  mise up
+}
+
+run_macos() {
+  if [ "$(uname -s)" != "Darwin" ]; then
+    echo "error: macos command is only supported on macOS" >&2
+    exit 1
+  fi
+
+  require_command brew
+
+  echo "> brew bundle --file mac/Brewfile"
+  brew bundle --file "$DOTFILES_DIR/mac/Brewfile"
+
+  echo
+  echo "> bash mac/set_defaults.sh"
+  bash "$DOTFILES_DIR/mac/set_defaults.sh"
+}
+
+main() {
+  case "${1:-}" in
+    install)
+      run_install
+      ;;
+    restow)
+      run_restow
+      ;;
+    update)
+      run_update
+      ;;
+    macos)
+      run_macos
+      ;;
+    -h|--help|help|"")
+      usage
+      ;;
+    *)
+      echo "error: unknown command: $1" >&2
+      echo >&2
+      usage >&2
+      exit 1
+      ;;
+  esac
+}
+
+main "$@"
