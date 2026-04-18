@@ -77,11 +77,14 @@ Re-stow after making changes:
 ./dot restow
 ```
 
-Update Homebrew packages and mise tools:
+Update system packages and mise tools:
 
 ```bash
 ./dot update
 ```
+
+- macOS: runs `brew update && brew upgrade`, then `mise up`
+- Linux: runs `paru -Syu` if available, then `mise up`
 
 Install macOS Brewfile packages and apply macOS defaults:
 

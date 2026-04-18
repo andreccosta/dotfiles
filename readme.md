@@ -35,6 +35,9 @@ $ ./dot restow
 $ ./dot update
 ```
 
+- macOS: `brew update && brew upgrade`, then `mise up`
+- Linux: `paru -Syu` if available, then `mise up`
+
 ## macOS bootstrap
 
 ```console

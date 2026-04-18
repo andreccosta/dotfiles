@@ -152,11 +152,23 @@ run_restow() {
 }
 
 run_update() {
-  require_command brew
   require_command mise
 
-  echo "> brew update && brew upgrade"
-  brew update && brew upgrade
+  case "$(uname -s)" in
+    Darwin)
+      require_command brew
+      echo "> brew update && brew upgrade"
+      brew update && brew upgrade
+      ;;
+    Linux)
+      if command_exists paru; then
+        echo "> paru -Syu"
+        paru -Syu
+      else
+        echo "warning: no supported system package manager found for updates (expected paru on Linux)" >&2
+      fi
+      ;;
+  esac
 
   echo
   echo "> mise up"
