@@ -5,6 +5,9 @@ This repo uses [GNU Stow](https://www.gnu.org/software/stow/) to manage symlinks
 ## Install
 
 ```console
+$ mkdir -p ~/code/src/github.com/andreccosta
+$ git clone https://github.com/andreccosta/dotfiles.git ~/code/src/github.com/andreccosta/dotfiles
+$ cd ~/code/src/github.com/andreccosta/dotfiles
 $ ./install.sh
 ```
 

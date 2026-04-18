@@ -8,8 +8,9 @@ This repository uses GNU Stow to manage symlinks for shell files and application
 
 ```bash
 brew install git stow
-git clone https://github.com/andreccosta/dotfiles.git ~/dotfiles
-cd ~/dotfiles
+mkdir -p ~/code/src/github.com/andreccosta
+git clone https://github.com/andreccosta/dotfiles.git ~/code/src/github.com/andreccosta/dotfiles
+cd ~/code/src/github.com/andreccosta/dotfiles
 ./install.sh
 ./dot macos
 ```
@@ -17,16 +18,18 @@ cd ~/dotfiles
 ### Linux
 
 ```bash
-git clone https://github.com/andreccosta/dotfiles.git ~/dotfiles
-cd ~/dotfiles
+mkdir -p ~/code/src/github.com/andreccosta
+git clone https://github.com/andreccosta/dotfiles.git ~/code/src/github.com/andreccosta/dotfiles
+cd ~/code/src/github.com/andreccosta/dotfiles
 ./install.sh
 ```
 
 Or run Stow through the repo helper directly:
 
 ```bash
-git clone https://github.com/andreccosta/dotfiles.git ~/dotfiles
-cd ~/dotfiles
+mkdir -p ~/code/src/github.com/andreccosta
+git clone https://github.com/andreccosta/dotfiles.git ~/code/src/github.com/andreccosta/dotfiles
+cd ~/code/src/github.com/andreccosta/dotfiles
 ./dot install
 ```
 
