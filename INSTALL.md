@@ -48,8 +48,7 @@ sudo pacman -S stow
 
 1. Ensures `git` and `stow` are installed
 2. Stows the default package set from `stow/` into `$HOME`
-3. Symlinks `./dot` to `~/bin/dot`
-4. Makes `zsh` the default shell if available
+3. Makes `zsh` the default shell if available
 
 ## Stow commands
 
@@ -73,6 +72,7 @@ Update Homebrew packages and mise tools:
 
 ## Notes
 
+- `dot` is a repo-local bootstrap script. Run it from the root of this repository as `./dot ...`.
 - Existing files in `$HOME` can conflict with Stow-managed symlinks. Move or back them up first if Stow reports a conflict.
 - Windows setup is still handled separately by `win/install.ps1`.
 - macOS system setup scripts like `mac/set_defaults.sh` are still separate from Stow.

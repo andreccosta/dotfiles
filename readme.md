@@ -29,7 +29,7 @@ $ ./dot update
 ## Test
 
 ```console
-$ make test
+$ ./test.sh
 ```
 
-Tests run in a docker container using shellcheck.
+Tests run with shellcheck.

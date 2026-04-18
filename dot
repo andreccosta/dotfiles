@@ -86,7 +86,9 @@ package_args() {
 
 backup_path() {
   local target="$1"
-  local backup="$target.pre-stow-backup-$(date +%Y%m%d%H%M%S)"
+  local backup
+
+  backup="$target.pre-stow-backup-$(date +%Y%m%d%H%M%S)"
 
   echo "> mv $target $backup"
   mv "$target" "$backup"
@@ -147,19 +149,12 @@ EOF
   stow "$mode" -d "$STOW_DIR" -t "$HOME" "${packages[@]}"
 }
 
-link_dot() {
-  mkdir -p "$HOME/bin"
-  ln -sfn "$DOTFILES_DIR/dot" "$HOME/bin/dot"
-}
-
 run_install() {
   run_stow -S
-  link_dot
 }
 
 run_restow() {
   run_stow -R
-  link_dot
 }
 
 run_update() {

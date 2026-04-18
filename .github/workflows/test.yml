@@ -6,10 +6,12 @@ on:
 
 jobs:
   test:
-    name: make test
+    name: shellcheck
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
-      - name: make test
-        run: make test
+      - name: Install shellcheck
+        run: sudo apt-get update && sudo apt-get install -y shellcheck file
+      - name: Run tests
+        run: ./test.sh
