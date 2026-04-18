@@ -1,12 +1,30 @@
 # dotfiles
 
+This repo uses [GNU Stow](https://www.gnu.org/software/stow/) to manage symlinks into `$HOME`.
+
 ## Install
 
 ```console
-$ make
+$ ./install.sh
 ```
 
-*Creates symlinks to home folder*
+Or directly:
+
+```console
+$ ./dot install
+```
+
+## Re-stow after changes
+
+```console
+$ ./dot restow
+```
+
+## Update tools
+
+```console
+$ ./dot update
+```
 
 ## Test
 
@@ -14,4 +32,4 @@ $ make
 $ make test
 ```
 
-*Tests run in a docker container using shellcheck*
+Tests run in a docker container using shellcheck.

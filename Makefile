@@ -1,17 +1,12 @@
-.PHONY: all dotfiles install test shellcheck
+.PHONY: all dotfiles install restow test shellcheck
 
-all: dotfiles
+all: install
 
-install: dotfiles
+install dotfiles:
+	./dot install
 
-dotfiles:
-	# adding symbolic links to dotfiles in ~
-	@for file in $(shell find $(CURDIR) -name ".*" -not -name "readme.md" -not -name ".gitignore" -not -name ".travis.yml" -not -name ".git" -not -name ".*.swp" -not -name ".gnupg"); do \
-		if [ -f $$file ]; then \
-			f=$$(basename $$file); \
-			ln -sfn $$file $(HOME)/$$f; \
-		fi \
-	done;
+restow:
+	./dot restow
 
 test: shellcheck
 
