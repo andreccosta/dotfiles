@@ -10,6 +10,9 @@
 /.agent
 /.pi
 
+# local/generated leftovers from older dotfiles layouts
+/config/
+
 node_modules
 package-lock.json
 pnpm-lock.yaml

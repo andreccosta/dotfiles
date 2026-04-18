@@ -43,7 +43,6 @@ base_packages() {
   cat <<'EOF'
 home
 agents
-alacritty
 ghostty
 kanata
 linearmouse
