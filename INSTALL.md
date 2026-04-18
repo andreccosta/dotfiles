@@ -71,6 +71,13 @@ Install the default package set:
 ./dot install
 ```
 
+Install only specific packages:
+
+```bash
+./dot install home
+./dot install home nvim
+```
+
 Re-stow after making changes:
 
 ```bash

@@ -17,6 +17,13 @@ Or directly:
 $ ./dot install
 ```
 
+Install only specific packages when needed:
+
+```console
+$ ./dot install home
+$ ./dot install home nvim
+```
+
 On macOS, then install Brewfile packages and apply defaults:
 
 ```console
