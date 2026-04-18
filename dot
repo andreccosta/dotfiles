@@ -88,23 +88,67 @@ backup_path() {
   mv "$target" "$backup"
 }
 
+resolve_link_target() {
+  local path="$1"
+  local target
+  local dir
+
+  target="$(readlink "$path")"
+  case "$target" in
+    /*)
+      printf '%s\n' "$target"
+      ;;
+    *)
+      dir="$(cd -P "$(dirname "$path")" && pwd)"
+      printf '%s\n' "$(cd -P "$dir/$(dirname "$target")" && pwd)/$(basename "$target")"
+      ;;
+  esac
+}
+
+has_stow_ancestor() {
+  local path="$1"
+  local current
+  local resolved
+
+  current="$(dirname "$path")"
+  while [ "$current" != "$HOME" ] && [ "$current" != "/" ]; do
+    if [ -L "$current" ]; then
+      resolved="$(resolve_link_target "$current")"
+      case "$resolved" in
+        "$STOW_DIR"/*)
+          return 0
+          ;;
+      esac
+    fi
+    current="$(dirname "$current")"
+  done
+
+  return 1
+}
+
 reconcile_targets() {
   local package
   local src
+  local rel
   local target
-  local link_target
+  local resolved
 
   while IFS= read -r package; do
     [ -n "$package" ] || continue
 
-    find "$STOW_DIR/$package" -mindepth 1 -maxdepth 1 | while IFS= read -r src; do
-      target="$HOME/$(basename "$src")"
+    find "$STOW_DIR/$package" -mindepth 1 | while IFS= read -r src; do
+      rel="${src#"$STOW_DIR/$package"/}"
+      target="$HOME/$rel"
+
+      if has_stow_ancestor "$target"; then
+        continue
+      fi
 
       if [ -L "$target" ]; then
-        link_target="$(readlink "$target")"
-        case "$link_target" in
+        resolved="$(resolve_link_target "$target")"
+        case "$resolved" in
           "$DOTFILES_DIR"/*)
-            if [[ "$link_target" != "$STOW_DIR/"* ]]; then
+            if [[ "$resolved" != "$STOW_DIR/"* ]]; then
               echo "> rm $target"
               rm -f "$target"
             fi
