@@ -23,6 +23,7 @@ Commands:
   install    Stow the default dotfiles packages into $HOME
   restow     Re-stow the default dotfiles packages into $HOME
   update     Update Homebrew packages and mise tools
+  macos      Install macOS Brewfile packages and apply macOS defaults
   help       Show this help message
 EOF
 }
@@ -169,6 +170,22 @@ run_update() {
   mise up
 }
 
+run_macos() {
+  if [ "$(uname -s)" != "Darwin" ]; then
+    echo "error: macos command is only supported on macOS" >&2
+    exit 1
+  fi
+
+  require_command brew
+
+  echo "> brew bundle --file mac/Brewfile"
+  brew bundle --file "$DOTFILES_DIR/mac/Brewfile"
+
+  echo
+  echo "> bash mac/set_defaults.sh"
+  bash "$DOTFILES_DIR/mac/set_defaults.sh"
+}
+
 main() {
   case "${1:-}" in
     install)
@@ -179,6 +196,9 @@ main() {
       ;;
     update)
       run_update
+      ;;
+    macos)
+      run_macos
       ;;
     -h|--help|help|"")
       usage

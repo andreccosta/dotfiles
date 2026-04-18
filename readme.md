@@ -14,6 +14,12 @@ Or directly:
 $ ./dot install
 ```
 
+On macOS, then install Brewfile packages and apply defaults:
+
+```console
+$ ./dot macos
+```
+
 ## Re-stow after changes
 
 ```console
@@ -24,6 +30,12 @@ $ ./dot restow
 
 ```console
 $ ./dot update
+```
+
+## macOS bootstrap
+
+```console
+$ ./dot macos
 ```
 
 ## Test

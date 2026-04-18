@@ -4,7 +4,17 @@ This repository uses GNU Stow to manage symlinks for shell files and application
 
 ## Quick Setup
 
-Clone the repo and run the installer:
+### macOS
+
+```bash
+brew install git stow
+git clone https://github.com/andreccosta/dotfiles.git ~/dotfiles
+cd ~/dotfiles
+./install.sh
+./dot macos
+```
+
+### Linux
 
 ```bash
 git clone https://github.com/andreccosta/dotfiles.git ~/dotfiles
@@ -70,9 +80,16 @@ Update Homebrew packages and mise tools:
 ./dot update
 ```
 
+Install macOS Brewfile packages and apply macOS defaults:
+
+```bash
+./dot macos
+```
+
 ## Notes
 
 - `dot` is a repo-local bootstrap script. Run it from the root of this repository as `./dot ...`.
 - Existing files in `$HOME` can conflict with Stow-managed symlinks. Move or back them up first if Stow reports a conflict.
 - Windows setup is still handled separately by `win/install.ps1`.
-- macOS system setup scripts like `mac/set_defaults.sh` are still separate from Stow.
+- `./dot macos` runs `brew bundle --file mac/Brewfile` and `mac/set_defaults.sh`.
+- macOS system setup is still separate from Stow-managed symlinks.
