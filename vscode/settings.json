@@ -1,4 +1,5 @@
 {
+  "update.mode": "manual",
   "[csharp]": {
     "editor.insertSpaces": true,
     "editor.tabSize": 4
