@@ -138,38 +138,60 @@ reconcile_targets() {
   local packages="$1"
   local package
   local src
-  local rel
-  local target
-  local resolved
+
+  reconcile_target() {
+    local package="$1"
+    local src="$2"
+    local rel
+    local target
+    local resolved
+    local child
+
+    rel="${src#"$STOW_DIR/$package"/}"
+    target="$HOME/$rel"
+
+    if [ -L "$target" ]; then
+      resolved="$(resolve_link_target "$target")"
+      case "$resolved" in
+        "$STOW_DIR"/*)
+          return 0
+          ;;
+        "$DOTFILES_DIR"/*)
+          echo "> rm $target"
+          rm -f "$target"
+          return 0
+          ;;
+      esac
+    fi
+
+    if has_stow_ancestor "$target"; then
+      return 0
+    fi
+
+    if [ -f "$target" ] && [ -f "$src" ] && cmp -s "$src" "$target"; then
+      echo "> rm $target"
+      rm -f "$target"
+      return 0
+    fi
+
+    if [ -e "$target" ] && ! { [ -d "$src" ] && [ -d "$target" ]; }; then
+      backup_path "$target"
+      return 0
+    fi
+
+    if [ -d "$src" ]; then
+      while IFS= read -r child; do
+        reconcile_target "$package" "$child"
+      done < <(find "$src" -mindepth 1 -maxdepth 1)
+    fi
+  }
 
   while IFS= read -r package; do
     [ -n "$package" ] || continue
 
-    find "$STOW_DIR/$package" -mindepth 1 | while IFS= read -r src; do
-      rel="${src#"$STOW_DIR/$package"/}"
-      target="$HOME/$rel"
-
-      if has_stow_ancestor "$target"; then
-        continue
-      fi
-
-      if [ -L "$target" ]; then
-        resolved="$(resolve_link_target "$target")"
-        case "$resolved" in
-          "$DOTFILES_DIR"/*)
-            if [[ "$resolved" != "$STOW_DIR/"* ]]; then
-              echo "> rm $target"
-              rm -f "$target"
-            fi
-            ;;
-        esac
-      elif [ -f "$target" ] && [ -f "$src" ] && cmp -s "$src" "$target"; then
-        echo "> rm $target"
-        rm -f "$target"
-      elif [ -e "$target" ] && ! { [ -d "$src" ] && [ -d "$target" ]; }; then
-        backup_path "$target"
-      fi
-    done
+    while IFS= read -r src; do
+      reconcile_target "$package" "$src"
+    done < <(find "$STOW_DIR/$package" -mindepth 1 -maxdepth 1)
   done <<EOF
 $packages
 EOF
@@ -178,27 +200,49 @@ EOF
 run_stow() {
   local mode="$1"
   shift
-  local requested_packages=("$@")
+  local requested_packages=()
+  local stow_options=()
   local packages=()
   local package_list
   local package
   require_command stow
 
+  while [ "$#" -gt 0 ]; do
+    case "$1" in
+      --)
+        shift
+        requested_packages+=("$@")
+        break
+        ;;
+      -*)
+        stow_options+=("$1")
+        ;;
+      *)
+        requested_packages+=("$1")
+        ;;
+    esac
+    shift
+  done
+
   cd "$DOTFILES_DIR"
 
   package_list="$(selected_packages "${requested_packages[@]}")"
 
-  reconcile_targets "$package_list"
-
   while IFS= read -r package; do
     [ -n "$package" ] || continue
+    if [ ! -d "$STOW_DIR/$package" ]; then
+      echo "error: unknown package: $package" >&2
+      exit 1
+    fi
     packages+=("$package")
   done <<EOF
 $package_list
 EOF
 
-  echo "> stow $mode -d $STOW_DIR -t $HOME ${packages[*]}"
-  stow "$mode" -d "$STOW_DIR" -t "$HOME" "${packages[@]}"
+  reconcile_targets "$package_list"
+
+  echo "> stow $mode ${stow_options[*]} -d $STOW_DIR -t $HOME ${packages[*]}"
+  stow "$mode" "${stow_options[@]}" -d "$STOW_DIR" -t "$HOME" "${packages[@]}"
 }
 
 run_install() {
