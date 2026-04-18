@@ -1,6 +1,6 @@
 # Dotfiles Installation
 
-This repository uses GNU Stow to manage symlinks for shell files and application config.
+This repository uses GNU Stow to manage symlinks for shell files and application config. Common cross-system files live in the `home` Stow package.
 
 ## Quick Setup
 

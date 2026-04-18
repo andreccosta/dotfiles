@@ -41,21 +41,15 @@ require_command() {
 
 base_packages() {
   cat <<'EOF'
-shell
-bin
+home
 agents
 alacritty
-bat
-btop
 ghostty
 kanata
 linearmouse
-mise
 nvim
 opencode
 pi
-starship
-tmux
 zed
 EOF
 }
