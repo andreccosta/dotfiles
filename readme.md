@@ -1,6 +1,6 @@
 # dotfiles
 
-This repo uses [GNU Stow](https://www.gnu.org/software/stow/) to manage symlinks into `$HOME`. Common cross-system files live in the `home` Stow package.
+This repo uses [GNU Stow](https://www.gnu.org/software/stow/) to manage symlinks into `$HOME`. Common cross-system files live in the `home` Stow package, and platform-specific packages are only installed on matching systems.
 
 ## Install
 
