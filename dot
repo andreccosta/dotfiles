@@ -179,6 +179,10 @@ reconcile_targets() {
       return 0
     fi
 
+    if [ -d "$src" ] && [ ! -e "$target" ]; then
+      return 0
+    fi
+
     if [ -d "$src" ]; then
       while IFS= read -r child; do
         reconcile_target "$package" "$child"
@@ -203,6 +207,7 @@ run_stow() {
   local requested_packages=()
   local stow_options=()
   local packages=()
+  local stow_command=()
   local package_list
   local package
   require_command stow
@@ -226,7 +231,11 @@ run_stow() {
 
   cd "$DOTFILES_DIR"
 
-  package_list="$(selected_packages "${requested_packages[@]}")"
+  if [ ${#requested_packages[@]} -gt 0 ]; then
+    package_list="$(selected_packages "${requested_packages[@]}")"
+  else
+    package_list="$(selected_packages)"
+  fi
 
   while IFS= read -r package; do
     [ -n "$package" ] || continue
@@ -241,8 +250,14 @@ EOF
 
   reconcile_targets "$package_list"
 
-  echo "> stow $mode ${stow_options[*]} -d $STOW_DIR -t $HOME ${packages[*]}"
-  stow "$mode" "${stow_options[@]}" -d "$STOW_DIR" -t "$HOME" "${packages[@]}"
+  stow_command=(stow "$mode")
+  if [ ${#stow_options[@]} -gt 0 ]; then
+    stow_command+=("${stow_options[@]}")
+  fi
+  stow_command+=(-d "$STOW_DIR" -t "$HOME" "${packages[@]}")
+
+  echo "> ${stow_command[*]}"
+  "${stow_command[@]}"
 }
 
 run_install() {
