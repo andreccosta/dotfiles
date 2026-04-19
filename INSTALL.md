@@ -91,7 +91,8 @@ Update system packages and mise tools:
 ```
 
 - macOS: runs `brew update && brew upgrade`, then `mise up`
-- Linux: runs `paru -Syu` if available, then `mise up`
+- Linux (Debian/Ubuntu): runs `sudo apt-get update && sudo apt-get upgrade -y`, then `mise up`
+- Linux (Arch): runs `paru -Syu` or `yay -Syu` if available, then `mise up`
 
 Install macOS Brewfile packages and apply macOS defaults:
 

@@ -43,7 +43,8 @@ $ ./dot update
 ```
 
 - macOS: `brew update && brew upgrade`, then `mise up`
-- Linux: `paru -Syu` if available, then `mise up`
+- Linux (Debian/Ubuntu): `sudo apt-get update && sudo apt-get upgrade -y`, then `mise up`
+- Linux (Arch): `paru -Syu` or `yay -Syu` if available, then `mise up`
 
 ## macOS bootstrap
 
