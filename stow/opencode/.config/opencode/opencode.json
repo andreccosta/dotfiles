@@ -4,6 +4,7 @@
   "share": "disabled",
   "lsp": false,
   "formatter": false,
+  "snapshot": false,
   "mcp": {
     "linear": {
       "enabled": false,
