@@ -8,7 +8,7 @@ mouse-hide-while-typing = false
 window-save-state = never
 window-inherit-font-size = false
 macos-option-as-alt = true
-scrollback-limit = 100000
+scrollback-limit = 100000000
 unfocused-split-opacity=0.7
 
 custom-shader = ~/.config/ghostty/shaders/cursor_warp.glsl
@@ -22,10 +22,7 @@ window-width = 120
 window-height = 30
 
 # update channel
-auto-update-channel = stable
-
-# ssh
-shell-integration-features = sudo, ssh-terminfo
+auto-update-channel = tip
 
 # binds
 keybind = home=csi:H
