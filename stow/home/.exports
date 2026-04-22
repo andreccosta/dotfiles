@@ -1,6 +1,8 @@
 # Default editor
-export EDITOR="code --wait"
+export EDITOR="nano"
 
-# Disable dotnet telemetry
+# Disable telemetry
+export GH_TELEMETRY=false
+export DO_NOT_TRACK=true
 export DOTNET_CLI_TELEMETRY_OPTOUT=1
 
