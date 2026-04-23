@@ -81,15 +81,19 @@ tm() {
   local name git_root
   name=$(basename "$PWD")
 
-  git_root=$(git rev-parse --show-toplevel 2>/dev/null) && \
+  if git_root=$(git rev-parse --show-toplevel 2>/dev/null); then
     name=$(basename "$git_root")
+  fi
 
-  if tmux has-session -t "$name" 2>/dev/null; then
-    tmux attach-session -t "$name"
-  else
+  if ! tmux has-session -t "=${name}" 2>/dev/null; then
     tmux new-session -d -s "$name" -n main "$@"
-    tmux new-window -d -t "$name" -n zsh
-    tmux attach-session -t "$name"
+    tmux new-window -d -t "=${name}" -n zsh
+  fi
+
+  if [ -n "$TMUX" ]; then
+    tmux switch-client -t "=${name}"
+  else
+    tmux attach-session -t "=${name}"
   fi
 }
 
