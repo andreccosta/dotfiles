@@ -1,4 +1,9 @@
 {
+  "agent_servers": {
+    "opencode": {
+      "type": "registry"
+    }
+  },
   "icon_theme": "Material Icon Theme",
   "edit_predictions": {
     "provider": "copilot",
