@@ -100,6 +100,7 @@ resolve_link_target() {
   local path="$1"
   local target
   local dir
+  local target_dir
 
   target="$(readlink "$path")"
   case "$target" in
@@ -108,7 +109,10 @@ resolve_link_target() {
       ;;
     *)
       dir="$(cd -P "$(dirname "$path")" && pwd)"
-      printf '%s\n' "$(cd -P "$dir/$(dirname "$target")" && pwd)/$(basename "$target")"
+      if ! target_dir="$(cd -P "$dir/$(dirname "$target")" 2>/dev/null && pwd)"; then
+        return 1
+      fi
+      printf '%s\n' "$target_dir/$(basename "$target")"
       ;;
   esac
 }
@@ -121,7 +125,10 @@ has_stow_ancestor() {
   current="$(dirname "$path")"
   while [ "$current" != "$HOME" ] && [ "$current" != "/" ]; do
     if [ -L "$current" ]; then
-      resolved="$(resolve_link_target "$current")"
+      if ! resolved="$(resolve_link_target "$current")"; then
+        current="$(dirname "$current")"
+        continue
+      fi
       case "$resolved" in
         "$STOW_DIR"/*)
           return 0
@@ -210,6 +217,7 @@ run_stow() {
   local stow_command=()
   local package_list
   local package
+  local skip_reconcile=0
   require_command stow
 
   while [ "$#" -gt 0 ]; do
@@ -219,8 +227,17 @@ run_stow() {
         requested_packages+=("$@")
         break
         ;;
-      -*)
+      -n|--no|--simulate)
         stow_options+=("$1")
+        skip_reconcile=1
+        ;;
+      -*=*)
+        stow_options+=("$1")
+        ;;
+      -*)
+        echo "error: unsupported stow option form: $1" >&2
+        echo "use --flag=value for options with values" >&2
+        exit 1
         ;;
       *)
         requested_packages+=("$1")
@@ -248,7 +265,9 @@ run_stow() {
 $package_list
 EOF
 
-  reconcile_targets "$package_list"
+  if [ "$skip_reconcile" -eq 0 ]; then
+    reconcile_targets "$package_list"
+  fi
 
   stow_command=(stow "$mode")
   if [ ${#stow_options[@]} -gt 0 ]; then
@@ -269,6 +288,11 @@ run_restow() {
 }
 
 run_update() {
+  if [ "$#" -gt 0 ]; then
+    echo "error: update does not accept package arguments" >&2
+    exit 1
+  fi
+
   require_command mise
 
   case "$(uname -s)" in
@@ -300,6 +324,11 @@ run_update() {
 }
 
 run_macos() {
+  if [ "$#" -gt 0 ]; then
+    echo "error: macos does not accept package arguments" >&2
+    exit 1
+  fi
+
   if [ "$(uname -s)" != "Darwin" ]; then
     echo "error: macos command is only supported on macOS" >&2
     exit 1
@@ -326,12 +355,18 @@ main() {
       run_restow "$@"
       ;;
     update)
-      run_update
+      shift
+      run_update "$@"
       ;;
     macos)
-      run_macos
+      shift
+      run_macos "$@"
       ;;
     -h|--help|help|"")
+      if [ "$#" -gt 1 ]; then
+        echo "error: help does not accept arguments" >&2
+        exit 1
+      fi
       usage
       ;;
     *)
