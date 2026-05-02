@@ -1,5 +1,5 @@
 {
-  "lastChangelogVersion": "0.67.68",
+  "lastChangelogVersion": "0.72.0",
   "theme": "terminal",
   "defaultProvider": "openai-codex",
   "defaultModel": "gpt-5.4",
@@ -7,5 +7,6 @@
   "packages": [
     "npm:@plannotator/pi-extension"
   ],
-  "hideThinkingBlock": false
+  "hideThinkingBlock": false,
+  "transport": "websocket-cached"
 }
