@@ -27,7 +27,6 @@ auto-update-channel = tip
 # binds
 keybind = home=csi:H
 keybind = end=csi:F
-keybind = shift+enter=text:\n
 keybind = cmd+enter=unbind
 
 config-file = ?~/.local/ghostty/config
