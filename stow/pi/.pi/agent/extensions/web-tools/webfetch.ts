@@ -1,6 +1,6 @@
-import { formatSize } from "@mariozechner/pi-coding-agent";
-import { StringEnum, type ImageContent, type TextContent } from "@mariozechner/pi-ai";
-import { Text } from "@mariozechner/pi-tui";
+import { formatSize } from "@earendil-works/pi-coding-agent";
+import { StringEnum, type ImageContent, type TextContent } from "@earendil-works/pi-ai";
+import { Text } from "@earendil-works/pi-tui";
 import { Type } from "@sinclair/typebox";
 import { htmlToMarkdown, htmlToText, isPoorMarkdownConversion } from "./html.ts";
 import {

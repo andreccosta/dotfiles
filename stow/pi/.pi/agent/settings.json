@@ -1,9 +1,9 @@
 {
-  "lastChangelogVersion": "0.72.0",
+  "lastChangelogVersion": "0.74.0",
   "theme": "terminal",
   "defaultProvider": "openai-codex",
-  "defaultModel": "gpt-5.4",
-  "defaultThinkingLevel": "medium",
+  "defaultModel": "gpt-5.5",
+  "defaultThinkingLevel": "low",
   "packages": [
     "npm:@plannotator/pi-extension"
   ],
