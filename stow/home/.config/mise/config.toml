@@ -13,7 +13,7 @@ env_shell_expand = true
 idiomatic_version_file_enable_tools = ["ruby"]
 
 [settings.ruby]
-compile = true
+compile = false
 
 [settings.npm]
 package_manager = "pnpm"
