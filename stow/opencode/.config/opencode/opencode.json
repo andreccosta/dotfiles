@@ -107,6 +107,9 @@
       }
     }
   },
+  "plugin": [
+    ["@plannotator/opencode@latest", { "workflow": "manual"}]
+  ],
   "permission": {
     "bash": {
       "rm *": "ask"
