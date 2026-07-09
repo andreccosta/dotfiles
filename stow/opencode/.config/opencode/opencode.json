@@ -108,7 +108,7 @@
     }
   },
   "plugin": [
-    ["@plannotator/opencode@latest", { "workflow": "manual"}]
+    ["@plannotator/opencode@latest", { "workflow": "manual", "planningAgents": [] }]
   ],
   "permission": {
     "bash": {
