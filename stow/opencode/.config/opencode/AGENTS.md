@@ -2,7 +2,7 @@ In all interaction and commit messages, be extremely concise and sacrifice gramm
 
 # General
 
-You run in an environment where ast-grep (`sg`) is available; whenever a search requires syntax-aware or structural matching, default to `sg --lang <lang> -p '<pattern>'` (infer the language from context) and avoid falling back to text-only tools like `rg` or `grep` unless I explicitly request a plain-text search.
+You run in an environment where ast-grep (`ast-grep`) is available; whenever a search requires syntax-aware or structural matching, default to `ast-grep --lang <lang> -p '<pattern>'` (infer the language from context) and avoid falling back to text-only tools like `rg` or `grep` unless I explicitly request a plain-text search.
 
 # Code Quality Standards
 
