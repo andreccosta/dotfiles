@@ -44,6 +44,7 @@ base_packages() {
 home
 agents
 ghostty
+herdr
 kanata
 nvim
 opencode
