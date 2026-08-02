@@ -1,5 +1,8 @@
 onboarding = false
 
+[keys]
+prefix = "backtick"
+
 [ui]
 agent_panel_sort = "spaces"
 
