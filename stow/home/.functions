@@ -77,6 +77,20 @@ until_fail() {
   done
 }
 
+wta() {
+  if [[ "${1:-}" == "--tmux" ]]; then
+    shift
+    wta-tmux "$@"
+    return
+  fi
+
+  wt switch -c -x "$HOME/bin/herdr-opencode" "$@"
+}
+
+wta-tmux() {
+  wt switch -c -x "tm opencode" "$@"
+}
+
 tm() {
   local name git_root
   name=$(basename "$PWD")

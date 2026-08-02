@@ -57,7 +57,3 @@ fi
 if type bundle &>/dev/null; then
   alias bx='bundler exec'
 fi
-
-# wt
-alias wta='wt switch -x "tm opencode" -c'
-

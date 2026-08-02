@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+inside_herdr=${HERDR_ENV:-0}
+
+if [[ "$inside_herdr" != "1" ]] && ! herdr status server >/dev/null 2>&1; then
+  nohup herdr server >/dev/null 2>&1 &
+
+  for _ in {1..50}; do
+    herdr status server >/dev/null 2>&1 && break
+    sleep 0.1
+  done
+
+  if ! herdr status server >/dev/null 2>&1; then
+    echo "herdr-opencode: failed to start the Herdr server" >&2
+    exit 1
+  fi
+fi
+
+response=$(herdr workspace create --cwd "$PWD" --focus)
+pane_id=$(jq -er '.result.root_pane.pane_id' <<< "$response")
+
+herdr agent start opencode --kind opencode --pane "$pane_id" -- "$@"
+
+if [[ "$inside_herdr" != "1" ]]; then
+  exec herdr
+fi
