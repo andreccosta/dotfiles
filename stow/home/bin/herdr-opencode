@@ -21,7 +21,20 @@ fi
 response=$(herdr workspace create --cwd "$PWD" --focus)
 pane_id=$(jq -er '.result.root_pane.pane_id' <<< "$response")
 
-herdr agent start opencode --kind opencode --pane "$pane_id" -- "$@"
+deadline=$((SECONDS + 30))
+while true; do
+  if agent_output=$(herdr agent start opencode --kind opencode --pane "$pane_id" -- "$@" 2>&1); then
+    printf '%s\n' "$agent_output"
+    break
+  fi
+
+  if [[ "$agent_output" != *'"code":"agent_pane_busy"'* ]] || (( SECONDS >= deadline )); then
+    printf '%s\n' "$agent_output" >&2
+    exit 1
+  fi
+
+  sleep 0.1
+done
 
 if [[ "$inside_herdr" != "1" ]]; then
   exec herdr
