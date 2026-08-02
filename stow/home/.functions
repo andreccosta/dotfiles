@@ -91,6 +91,36 @@ wta-tmux() {
   wt switch -c -x "tm opencode" "$@"
 }
 
+hm() {
+  local cwd workspace_id
+  cwd=$(git rev-parse --show-toplevel 2>/dev/null || pwd -P)
+
+  if ! herdr status server >/dev/null 2>&1; then
+    (cd "$cwd" && exec herdr)
+    return
+  fi
+
+  workspace_id=$(
+    herdr api snapshot |
+      jq -r --arg cwd "$cwd" '
+        .result.snapshot
+        | ([.workspaces[] | select(.worktree.checkout_path? == $cwd) | .workspace_id]
+          + [.panes[] | select(.cwd == $cwd) | .workspace_id])
+        | first // empty
+      '
+  )
+
+  if [[ -n "$workspace_id" ]]; then
+    herdr workspace focus "$workspace_id" >/dev/null
+  else
+    herdr workspace create --cwd "$cwd" --focus >/dev/null
+  fi
+
+  if [[ "${HERDR_ENV:-0}" != "1" ]]; then
+    herdr
+  fi
+}
+
 tm() {
   local name git_root
   name=$(basename "$PWD")
