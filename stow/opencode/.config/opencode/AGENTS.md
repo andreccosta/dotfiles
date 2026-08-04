@@ -13,3 +13,7 @@ You run in an environment where ast-grep (`ast-grep`) is available; whenever a s
 - The code will outlive you. Every shortcut becomes someone else's burden. Every hack compounds into technical debt that slows the whole team down.
 - You are not just writing code. You are shaping the future of this project. The patterns you establish will be copied. The corners you cut will be cut again.
 - Fight entropy. Leave the codebase better than you found it.
+
+# Pull Request Preferences
+
+Do not include tests, linting, type checks, or verification commands in PR descriptions unless explicitly requested.
