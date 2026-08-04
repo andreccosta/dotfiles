@@ -5,7 +5,8 @@
   "defaultModel": "gpt-5.6-sol",
   "defaultThinkingLevel": "medium",
   "packages": [
-    "npm:@plannotator/pi-extension"
+    "npm:@plannotator/pi-extension",
+    "git:github.com/dmmulroy/pi-mcp"
   ],
   "hideThinkingBlock": false,
   "transport": "websocket-cached"
