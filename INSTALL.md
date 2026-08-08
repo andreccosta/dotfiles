@@ -104,6 +104,5 @@ Install macOS Brewfile packages and apply macOS defaults:
 
 - `dot` is a repo-local bootstrap script. Run it from the root of this repository as `./dot ...`.
 - Existing files in `$HOME` can conflict with Stow-managed symlinks. Move or back them up first if Stow reports a conflict.
-- Windows setup is still handled separately by `win/install.ps1`.
 - `./dot macos` runs `brew bundle --file mac/Brewfile` and `mac/set_defaults.sh`.
 - macOS system setup is still separate from Stow-managed symlinks.
