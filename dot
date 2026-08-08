@@ -147,6 +147,15 @@ reconcile_targets() {
   local package
   local src
 
+  is_generated_source() {
+    case "$(basename "$1")" in
+      node_modules|package-lock.json|pnpm-lock.yaml)
+        return 0
+        ;;
+    esac
+    return 1
+  }
+
   reconcile_target() {
     local package="$1"
     local src="$2"
@@ -154,6 +163,12 @@ reconcile_targets() {
     local target
     local resolved
     local child
+
+    # Generated dependency trees are local state, not dotfiles.  In
+    # particular, pnpm's symlink graph must not be followed or modified.
+    if is_generated_source "$src"; then
+      return 0
+    fi
 
     rel="${src#"$STOW_DIR/$package"/}"
     target="$HOME/$rel"
@@ -191,7 +206,9 @@ reconcile_targets() {
       return 0
     fi
 
-    if [ -d "$src" ]; then
+    # Never recurse through directory symlinks.  Apart from being unsafe,
+    # dependency managers commonly create cyclic symlink graphs.
+    if [ -d "$src" ] && [ ! -L "$src" ]; then
       while IFS= read -r child; do
         reconcile_target "$package" "$child"
       done < <(find "$src" -mindepth 1 -maxdepth 1)
