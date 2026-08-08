@@ -58,8 +58,6 @@ os_packages() {
     Darwin)
       cat <<'EOF'
 linearmouse
-mac-skhd
-mac-yabai
 EOF
       ;;
     Linux)
