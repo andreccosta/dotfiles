@@ -1,7 +1,7 @@
 {
   "lastChangelogVersion": "0.84.1",
   "theme": "terminal",
-  "defaultProvider": "openai-codex",
+  "defaultProvider": "work",
   "defaultModel": "gpt-5.6-sol-fast",
   "defaultThinkingLevel": "medium",
   "packages": [

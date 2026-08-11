@@ -8,7 +8,10 @@ const CODEX_FAST_ALIASES: Record<string, string> = {
 export default function (pi: ExtensionAPI) {
   pi.on("before_provider_request", (event, ctx) => {
     const model = ctx.model;
-    if (model?.provider !== "openai-codex" || model.api !== "openai-codex-responses") return;
+    const isCodexProvider =
+      (model?.provider === "openai-codex" && model.api === "openai-codex-responses") ||
+      (model?.provider === "work" && model.api === "work-codex-lb-responses");
+    if (!isCodexProvider) return;
 
     const targetModel = CODEX_FAST_ALIASES[model.id];
     if (!targetModel) return;
