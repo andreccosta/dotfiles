@@ -1,6 +1,7 @@
 import type { Model } from "@earendil-works/pi-ai";
 import type { ThinkingLevel } from "@earendil-works/pi-agent-core";
 import type { ResponseItem, ResponsesReasoningConfig, ResponsesTextConfig } from "./remote-compaction.ts";
+import { resolveCodexModelAlias } from "../openai-fast-aliases.ts";
 
 const OPENAI_CODEX_PROVIDER = "openai-codex";
 const OPENAI_CODEX_API = "openai-codex-responses";
@@ -34,6 +35,12 @@ export function isOpenAICodexLbModel(model: unknown): model is CodexModel {
 
 export function isSupportedCodexModel(model: unknown): model is CodexModel {
   return isOpenAICodexModel(model) || isOpenAICodexLbModel(model);
+}
+
+/** Resolve repository-local model aliases before making nested Codex requests. */
+export function resolveCodexRequestModel(model: CodexModel): CodexModel {
+  const id = resolveCodexModelAlias(model.id);
+  return id === model.id ? model : { ...model, id };
 }
 
 export function modelKey(model: Pick<CodexModel, "provider" | "api" | "id">): string {

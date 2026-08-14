@@ -7,6 +7,7 @@ import {
   isOpenAICodexLbModel,
   isOpenAICodexModel,
   isSupportedCodexModel,
+  resolveCodexRequestModel,
   thinkingLevelToResponsesReasoning,
 } from "./model.ts";
 import {
@@ -51,6 +52,15 @@ const workModel = model(
   "work-codex-lb-responses",
   "http://127.0.0.1/backend-api",
 );
+
+test("resolves fast aliases for nested Codex requests", () => {
+  const aliasedModel = { ...workModel, id: "gpt-5.6-sol-fast" };
+  const requestModel = resolveCodexRequestModel(aliasedModel);
+
+  assert.equal(requestModel.id, "gpt-5.6-sol");
+  assert.equal(aliasedModel.id, "gpt-5.6-sol-fast");
+  assert.equal(resolveCodexRequestModel(workModel), workModel);
+});
 
 test("targets only OpenAI Codex providers", () => {
   assert.equal(isOpenAICodexModel(codexModel), true);

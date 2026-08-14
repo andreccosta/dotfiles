@@ -10,6 +10,7 @@ import {
   looksLikeResponsesPayload,
   messageMatchesModel,
   modelKey,
+  resolveCodexRequestModel,
   thinkingLevelToResponsesReasoning,
 } from "./model.ts";
 import {
@@ -141,6 +142,11 @@ export default function openAICodexCompactionExtension(pi: ExtensionAPI) {
     const model = ctx.model;
     if (!isSupportedCodexModel(model)) return;
 
+    // Fast mode is represented by a local model alias. Nested completion and
+    // remote-compaction calls bypass the normal before_provider_request alias
+    // rewrite, so use the provider-facing model id explicitly here.
+    const requestModel = resolveCodexRequestModel(model);
+
     const auth = await ctx.modelRegistry.getApiKeyAndHeaders(model);
     if (!auth.ok || !auth.apiKey) return;
 
@@ -157,13 +163,13 @@ export default function openAICodexCompactionExtension(pi: ExtensionAPI) {
     const thinkingLevel = pi.getThinkingLevel() ?? getBranchThinkingLevel(branchEntries);
     const reasoning =
       observedRequestShape?.reasoning ??
-      thinkingLevelToResponsesReasoning(model, thinkingLevel);
+      thinkingLevelToResponsesReasoning(requestModel, thinkingLevel);
 
     const [localResult, remoteResult] = await Promise.allSettled([
       generateBestEffortLocalSummary({
         preparation: event.preparation,
         messages: fullBranchMessages,
-        model,
+        model: requestModel,
         apiKey: auth.apiKey,
         headers,
         customInstructions: event.customInstructions,
@@ -176,11 +182,11 @@ export default function openAICodexCompactionExtension(pi: ExtensionAPI) {
         tokensBefore: event.preparation.tokensBefore,
       }),
       callRemoteCompactionEndpoint({
-        model,
+        model: requestModel,
         apiKey: auth.apiKey,
         headers,
         sessionId,
-        input: normalizeResponseItemsForPrompt(responseItems, model),
+        input: normalizeResponseItemsForPrompt(responseItems, requestModel),
         instructions: ctx.getSystemPrompt(),
         tools: buildToolsPayload(pi.getAllTools(), pi.getActiveTools()),
         parallelToolCalls: true,
