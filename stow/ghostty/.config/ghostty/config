@@ -19,7 +19,7 @@ window-width = 120
 window-height = 30
 
 # update channel
-auto-update-channel = tip
+auto-update-channel = stable
 
 # binds
 keybind = home=csi:H
