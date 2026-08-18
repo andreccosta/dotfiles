@@ -48,6 +48,7 @@
 	ss = status -sb
 	st = status
 	sw = switch
+	reset-remote = !git fetch && git reset --hard @{u}
 	review = !git diff $(git merge-base origin/master HEAD)
 	review-files = !git diff $(git merge-base origin/master HEAD) --name-only
 	review-committed = diff origin/master...
