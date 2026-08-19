@@ -1,7 +1,6 @@
-import { Buffer } from "node:buffer";
 import { createHash } from "node:crypto";
-import { existsSync, readFileSync, realpathSync } from "node:fs";
-import { dirname, join, parse } from "node:path";
+import { existsSync, mkdirSync, readFileSync, realpathSync, writeFileSync } from "node:fs";
+import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import type {
 	Api,
@@ -10,11 +9,11 @@ import type {
 	Model,
 	SimpleStreamOptions,
 } from "@earendil-works/pi-ai";
+import { getAgentDir, getPackageDir } from "@earendil-works/pi-coding-agent";
 import { CODEX_LB_PATCH_MARKER, patchOpenAICodexAdapter } from "./patch.ts";
 
 const CODEX_ADAPTER_SPECIFIER = "@earendil-works/pi-ai/api/openai-codex-responses";
 const CODEX_ADAPTER_RELATIVE_PATH = "dist/api/openai-codex-responses.js";
-const CODING_AGENT_PACKAGE = "@earendil-works/pi-coding-agent";
 const RELATIVE_FROM_PATTERN = /\bfrom\s+(["'])(\.\.?\/[^"']+)\1/g;
 const RELATIVE_SIDE_EFFECT_IMPORT_PATTERN = /\bimport\s+(["'])(\.\.?\/[^"']+)\1/g;
 const RELATIVE_DYNAMIC_IMPORT_PATTERN = /\bimport\s*\(\s*(["'])(\.\.?\/[^"']+)\1\s*\)/g;
@@ -41,40 +40,17 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 	return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-function readPackageName(packageJsonPath: string): string | undefined {
-	try {
-		const parsed: unknown = JSON.parse(readFileSync(packageJsonPath, "utf8"));
-		return isRecord(parsed) && typeof parsed.name === "string" ? parsed.name : undefined;
-	} catch {
-		return undefined;
-	}
-}
-
-function findPackageRoot(startPath: string, packageName: string): string | undefined {
-	let directory = dirname(startPath);
-	const root = parse(directory).root;
-
-	while (directory !== root) {
-		if (readPackageName(join(directory, "package.json")) === packageName) return directory;
-		directory = dirname(directory);
-	}
-
-	return undefined;
-}
-
 function resolveRuntimeCodexAdapterUrl(): URL | undefined {
-	const entryPath = process.argv[1];
-	if (!entryPath) return undefined;
+	const packageRoots = [
+		dirname(getPackageDir()),
+		join(getAgentDir(), "node_modules", "@earendil-works"),
+	];
 
-	try {
-		const codingAgentRoot = findPackageRoot(realpathSync(entryPath), CODING_AGENT_PACKAGE);
-		if (!codingAgentRoot) return undefined;
-
-		const candidate = join(dirname(codingAgentRoot), "pi-ai", CODEX_ADAPTER_RELATIVE_PATH);
-		return existsSync(candidate) ? pathToFileURL(realpathSync(candidate)) : undefined;
-	} catch {
-		return undefined;
+	for (const root of packageRoots) {
+		const candidate = join(root, "pi-ai", CODEX_ADAPTER_RELATIVE_PATH);
+		if (existsSync(candidate)) return pathToFileURL(realpathSync(candidate));
 	}
+	return undefined;
 }
 
 export function resolveCodexAdapterUrl(): URL {
@@ -137,9 +113,11 @@ export async function loadOpenAICodexLbAdapter(options: CloneOptions = {}): Prom
 	const patchedSource = patchOpenAICodexAdapter(source);
 	const cloneSource = absolutizeRelativeImports(patchedSource, canonicalSourceUrl);
 	const fingerprint = createHash("sha256").update(cloneSource).digest("hex").slice(0, 16);
-	const encodedSource = Buffer.from(`${cloneSource}\n//# sourceURL=openai-codex-lb-${fingerprint}.js\n`).toString("base64");
-	const cloneUrl = `data:text/javascript;base64,${encodedSource}#${fingerprint}`;
-	const loaded: unknown = await import(cloneUrl);
+	const cacheDir = join(getAgentDir(), "cache", "openai-codex-lb");
+	const clonePath = join(cacheDir, `adapter-${fingerprint}.mjs`);
+	mkdirSync(cacheDir, { recursive: true });
+	if (!existsSync(clonePath)) writeFileSync(clonePath, cloneSource, { mode: 0o600 });
+	const loaded: unknown = await import(pathToFileURL(clonePath).href);
 
 	if (!isAdapter(loaded)) {
 		const exports = isRecord(loaded) ? Object.keys(loaded).sort().join(", ") : typeof loaded;

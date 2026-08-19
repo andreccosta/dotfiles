@@ -8,13 +8,6 @@
     ]
   },
   "dependencies": {
-    "@earendil-works/pi-agent-core": "*",
-    "@earendil-works/pi-ai": "*",
-    "@earendil-works/pi-coding-agent": "*",
-    "@earendil-works/pi-tui": "*",
-    "diff": "^8.0.4"
-  },
-  "peerDependencies": {
-    "typescript": "^5"
+    "@earendil-works/pi-ai": "*"
   }
 }
