@@ -1,12 +1,14 @@
 [tools]
+claude = "latest"
+codex = "latest"
 go = "latest"
 node = "lts"
+pi = "latest"
 pnpm = "latest"
 python = "prefix:3.14"
 ruby = "latest"
 rust = "latest"
 zig = "latest"
-"npm:@earendil-works/pi-coding-agent" = "latest"
 
 [settings]
 env_shell_expand = true
