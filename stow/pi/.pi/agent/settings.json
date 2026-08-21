@@ -9,5 +9,7 @@
     "git:github.com/dmmulroy/pi-mcp"
   ],
   "hideThinkingBlock": false,
-  "transport": "websocket-cached"
+  "transport": "websocket-cached",
+  "steeringMode": "all",
+  "followUpMode": "all"
 }
