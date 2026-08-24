@@ -4,8 +4,10 @@ onboarding = false
 prefix = "backtick"
 
 [ui]
-agent_panel_sort = "spaces"
+agent_panel_sort = "priority"
 prompt_new_tab_name = false
+status_indicators = "symbols"
+show_agent_labels_on_pane_borders = false
 
 [theme]
 name = "tokyo-night"
