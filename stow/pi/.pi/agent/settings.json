@@ -11,5 +11,6 @@
   "hideThinkingBlock": false,
   "transport": "websocket-cached",
   "steeringMode": "all",
-  "followUpMode": "all"
+  "followUpMode": "all",
+  "showCacheMissNotices": true
 }
