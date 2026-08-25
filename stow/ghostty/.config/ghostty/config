@@ -25,5 +25,6 @@ auto-update-channel = stable
 keybind = home=csi:H
 keybind = end=csi:F
 keybind = cmd+enter=unbind
+keybind = ctrl+shift+r=reset
 
 config-file = ?~/.local/ghostty/config
