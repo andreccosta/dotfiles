@@ -30,10 +30,10 @@ On macOS, then install Brewfile packages and apply defaults:
 $ ./dot macos
 ```
 
-## Re-stow after changes
+## Sync after changes
 
 ```console
-$ ./dot restow
+$ ./dot install
 ```
 
 ## Update tools

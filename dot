@@ -20,8 +20,7 @@ usage() {
 Usage: ./dot <command> [package...]
 
 Commands:
-  install    Stow the default or specified dotfiles packages into $HOME
-  restow     Re-stow the default or specified dotfiles packages into $HOME
+  install    Sync the default or specified dotfiles packages into $HOME
   update     Update system packages and mise tools
   macos      Install macOS Brewfile packages and apply macOS defaults
   help       Show this help message
@@ -300,10 +299,6 @@ EOF
 }
 
 run_install() {
-  run_stow -S "$@"
-}
-
-run_restow() {
   run_stow -R "$@"
 }
 
@@ -369,10 +364,6 @@ main() {
     install)
       shift
       run_install "$@"
-      ;;
-    restow)
-      shift
-      run_restow "$@"
       ;;
     update)
       shift

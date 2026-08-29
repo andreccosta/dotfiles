@@ -78,10 +78,10 @@ Install only specific packages:
 ./dot install home nvim
 ```
 
-Re-stow after making changes:
+Sync after making changes:
 
 ```bash
-./dot restow
+./dot install
 ```
 
 Update system packages and mise tools:
