@@ -1,4 +1,4 @@
-worktree-path = "{{ repo_path }}/../{{ branch | sanitize }}"
+worktree-path = '{{ repo_path | replace("/code/src/", "/code/worktrees/") }}/{{ branch | sanitize }}'
 
 [aliases]
 review = "wt switch --no-hooks {{ args[0] }}"
