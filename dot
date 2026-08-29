@@ -284,6 +284,9 @@ run_stow() {
 $package_list
 EOF
 
+  RUN_STOW_PACKAGE_LIST="$package_list"
+  RUN_STOW_SKIP_RECONCILE="$skip_reconcile"
+
   if [ "$skip_reconcile" -eq 0 ]; then
     reconcile_targets "$package_list"
   fi
@@ -298,8 +301,29 @@ EOF
   "${stow_command[@]}"
 }
 
+package_list_contains() {
+  local needle="$1"
+  local package
+
+  while IFS= read -r package; do
+    [ "$package" = "$needle" ] && return 0
+  done <<EOF
+$RUN_STOW_PACKAGE_LIST
+EOF
+
+  return 1
+}
+
 run_install() {
   run_stow -R "$@"
+
+  if [ "${RUN_STOW_SKIP_RECONCILE:-0}" -eq 0 ] && package_list_contains pi; then
+    cat <<EOF
+
+Note: the pi package includes a package.json for local extensions.
+If dependencies are missing, install them in \$HOME/.pi/agent.
+EOF
+  fi
 }
 
 run_update() {
