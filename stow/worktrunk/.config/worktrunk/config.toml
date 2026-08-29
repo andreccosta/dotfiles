@@ -1,5 +1,5 @@
 worktree-path = '{{ repo_path | replace("/code/src/", "/code/worktrees/") }}/{{ branch | sanitize }}'
 
 [aliases]
-review = "wt switch --no-hooks {{ args[0] }}"
+review = "wt switch --no-hooks {{ args }}"
 review-remove = "wt remove --no-hooks --force-delete {{ args }}"
