@@ -3,14 +3,76 @@
 set -euo pipefail
 
 remote_name="origin"
+dry_run=false
+assume_yes=false
+main_branch_arg=""
 
-if [[ $# -gt 1 ]]; then
-    echo "Usage: $(basename "$0") [main-branch]" >&2
+usage() {
+    cat <<EOF
+Usage: $(basename "$0") [--dry-run | --yes] [main-branch]
+
+Options:
+  --dry-run  Show branches that would be deleted without deleting them.
+             The remote is still fetched and pruned.
+  --yes      Delete matching branches without prompting.
+  -h, --help Show this help.
+EOF
+}
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --dry-run)
+            dry_run=true
+            ;;
+        --yes)
+            assume_yes=true
+            ;;
+        -h|--help)
+            usage
+            exit 0
+            ;;
+        --)
+            shift
+            if [[ $# -gt 1 || ( $# -eq 1 && -n "$main_branch_arg" ) ]]; then
+                usage >&2
+                exit 1
+            fi
+            [[ $# -eq 1 ]] && main_branch_arg="$1"
+            break
+            ;;
+        -*)
+            echo "Error: unknown option '$1'." >&2
+            usage >&2
+            exit 1
+            ;;
+        *)
+            if [[ -n "$main_branch_arg" ]]; then
+                usage >&2
+                exit 1
+            fi
+            main_branch_arg="$1"
+            ;;
+    esac
+    shift
+done
+
+if [[ "$dry_run" == true && "$assume_yes" == true ]]; then
+    echo "Error: --dry-run and --yes cannot be used together." >&2
     exit 1
 fi
 
 if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
     echo "Error: not inside a git repository." >&2
+    exit 1
+fi
+
+if ! git remote get-url "$remote_name" >/dev/null 2>&1; then
+    echo "Error: remote '$remote_name' not found." >&2
+    exit 1
+fi
+
+if ! git fetch --prune "$remote_name"; then
+    echo "Error: failed to fetch '$remote_name'; refusing to use cached remote-tracking refs." >&2
     exit 1
 fi
 
@@ -23,7 +85,7 @@ detect_default_branch() {
     fi
 
     for candidate in main master; do
-        if git show-ref --verify --quiet "refs/heads/${candidate}" || git show-ref --verify --quiet "refs/remotes/${remote_name}/${candidate}"; then
+        if git show-ref --verify --quiet "refs/remotes/${remote_name}/${candidate}"; then
             printf '%s\n' "$candidate"
             return
         fi
@@ -33,61 +95,81 @@ detect_default_branch() {
     exit 1
 }
 
-main_branch="${1:-$(detect_default_branch)}"
+main_branch="${main_branch_arg:-$(detect_default_branch)}"
 
-if git remote get-url "$remote_name" >/dev/null 2>&1; then
-    git fetch --prune "$remote_name" >/dev/null 2>&1 || echo "Warning: failed to fetch '$remote_name'; using local refs." >&2
-fi
-
-if git show-ref --verify --quiet "refs/remotes/${remote_name}/${main_branch}"; then
-    base_ref="${remote_name}/${main_branch}"
-else
-    base_ref="$main_branch"
-fi
-
-if ! git rev-parse --verify --quiet "${base_ref}^{commit}" >/dev/null; then
-    echo "Error: branch '${base_ref}' not found." >&2
+if ! git check-ref-format --branch "$main_branch" >/dev/null 2>&1; then
+    echo "Error: invalid branch name '$main_branch'." >&2
     exit 1
 fi
 
-current_branch="$(git branch --show-current)"
+base_ref="refs/remotes/${remote_name}/${main_branch}"
+base_display="${remote_name}/${main_branch}"
 
-while IFS= read -r branch; do
+if ! git rev-parse --verify --quiet "${base_ref}^{commit}" >/dev/null; then
+    echo "Error: remote-tracking branch '${base_display}' not found." >&2
+    exit 1
+fi
+
+tty_open=false
+
+while IFS=' ' read -r branch checked_out; do
     [[ -z "$branch" ]] && continue
     [[ "$branch" == "$main_branch" ]] && continue
-    [[ "$branch" == "$current_branch" ]] && continue
+    [[ "$checked_out" == true ]] && continue
 
-    delete_mode=""
     delete_reason=""
 
     if git merge-base --is-ancestor "$branch" "$base_ref"; then
-        delete_mode="-d"
         delete_reason="merged"
     else
-        merge_base="$(git merge-base "$base_ref" "$branch")"
-        synthetic_commit="$(git commit-tree "$(git rev-parse "${branch}^{tree}")" -p "$merge_base" -m "_")"
+        if ! merge_base="$(git merge-base "$base_ref" "$branch")"; then
+            echo "Warning: no merge base between '$branch' and '$base_ref'; skipping." >&2
+            continue
+        fi
 
-        if [[ "$(git cherry "$base_ref" "$synthetic_commit")" == "-"* ]]; then
-            delete_mode="-D"
-            delete_reason="squash-merged"
+        branch_patch_id="$(git diff --binary "$merge_base" "$branch" | git patch-id --stable | awk 'NR == 1 { print $1 }')"
+
+        if [[ -n "$branch_patch_id" ]] && git log --no-merges --format=%H --patch --binary "$merge_base..$base_ref" \
+            | git patch-id --stable \
+            | awk -v id="$branch_patch_id" '$1 == id { found = 1 } END { exit !found }'; then
+            delete_reason="patch-equivalent"
         fi
     fi
 
-    [[ -z "$delete_mode" ]] && continue
-
-    if [[ ! -r /dev/tty ]]; then
-        echo "No interactive terminal available; skipping '$branch'."
+    [[ -z "$delete_reason" ]] && continue
+    if [[ "$dry_run" == true ]]; then
+        echo "Would delete local branch '$branch' (${delete_reason} into ${base_display})."
         continue
     fi
 
-    read -r -p "Delete local branch '$branch' (${delete_reason} into ${base_ref})? [y/N] " yn </dev/tty
+    if [[ "$assume_yes" == true ]]; then
+        if ! git branch -D -- "$branch"; then
+            echo "Warning: failed to delete '$branch'; continuing." >&2
+        fi
+        continue
+    fi
+
+    if [[ "$tty_open" == false ]] && ! { exec 3<>/dev/tty; } 2>/dev/null; then
+        echo "No interactive terminal available; skipping '$branch'."
+        continue
+    fi
+    tty_open=true
+
+    printf "Delete local branch '%s' (%s into %s)? [y/N] " "$branch" "$delete_reason" "$base_display" >&3
+    if ! IFS= read -r yn <&3; then
+        printf '\n' >&3
+        echo "Skipping branch '$branch'."
+        continue
+    fi
 
     case $yn in
         [yY]|[yY][eE][sS])
-            git branch "$delete_mode" "$branch"
+            if ! git branch -D -- "$branch"; then
+                echo "Warning: failed to delete '$branch'; continuing." >&2
+            fi
             ;;
         *)
             echo "Skipping branch '$branch'."
             ;;
     esac
-done < <(git for-each-ref refs/heads/ --format='%(refname:short)')
+done < <(git for-each-ref refs/heads/ --format='%(refname:short) %(if)%(worktreepath)%(then)true%(else)false%(end)')
