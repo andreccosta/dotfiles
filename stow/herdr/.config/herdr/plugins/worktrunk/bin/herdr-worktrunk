@@ -1,0 +1,151 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+PLUGIN_ID="andreccosta.worktrunk"
+HERDR_BIN="${HERDR_BIN_PATH:-herdr}"
+
+fail() {
+  printf 'herdr-worktrunk: %s\n' "$*" >&2
+  exit 1
+}
+
+need() {
+  command -v "$1" >/dev/null 2>&1 || fail "missing required command: $1"
+}
+
+context_value() {
+  local key="$1"
+  python3 - "$key" <<'PY'
+import json, os, sys
+ctx = json.loads(os.environ.get("HERDR_PLUGIN_CONTEXT_JSON", "{}") or "{}")
+cur = ctx
+for part in sys.argv[1].split('.'):
+    if not isinstance(cur, dict):
+        cur = None
+        break
+    cur = cur.get(part)
+print(cur or "")
+PY
+}
+
+context_cwd() {
+  local cwd
+  cwd="$(context_value focused_pane_cwd)"
+  [[ -n "$cwd" ]] || cwd="$(context_value workspace_cwd)"
+  [[ -n "$cwd" ]] || fail "Herdr context did not include a working directory"
+  printf '%s\n' "$cwd"
+}
+
+open_runner() {
+  local action="$1" cwd workspace_id
+  cwd="$(context_cwd)"
+  workspace_id="$(context_value workspace_id)"
+
+  exec "$HERDR_BIN" plugin pane open \
+    --plugin "$PLUGIN_ID" \
+    --entrypoint runner \
+    --cwd "$cwd" \
+    --env "HERDR_WORKTRUNK_ACTION=$action" \
+    --env "HERDR_WORKTRUNK_CWD=$cwd" \
+    --env "HERDR_WORKTRUNK_WORKSPACE_ID=$workspace_id" \
+    --focus
+}
+
+json_string() {
+  python3 -c 'import json,sys; print(json.load(sys.stdin).get(sys.argv[1], ""))' "$1"
+}
+
+create_worktree() {
+  local cwd="$1" branch base out path
+  read -r -p "New branch: " branch
+  [[ -n "$branch" ]] || fail "branch is required"
+  read -r -p "Base ref (optional): " base
+
+  if [[ -n "$base" ]]; then
+    out="$(wt -C "$cwd" switch --create "$branch" --base "$base" --no-cd --format=json)"
+  else
+    out="$(wt -C "$cwd" switch --create "$branch" --no-cd --format=json)"
+  fi
+  path="$(printf '%s' "$out" | json_string path)"
+  [[ -n "$path" ]] || fail "Worktrunk did not return a worktree path"
+
+  printf 'Opening %s in Herdr...\n' "$path"
+  exec "$HERDR_BIN" worktree open --cwd "$cwd" --path "$path" --focus
+}
+
+open_worktree() {
+  local cwd="$1" list selection path
+  list="$(wt -C "$cwd" list --format=json --config-set list.json-schema=2)"
+  LIST_JSON="$list" python3 <<'PY'
+import json, os
+items = json.loads(os.environ["LIST_JSON"]).get("items", [])
+for i, item in enumerate([x for x in items if x.get("worktree")], 1):
+    branch = item.get("branch") or "detached"
+    path = item["worktree"].get("path", "")
+    current = " (current)" if item["worktree"].get("current") else ""
+    print(f"{i:2}. {branch:30} {path}{current}")
+PY
+  read -r -p "Open number: " selection
+  path="$(LIST_JSON="$list" python3 - "$selection" <<'PY'
+import json, os, sys
+try:
+    selected = int(sys.argv[1])
+except ValueError:
+    sys.exit(2)
+items = [x for x in json.loads(os.environ["LIST_JSON"]).get("items", []) if x.get("worktree")]
+if selected < 1 or selected > len(items):
+    sys.exit(2)
+print(items[selected - 1]["worktree"].get("path", ""))
+PY
+  )" || fail "invalid selection: $selection"
+  [[ -n "$path" ]] || fail "selected worktree has no path"
+
+  printf 'Opening %s in Herdr...\n' "$path"
+  exec "$HERDR_BIN" worktree open --cwd "$cwd" --path "$path" --focus
+}
+
+remove_worktree() {
+  local cwd="$1" workspace_id="$2" root common primary answer
+  root="$(git -C "$cwd" rev-parse --path-format=absolute --show-toplevel)"
+  common="$(git -C "$root" rev-parse --path-format=absolute --git-common-dir)"
+  primary="$(git -C "$(dirname "$common")" rev-parse --path-format=absolute --show-toplevel 2>/dev/null || true)"
+
+  [[ -n "$primary" && "$root" != "$primary" ]] || fail "refusing to remove the primary checkout"
+  read -r -p "Remove worktree $root? [y/N] " answer
+  [[ "$answer" == "y" || "$answer" == "Y" ]] || { echo "Cancelled."; return; }
+
+  wt -C "$root" remove --foreground "$root"
+  if [[ -n "$workspace_id" ]]; then
+    "$HERDR_BIN" workspace close "$workspace_id" || true
+  fi
+}
+
+run_action() {
+  local action="${HERDR_WORKTRUNK_ACTION:-}" cwd="${HERDR_WORKTRUNK_CWD:-}" workspace_id="${HERDR_WORKTRUNK_WORKSPACE_ID:-}"
+  [[ -n "$action" && -n "$cwd" ]] || fail "runner context is missing"
+  need git
+  need wt
+  need python3
+
+  printf 'Worktrunk action: %s\nRepository: %s\n\n' "$action" "$cwd"
+  case "$action" in
+    create) create_worktree "$cwd" ;;
+    open) open_worktree "$cwd" ;;
+    remove) remove_worktree "$cwd" "$workspace_id" ;;
+    *) fail "unknown action: $action" ;;
+  esac
+}
+
+case "${1:-}" in
+  action)
+    [[ -n "${2:-}" ]] || fail "usage: $0 action <create|open|remove>"
+    need python3
+    open_runner "$2"
+    ;;
+  runner)
+    run_action
+    ;;
+  *)
+    fail "usage: $0 action <create|open|remove> | runner"
+    ;;
+esac

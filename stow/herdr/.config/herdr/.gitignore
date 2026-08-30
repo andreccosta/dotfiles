@@ -1,3 +1,9 @@
 *
 !.gitignore
 !config.toml
+!plugins/
+!plugins/worktrunk/
+!plugins/worktrunk/bin/
+!plugins/worktrunk/herdr-plugin.toml
+!plugins/worktrunk/bin/herdr-worktrunk
+!plugins/worktrunk/README.md

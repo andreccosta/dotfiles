@@ -100,6 +100,15 @@ Install macOS Brewfile packages and apply macOS defaults:
 ./dot macos
 ```
 
+## Herdr Worktrunk plugin
+
+The local Herdr plugin is stowed with the `herdr` package and linked automatically by `./dot install` when `herdr` is available. To link it manually:
+
+```bash
+herdr plugin link ~/.config/herdr/plugins/worktrunk --enabled
+herdr server reload-config
+```
+
 ## Notes
 
 - `dot` is a repo-local bootstrap script. Run it from the root of this repository as `./dot ...`.

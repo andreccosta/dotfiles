@@ -314,8 +314,43 @@ EOF
   return 1
 }
 
+link_herdr_worktrunk_plugin() {
+  local plugin_path="$HOME/.config/herdr/plugins/worktrunk"
+
+  if ! command_exists herdr; then
+    cat <<EOF
+
+Note: herdr package installed, but the herdr executable is not on PATH.
+After installing Herdr, link the Worktrunk plugin with:
+  herdr plugin link ~/.config/herdr/plugins/worktrunk --enabled
+EOF
+    return 0
+  fi
+
+  if [ ! -f "$plugin_path/herdr-plugin.toml" ]; then
+    echo "warning: Herdr Worktrunk plugin not found at $plugin_path" >&2
+    return 0
+  fi
+
+  echo
+  echo "> herdr plugin link $plugin_path --enabled"
+  if ! herdr plugin link "$plugin_path" --enabled; then
+    echo "warning: failed to link Herdr Worktrunk plugin" >&2
+    return 0
+  fi
+
+  echo "> herdr server reload-config"
+  if ! herdr server reload-config; then
+    echo "warning: Herdr server is not running or config reload failed; the plugin will load next time Herdr starts" >&2
+  fi
+}
+
 run_install() {
   run_stow -R "$@"
+
+  if [ "${RUN_STOW_SKIP_RECONCILE:-0}" -eq 0 ] && package_list_contains herdr; then
+    link_herdr_worktrunk_plugin
+  fi
 
   if [ "${RUN_STOW_SKIP_RECONCILE:-0}" -eq 0 ] && package_list_contains pi; then
     cat <<EOF

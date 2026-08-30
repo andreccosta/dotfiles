@@ -2,12 +2,32 @@ onboarding = false
 
 [keys]
 prefix = "backtick"
+new_worktree = ""
+remove_worktree = ""
 
 [ui]
 agent_panel_sort = "priority"
 prompt_new_tab_name = false
 status_indicators = "symbols"
 show_agent_labels_on_pane_borders = false
+
+[[keys.command]]
+key = "prefix+shift+g"
+type = "plugin_action"
+command = "andreccosta.worktrunk:create"
+description = "Worktrunk: create worktree"
+
+[[keys.command]]
+key = "prefix+shift+o"
+type = "plugin_action"
+command = "andreccosta.worktrunk:open"
+description = "Worktrunk: open worktree"
+
+[[keys.command]]
+key = "prefix+alt+r"
+type = "plugin_action"
+command = "andreccosta.worktrunk:remove"
+description = "Worktrunk: remove current worktree"
 
 [theme]
 name = "tokyo-night"

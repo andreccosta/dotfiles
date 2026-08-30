@@ -1,0 +1,36 @@
+id = "andreccosta.worktrunk"
+name = "Worktrunk"
+version = "0.1.0"
+min_herdr_version = "0.8.2"
+description = "Tiny Herdr plugin that delegates worktree operations to Worktrunk."
+platforms = ["linux", "macos"]
+
+[[actions]]
+id = "create"
+title = "Worktrunk: create worktree"
+description = "Create a worktree with `wt switch --create` and open it in Herdr."
+contexts = ["workspace", "tab", "pane"]
+command = ["bin/herdr-worktrunk", "action", "create"]
+
+[[actions]]
+id = "open"
+title = "Worktrunk: open worktree"
+description = "Pick an existing Worktrunk worktree and open it in Herdr."
+contexts = ["workspace", "tab", "pane"]
+command = ["bin/herdr-worktrunk", "action", "open"]
+
+[[actions]]
+id = "remove"
+title = "Worktrunk: remove current worktree"
+description = "Remove the current worktree with `wt remove` and close the Herdr workspace."
+contexts = ["workspace", "tab", "pane"]
+command = ["bin/herdr-worktrunk", "action", "remove"]
+
+[[panes]]
+id = "runner"
+title = "Worktrunk"
+description = "Interactive Worktrunk operation runner."
+placement = "popup"
+width = "80%"
+height = "70%"
+command = ["bin/herdr-worktrunk", "runner"]
