@@ -27,11 +27,11 @@ The dotfiles also install a small `hwt` command for the non-modal workflow:
 
 ```sh
 hwt create <branch> [base]
-hwt open [branch-or-path]
+hwt switch [branch-or-path]
 hwt remove [branch-or-path]
 ```
 
-`hwt` delegates creation/switching/removal to `wt`, then opens the selected checkout with `herdr worktree open` so Herdr keeps native worktree grouping/provenance. When run outside Herdr, it starts/attaches Herdr like `hm`.
+`hwt` delegates creation/switching/removal to `wt`, then opens the selected checkout with `herdr worktree open` so Herdr keeps native worktree grouping/provenance. `hwt open` remains available as an alias for `hwt switch`. When run outside Herdr, it starts/attaches Herdr like `hm`.
 
 ## Actions
 

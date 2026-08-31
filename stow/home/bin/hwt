@@ -10,13 +10,15 @@ Usage: hwt <command> [args]
 Commands:
   create <branch> [base]   Create a Worktrunk worktree and open it in Herdr
   open [branch-or-path]    Switch/select a Worktrunk worktree and open it in Herdr
+  switch [branch-or-path]  Alias for open, close to `wt switch`
   remove [branch-or-path]  Remove a Worktrunk worktree, then return Herdr to the primary checkout when possible
 
 Examples:
   hwt create feature/foo
   hwt create hotfix release/1.2
   hwt open feature/foo
-  hwt open                 # uses Worktrunk's picker
+  hwt switch               # uses Worktrunk's picker
+  hwt switch feature/foo
   hwt remove               # removes the current worktree
 EOF
 }
@@ -174,7 +176,7 @@ main() {
 
   case "${1:-}" in
     create) shift; cmd_create "$@" ;;
-    open) shift; cmd_open "$@" ;;
+    open|switch) shift; cmd_open "$@" ;;
     remove) shift; cmd_remove "$@" ;;
     -h|--help|help|"") usage ;;
     *) fail "unknown command: $1" ;;

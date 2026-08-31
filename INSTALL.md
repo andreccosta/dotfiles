@@ -113,11 +113,11 @@ The `home` package also installs `hwt`, a CLI-first Worktrunk workflow:
 
 ```bash
 hwt create <branch> [base]
-hwt open [branch-or-path]
+hwt switch [branch-or-path]
 hwt remove [branch-or-path]
 ```
 
-Use `hm` to open the current checkout in Herdr, `hwt` to let Worktrunk manage a worktree before opening it in Herdr, and `hwta` to create a Worktrunk worktree and start an OpenCode agent there. `wta` remains as a backwards-compatible alias for `hwta`; the existing tmux-specific `wta-tmux` helper is unchanged.
+Use `hm` to open the current checkout in Herdr, `hwt` to let Worktrunk manage a worktree before opening it in Herdr, and `hwta` to create a Worktrunk worktree and start an OpenCode agent there. `hwt open` remains available as an alias for `hwt switch`. `wta` remains as a backwards-compatible alias for `hwta`; the existing tmux-specific `wta-tmux` helper is unchanged.
 
 ## Notes
 
