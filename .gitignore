@@ -15,6 +15,10 @@
 # worktrunk-managed local worktrees
 /.worktrees/
 
+# worktrunk machine-local command approvals
+/stow/worktrunk/.config/worktrunk/approvals.toml
+/stow/worktrunk/.config/worktrunk/approvals.toml.lock
+
 
 node_modules
 package-lock.json
