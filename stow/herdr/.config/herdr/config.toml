@@ -14,20 +14,20 @@ show_agent_labels_on_pane_borders = false
 [[keys.command]]
 key = "prefix+shift+g"
 type = "plugin_action"
-command = "andreccosta.worktrunk:create"
-description = "Worktrunk: create worktree"
+command = "andreccosta.worktrunk.create"
+description = "Worktree via Worktrunk: create"
 
 [[keys.command]]
 key = "prefix+shift+o"
 type = "plugin_action"
-command = "andreccosta.worktrunk:open"
-description = "Worktrunk: open worktree"
+command = "andreccosta.worktrunk.open"
+description = "Worktree via Worktrunk: open"
 
 [[keys.command]]
 key = "prefix+alt+r"
 type = "plugin_action"
-command = "andreccosta.worktrunk:remove"
-description = "Worktrunk: remove current worktree"
+command = "andreccosta.worktrunk.remove"
+description = "Worktree via Worktrunk: remove current"
 
 [theme]
 name = "tokyo-night"

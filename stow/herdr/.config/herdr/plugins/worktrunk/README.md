@@ -21,11 +21,23 @@ When developing directly from this repository, you can also link the repository 
 herdr plugin link ./stow/herdr/.config/herdr/plugins/worktrunk --enabled
 ```
 
+## CLI workflow
+
+The dotfiles also install a small `hwt` command for the non-modal workflow:
+
+```sh
+hwt create <branch> [base]
+hwt open [branch-or-path]
+hwt remove [branch-or-path]
+```
+
+`hwt` delegates creation/switching/removal to `wt`, then opens the selected checkout with `herdr worktree open` so Herdr keeps native worktree grouping/provenance. When run outside Herdr, it starts/attaches Herdr like `hm`.
+
 ## Actions
 
-- `Worktrunk: create worktree` — prompts for a branch/base ref, runs `wt switch --create`, then opens the new worktree in Herdr.
-- `Worktrunk: open worktree` — lists `wt list` results and opens the selected worktree in Herdr.
-- `Worktrunk: remove current worktree` — runs `wt remove` for the current linked worktree and closes the Herdr workspace.
+- `Worktree via Worktrunk: create` — prompts for a branch/base ref, runs `wt switch --create`, then opens the new worktree in Herdr.
+- `Worktree via Worktrunk: open` — lists `wt list` results and opens the selected worktree in Herdr.
+- `Worktree via Worktrunk: remove current` — runs `wt remove` for the current linked worktree and closes the Herdr workspace.
 
 ## Keybindings
 

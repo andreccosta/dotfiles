@@ -1,0 +1,184 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+HERDR_BIN="${HERDR_BIN_PATH:-herdr}"
+
+usage() {
+  cat <<'EOF'
+Usage: hwt <command> [args]
+
+Commands:
+  create <branch> [base]   Create a Worktrunk worktree and open it in Herdr
+  open [branch-or-path]    Switch/select a Worktrunk worktree and open it in Herdr
+  remove [branch-or-path]  Remove a Worktrunk worktree, then return Herdr to the primary checkout when possible
+
+Examples:
+  hwt create feature/foo
+  hwt create hotfix release/1.2
+  hwt open feature/foo
+  hwt open                 # uses Worktrunk's picker
+  hwt remove               # removes the current worktree
+EOF
+}
+
+fail() {
+  printf 'hwt: %s\n' "$*" >&2
+  exit 1
+}
+
+need() {
+  command -v "$1" >/dev/null 2>&1 || fail "missing required command: $1"
+}
+ensure_herdr_server() {
+  if [[ "${HERDR_ENV:-0}" == "1" ]] || "$HERDR_BIN" status server >/dev/null 2>&1; then
+    return
+  fi
+
+  nohup "$HERDR_BIN" server >/dev/null 2>&1 &
+  for _ in {1..50}; do
+    "$HERDR_BIN" status server >/dev/null 2>&1 && return
+    sleep 0.1
+  done
+
+  fail "failed to start the Herdr server"
+}
+
+attach_herdr_if_needed() {
+  if [[ "${HERDR_ENV:-0}" != "1" ]]; then
+    exec "$HERDR_BIN"
+  fi
+}
+
+
+checkout_root() {
+  git -C "${1:-$PWD}" rev-parse --path-format=absolute --show-toplevel 2>/dev/null \
+    || fail "not inside a git repository"
+}
+
+source_root() {
+  local root common primary
+  root="$(checkout_root "${1:-$PWD}")"
+
+  # If invoked from a linked worktree, Herdr needs the source checkout as --cwd
+  # so it can attach the opened checkout to the existing worktree group.
+  common="$(git -C "$root" rev-parse --path-format=absolute --git-common-dir 2>/dev/null || true)"
+  if [[ -n "$common" ]]; then
+    primary="$(dirname "$common")"
+    if git -C "$primary" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+      checkout_root "$primary"
+      return
+    fi
+  fi
+
+  printf '%s\n' "$root"
+}
+
+json_field() {
+  python3 -c '
+import json, sys
+try:
+    data = json.load(sys.stdin)
+except Exception:
+    sys.exit(1)
+for name in sys.argv[1:]:
+    value = data.get(name)
+    if value:
+        print(value)
+        sys.exit(0)
+# Worktrunk schema variants used by older/newer versions.
+worktree = data.get("worktree")
+if isinstance(worktree, dict):
+    for name in ("path", "worktree_path", "checkout_path"):
+        value = worktree.get(name)
+        if value:
+            print(value)
+            sys.exit(0)
+sys.exit(1)
+' "$@"
+}
+
+worktrunk_path() {
+  json_field path worktree_path checkout_path
+}
+
+open_in_herdr() {
+  local source="$1" path="$2"
+  [[ -n "$path" ]] || fail "empty worktree path"
+  ensure_herdr_server
+  "$HERDR_BIN" worktree open --cwd "$source" --path "$path" --focus >/dev/null
+  attach_herdr_if_needed
+}
+
+cmd_create() {
+  local branch="${1:-}" base="${2:-}" cwd source out path
+  [[ -n "$branch" ]] || fail "create requires a branch name"
+  [[ $# -le 2 ]] || fail "create accepts at most: <branch> [base]"
+
+  cwd="$(checkout_root)"
+  source="$(source_root "$cwd")"
+
+  if [[ -n "$base" ]]; then
+    out="$(wt -C "$cwd" switch --create "$branch" --base "$base" --no-cd --format=json)"
+  else
+    out="$(wt -C "$cwd" switch --create "$branch" --no-cd --format=json)"
+  fi
+  path="$(printf '%s' "$out" | worktrunk_path)" || fail "Worktrunk did not return a worktree path"
+  open_in_herdr "$source" "$path"
+}
+
+cmd_open() {
+  local target="${1:-}" cwd source out path
+  [[ $# -le 1 ]] || fail "open accepts at most: [branch-or-path]"
+
+  cwd="$(checkout_root)"
+  source="$(source_root "$cwd")"
+
+  if [[ -n "$target" ]]; then
+    out="$(wt -C "$cwd" switch "$target" --no-cd --format=json)"
+  else
+    out="$(wt -C "$cwd" switch --no-cd --format=json)"
+  fi
+  path="$(printf '%s' "$out" | worktrunk_path)" || fail "Worktrunk did not return a worktree path"
+  open_in_herdr "$source" "$path"
+}
+
+cmd_remove() {
+  local target="${1:-}" cwd source removed_root
+  [[ $# -le 1 ]] || fail "remove accepts at most: [branch-or-path]"
+
+  cwd="$(checkout_root)"
+  source="$(source_root "$cwd")"
+  removed_root="$cwd"
+
+  if [[ -n "$target" ]]; then
+    wt -C "$cwd" remove --foreground "$target"
+  else
+    wt -C "$cwd" remove --foreground
+  fi
+
+  # If this runs inside Herdr, return to the primary/source checkout. Close the
+  # removed workspace only when Herdr told us which workspace invoked the command.
+  ensure_herdr_server
+  "$HERDR_BIN" worktree open --cwd "$source" --path "$source" --focus || true
+  if [[ -n "${HERDR_WORKSPACE_ID:-}" && "$removed_root" != "$source" ]]; then
+    "$HERDR_BIN" workspace close "$HERDR_WORKSPACE_ID" || true
+  fi
+  attach_herdr_if_needed
+}
+
+main() {
+  need git
+  need wt
+  need python3
+  need "$HERDR_BIN"
+
+  case "${1:-}" in
+    create) shift; cmd_create "$@" ;;
+    open) shift; cmd_open "$@" ;;
+    remove) shift; cmd_remove "$@" ;;
+    -h|--help|help|"") usage ;;
+    *) fail "unknown command: $1" ;;
+  esac
+}
+
+main "$@"

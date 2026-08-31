@@ -77,7 +77,7 @@ until_fail() {
   done
 }
 
-wta() {
+hwta() {
   if [[ "${1:-}" == "--tmux" ]]; then
     shift
     wta-tmux "$@"
@@ -91,8 +91,12 @@ wta-tmux() {
   wt switch -c -x "tm opencode" "$@"
 }
 
+wta() {
+  hwta "$@"
+}
+
 hm() {
-  local cwd workspace_id
+  local cwd workspace_id common primary source
   cwd=$(git rev-parse --show-toplevel 2>/dev/null || pwd -P)
 
   if ! herdr status server >/dev/null 2>&1; then
@@ -113,7 +117,20 @@ hm() {
   if [[ -n "$workspace_id" ]]; then
     herdr workspace focus "$workspace_id" >/dev/null
   else
-    herdr workspace create --cwd "$cwd" --focus >/dev/null
+    source=""
+    common=$(git -C "$cwd" rev-parse --path-format=absolute --git-common-dir 2>/dev/null || true)
+    if [[ -n "$common" ]]; then
+      primary=$(dirname "$common")
+      if [[ "$primary" != "$cwd" ]] && git -C "$primary" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+        source=$(git -C "$primary" rev-parse --show-toplevel 2>/dev/null || true)
+      fi
+    fi
+
+    if [[ -n "$source" ]]; then
+      herdr worktree open --cwd "$source" --path "$cwd" --focus >/dev/null
+    else
+      herdr workspace create --cwd "$cwd" --focus >/dev/null
+    fi
   fi
 
   if [[ "${HERDR_ENV:-0}" != "1" ]]; then

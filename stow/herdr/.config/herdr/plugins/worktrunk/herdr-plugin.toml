@@ -7,22 +7,22 @@ platforms = ["linux", "macos"]
 
 [[actions]]
 id = "create"
-title = "Worktrunk: create worktree"
-description = "Create a worktree with `wt switch --create` and open it in Herdr."
+title = "Worktree via Worktrunk: create"
+description = "Create a worktree with Worktrunk (`wt switch --create`) and open it in Herdr."
 contexts = ["workspace", "tab", "pane"]
 command = ["bin/herdr-worktrunk", "action", "create"]
 
 [[actions]]
 id = "open"
-title = "Worktrunk: open worktree"
+title = "Worktree via Worktrunk: open"
 description = "Pick an existing Worktrunk worktree and open it in Herdr."
 contexts = ["workspace", "tab", "pane"]
 command = ["bin/herdr-worktrunk", "action", "open"]
 
 [[actions]]
 id = "remove"
-title = "Worktrunk: remove current worktree"
-description = "Remove the current worktree with `wt remove` and close the Herdr workspace."
+title = "Worktree via Worktrunk: remove current"
+description = "Remove the current worktree with Worktrunk (`wt remove`) and close the Herdr workspace."
 contexts = ["workspace", "tab", "pane"]
 command = ["bin/herdr-worktrunk", "action", "remove"]
 
@@ -33,4 +33,4 @@ description = "Interactive Worktrunk operation runner."
 placement = "popup"
 width = "80%"
 height = "70%"
-command = ["bin/herdr-worktrunk", "runner"]
+command = ["bash", "-lc", "exec \"$HERDR_PLUGIN_ROOT/bin/herdr-worktrunk\" runner"]
