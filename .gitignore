@@ -12,6 +12,9 @@
 
 # local/generated leftovers from older dotfiles layouts
 /config/
+# worktrunk-managed local worktrees
+/.worktrees/
+
 
 node_modules
 package-lock.json

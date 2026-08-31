@@ -3,27 +3,42 @@
 set -euo pipefail
 
 inside_herdr=${HERDR_ENV:-0}
+HERDR_BIN="${HERDR_BIN_PATH:-herdr}"
 
-if [[ "$inside_herdr" != "1" ]] && ! herdr status server >/dev/null 2>&1; then
-  nohup herdr server >/dev/null 2>&1 &
+if [[ "$inside_herdr" != "1" ]] && ! "$HERDR_BIN" status server >/dev/null 2>&1; then
+  nohup "$HERDR_BIN" server >/dev/null 2>&1 &
 
   for _ in {1..50}; do
-    herdr status server >/dev/null 2>&1 && break
+    "$HERDR_BIN" status server >/dev/null 2>&1 && break
     sleep 0.1
   done
 
-  if ! herdr status server >/dev/null 2>&1; then
+  if ! "$HERDR_BIN" status server >/dev/null 2>&1; then
     echo "herdr-opencode: failed to start the Herdr server" >&2
     exit 1
   fi
 fi
 
-response=$(herdr workspace create --cwd "$PWD" --focus)
+cwd=$(git rev-parse --show-toplevel 2>/dev/null || pwd -P)
+source=""
+common=$(git -C "$cwd" rev-parse --path-format=absolute --git-common-dir 2>/dev/null || true)
+if [[ -n "$common" ]]; then
+  primary=$(dirname "$common")
+  if [[ "$primary" != "$cwd" ]] && git -C "$primary" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    source=$(git -C "$primary" rev-parse --show-toplevel 2>/dev/null || true)
+  fi
+fi
+
+if [[ -n "$source" ]]; then
+  response=$("$HERDR_BIN" worktree open --cwd "$source" --path "$cwd" --focus)
+else
+  response=$("$HERDR_BIN" workspace create --cwd "$cwd" --focus)
+fi
 pane_id=$(jq -er '.result.root_pane.pane_id' <<< "$response")
 
 deadline=$((SECONDS + 30))
 while true; do
-  if agent_output=$(herdr agent start opencode --kind opencode --pane "$pane_id" -- "$@" 2>&1); then
+  if agent_output=$("$HERDR_BIN" agent start opencode --kind opencode --pane "$pane_id" -- "$@" 2>&1); then
     printf '%s\n' "$agent_output"
     break
   fi
@@ -37,5 +52,5 @@ while true; do
 done
 
 if [[ "$inside_herdr" != "1" ]]; then
-  exec herdr
+  exec "$HERDR_BIN"
 fi
