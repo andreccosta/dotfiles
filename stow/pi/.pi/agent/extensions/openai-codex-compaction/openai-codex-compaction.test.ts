@@ -53,14 +53,18 @@ const workModel = model(
   "http://127.0.0.1/backend-api",
 );
 
-test("resolves fast aliases for nested Codex requests", () => {
-  const aliasedModel = { ...workModel, id: "gpt-5.6-sol-fast" };
-  const requestModel = resolveCodexRequestModel(aliasedModel);
+for (const modelId of ["gpt-5.5", "gpt-5.6-sol", "gpt-6-astra"]) {
+  test(`resolves ${modelId}-fast for nested Codex requests`, () => {
+    const baseModel = { ...workModel, id: modelId };
+    const aliasedModel = { ...baseModel, id: `${modelId}-fast` };
+    const requestModel = resolveCodexRequestModel(aliasedModel);
 
-  assert.equal(requestModel.id, "gpt-5.6-sol");
-  assert.equal(aliasedModel.id, "gpt-5.6-sol-fast");
-  assert.equal(resolveCodexRequestModel(workModel), workModel);
-});
+    assert.equal(isSupportedCodexModel(aliasedModel), true);
+    assert.equal(requestModel.id, modelId);
+    assert.equal(aliasedModel.id, `${modelId}-fast`);
+    assert.equal(resolveCodexRequestModel(baseModel), baseModel);
+  });
+}
 
 test("targets only OpenAI Codex providers", () => {
   assert.equal(isOpenAICodexModel(codexModel), true);

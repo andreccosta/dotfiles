@@ -3,6 +3,7 @@ import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 const CODEX_FAST_ALIASES: Readonly<Record<string, string>> = {
   "gpt-5.5-fast": "gpt-5.5",
   "gpt-5.6-sol-fast": "gpt-5.6-sol",
+  "gpt-6-astra-fast": "gpt-6-astra",
 };
 
 export function resolveCodexModelAlias(modelId: string): string {
