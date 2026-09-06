@@ -78,21 +78,7 @@ until_fail() {
 }
 
 hwta() {
-  if [[ "${1:-}" == "--tmux" ]]; then
-    shift
-    wta-tmux "$@"
-    return
-  fi
-
   wt switch -c -x "$HOME/bin/herdr-opencode" "$@"
-}
-
-wta-tmux() {
-  wt switch -c -x "tm opencode" "$@"
-}
-
-wta() {
-  hwta "$@"
 }
 
 hm() {
