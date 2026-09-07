@@ -5,17 +5,27 @@ set -euo pipefail
 remote_name="origin"
 dry_run=false
 assume_yes=false
+check_github=true
 main_branch_arg=""
 
 usage() {
     cat <<EOF
-Usage: $(basename "$0") [--dry-run | --yes] [main-branch]
+Usage: $(basename "$0") [--dry-run | --yes] [--no-github] [main-branch]
 
 Options:
-  --dry-run  Show branches that would be deleted without deleting them.
-             The remote is still fetched and pruned.
-  --yes      Delete matching branches without prompting.
-  -h, --help Show this help.
+  --dry-run   Show branches that would be deleted without deleting them.
+              The remote is still fetched and pruned.
+  --yes       Delete matching branches without prompting.
+  --no-github Use Git ancestry only; do not query GitHub PRs.
+  -h, --help  Show this help.
+
+Deletes branches whose tips are ancestors of the remote base branch.
+For standard github.com remote URLs, authenticated gh also enables deletion
+when a local tip exactly matches a merged PR's head SHA for that base branch.
+Only remaining branch tips are queried, in batches of 20 (not all PR history).
+Missing commits or incomplete PR lists are skipped, never guessed from diffs.
+Other hosts, SSH aliases, missing gh, or API failures use ancestry checks only.
+The base branch and branches checked out in any worktree are always skipped.
 EOF
 }
 
@@ -26,6 +36,9 @@ while [[ $# -gt 0 ]]; do
             ;;
         --yes)
             assume_yes=true
+            ;;
+        --no-github)
+            check_github=false
             ;;
         -h|--help)
             usage
@@ -66,21 +79,22 @@ if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
     exit 1
 fi
 
-if ! git remote get-url "$remote_name" >/dev/null 2>&1; then
+if ! remote_url=$(git remote get-url "$remote_name" 2>/dev/null); then
     echo "Error: remote '$remote_name' not found." >&2
     exit 1
 fi
 
+printf 'Fetching and pruning %s...\n' "$remote_name" >&2
 if ! git fetch --prune "$remote_name"; then
     echo "Error: failed to fetch '$remote_name'; refusing to use cached remote-tracking refs." >&2
     exit 1
 fi
 
 detect_default_branch() {
-    local ref
+    local ref candidate
 
-    if ref=$(git symbolic-ref --quiet --short "refs/remotes/${remote_name}/HEAD" 2>/dev/null); then
-        printf '%s\n' "${ref#"${remote_name}"/}"
+    if ref=$(git symbolic-ref --quiet "refs/remotes/${remote_name}/HEAD" 2>/dev/null); then
+        printf '%s\n' "${ref#"refs/remotes/${remote_name}/"}"
         return
     fi
 
@@ -105,47 +119,145 @@ fi
 base_ref="refs/remotes/${remote_name}/${main_branch}"
 base_display="${remote_name}/${main_branch}"
 
-if ! git rev-parse --verify --quiet "${base_ref}^{commit}" >/dev/null; then
+if ! base_oid=$(git rev-parse --verify --quiet "${base_ref}^{commit}"); then
     echo "Error: remote-tracking branch '${base_display}' not found." >&2
     exit 1
 fi
 
-tty_open=false
+github_repository() {
+    local repository
 
-while IFS=' ' read -r branch checked_out; do
-    [[ -z "$branch" ]] && continue
-    [[ "$branch" == "$main_branch" ]] && continue
-    [[ "$checked_out" == true ]] && continue
+    # Deliberately do not guess SSH aliases or GitHub Enterprise hosts.
+    case $remote_url in
+        https://github.com/*) repository="${remote_url#https://github.com/}" ;;
+        ssh://git@github.com/*) repository="${remote_url#ssh://git@github.com/}" ;;
+        git@github.com:*) repository="${remote_url#git@github.com:}" ;;
+        *) return 1 ;;
+    esac
+    repository="${repository%/}"
+    repository="${repository%.git}"
+    [[ "$repository" =~ ^[a-zA-Z0-9_.-]+/[a-zA-Z0-9_.-]+$ ]] || return 1
+    printf '%s\n' "$repository"
+}
 
-    delete_reason=""
+scratch_dir=$(mktemp -d "${TMPDIR:-/tmp}/git-prune-local-branches.XXXXXX")
+trap 'rm -rf "$scratch_dir"' EXIT
 
-    if git merge-base --is-ancestor "$branch" "$base_ref"; then
-        delete_reason="merged"
-    else
-        if ! merge_base="$(git merge-base "$base_ref" "$branch")"; then
-            echo "Warning: no merge base between '$branch' and '$base_ref'; skipping." >&2
-            continue
+printf 'Checking local branch ancestry against %s...\n' "$base_display" >&2
+# Snapshot full refs and tips; shortened refs can be ambiguous with tag names.
+git for-each-ref refs/heads/ \
+    --format='%(refname) %(objectname) %(if)%(worktreepath)%(then)true%(else)false%(end)' \
+    > "$scratch_dir/branches"
+git for-each-ref --merged="$base_oid" refs/heads/ --format='%(objectname)' \
+    > "$scratch_dir/merged"
+
+# Join in awk rather than spawning a Git process for every branch.
+awk -v main_ref="refs/heads/$main_branch" '
+    FILENAME == ARGV[1] { merged[$1] = 1; next }
+    $1 != main_ref && $3 != "true" {
+        print $0, ($2 in merged ? "merged" : "unmerged")
+    }
+' "$scratch_dir/merged" "$scratch_dir/branches" > "$scratch_dir/candidates"
+
+query_github_batch() {
+    local aliases=$1 batch=$2 batches=$3
+
+    printf 'Checking GitHub PRs for local tips (batch %d/%d)...\n' "$batch" "$batches" >&2
+    # Commit associations avoid walking every PR ever merged in the repository.
+    # Cap each connection too: incomplete results conservatively keep that tip.
+    gh api graphql --hostname github.com \
+        -f owner="${repository%%/*}" -f name="${repository#*/}" \
+        -f query='query($owner: String!, $name: String!) {
+            repository(owner: $owner, name: $name) { '"$aliases"' }
+        }
+        fragment candidate on Commit {
+            oid
+            associatedPullRequests(first: 100) {
+                nodes { merged baseRefName headRefOid baseRepository { nameWithOwner } }
+                pageInfo { hasNextPage }
+            }
+        }' --jq '
+            .data.repository[]? | select(. != null) | .oid as $oid |
+            .associatedPullRequests |
+            if .pageInfo.hasNextPage then ["incomplete", $oid] | @tsv
+            else .nodes[] |
+                [$oid, .headRefOid, .merged, .baseRefName, .baseRepository.nameWithOwner] | @tsv
+            end
+        '
+}
+
+lookup_github_pr_heads() {
+    local oid aliases="" count=0 batch=0 total batches
+
+    awk '$4 == "unmerged" && !seen[$2]++ { print $2 }' \
+        "$scratch_dir/candidates" > "$scratch_dir/tips" || return 1
+    total=$(wc -l < "$scratch_dir/tips") || return 1
+    batches=$(( (total + 19) / 20 ))
+    : > "$scratch_dir/pr-results"
+    while IFS= read -r oid; do
+        aliases="$aliases tip$count: object(oid: \"$oid\") { ...candidate }"
+        count=$((count + 1))
+        if [[ "$count" -eq 20 ]]; then
+            batch=$((batch + 1))
+            query_github_batch "$aliases" "$batch" "$batches" >> "$scratch_dir/pr-results" || return 1
+            aliases=""
+            count=0
         fi
-
-        branch_patch_id="$(git diff --binary "$merge_base" "$branch" | git patch-id --stable | awk 'NR == 1 { print $1 }')"
-
-        if [[ -n "$branch_patch_id" ]] && git log --no-merges --format=%H --patch --binary "$merge_base..$base_ref" \
-            | git patch-id --stable \
-            | awk -v id="$branch_patch_id" '$1 == id { found = 1 } END { exit !found }'; then
-            delete_reason="patch-equivalent"
-        fi
+    done < "$scratch_dir/tips"
+    if [[ "$count" -gt 0 ]]; then
+        query_github_batch "$aliases" "$((batch + 1))" "$batches" >> "$scratch_dir/pr-results" || return 1
     fi
 
-    [[ -z "$delete_reason" ]] && continue
+    if grep -q '^incomplete[[:space:]]' "$scratch_dir/pr-results"; then
+        echo "Warning: some commit PR lists were incomplete; keeping those branches." >&2
+    fi
+    # An associated PR might contain this commit without having it as its tip,
+    # or target another base/repository. None of those authorize deletion.
+    awk -v base="$main_branch" -v repo="$repository" '
+        NF == 5 && $1 == $2 && $3 == "true" && $4 == base && tolower($5) == tolower(repo) { print $1 }
+    ' "$scratch_dir/pr-results" > "$scratch_dir/pr-heads"
+}
+
+: > "$scratch_dir/pr-heads"
+if [[ "$check_github" == true ]] && grep -q ' unmerged$' "$scratch_dir/candidates" && repository=$(github_repository); then
+    if ! command -v gh >/dev/null 2>&1; then
+        echo "Warning: gh not found; using ancestry checks only." >&2
+    elif ! lookup_github_pr_heads; then
+        # Never use partial output from a failed request or batch.
+        : > "$scratch_dir/pr-heads"
+        echo "Warning: GitHub PR lookup failed; using ancestry checks only." >&2
+    fi
+fi
+
+awk '
+    FILENAME == ARGV[1] { heads[$1] = 1; next }
+    $4 == "merged" { print $1, $2, "merged"; next }
+    $2 in heads { print $1, $2, "merged-PR" }
+' "$scratch_dir/pr-heads" "$scratch_dir/candidates" > "$scratch_dir/deletions"
+
+delete_branch() {
+    local branch=$1 expected_oid=$2 current_oid
+
+    # Best-effort race guard, particularly when a prompt has been open a while.
+    # Keep git branch's own protection against deleting checked-out branches.
+    if ! current_oid=$(git rev-parse --verify --quiet "refs/heads/$branch") || [[ "$current_oid" != "$expected_oid" ]]; then
+        echo "Warning: '$branch' changed since inspection; skipping." >&2
+    elif ! git branch -D -- "$branch"; then
+        echo "Warning: failed to delete '$branch'; continuing." >&2
+    fi
+}
+
+tty_open=false
+
+while IFS=' ' read -r branch_ref branch_oid delete_reason; do
+    branch="${branch_ref#refs/heads/}"
     if [[ "$dry_run" == true ]]; then
         echo "Would delete local branch '$branch' (${delete_reason} into ${base_display})."
         continue
     fi
 
     if [[ "$assume_yes" == true ]]; then
-        if ! git branch -D -- "$branch"; then
-            echo "Warning: failed to delete '$branch'; continuing." >&2
-        fi
+        delete_branch "$branch" "$branch_oid"
         continue
     fi
 
@@ -164,12 +276,10 @@ while IFS=' ' read -r branch checked_out; do
 
     case $yn in
         [yY]|[yY][eE][sS])
-            if ! git branch -D -- "$branch"; then
-                echo "Warning: failed to delete '$branch'; continuing." >&2
-            fi
+            delete_branch "$branch" "$branch_oid"
             ;;
         *)
             echo "Skipping branch '$branch'."
             ;;
     esac
-done < <(git for-each-ref refs/heads/ --format='%(refname:short) %(if)%(worktreepath)%(then)true%(else)false%(end)')
+done < "$scratch_dir/deletions"

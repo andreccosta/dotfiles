@@ -27,3 +27,5 @@ done < <(git ls-files | sort -u)
 if [ "$any_failed" = true ]; then
   exit 1
 fi
+
+bash "$(dirname "$0")/tests/git-prune-local-branches.sh"
