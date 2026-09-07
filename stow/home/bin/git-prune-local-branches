@@ -165,6 +165,8 @@ query_github_batch() {
     printf 'Checking GitHub PRs for local tips (batch %d/%d)...\n' "$batch" "$batches" >&2
     # Commit associations avoid walking every PR ever merged in the repository.
     # Cap each connection too: incomplete results conservatively keep that tip.
+    # GraphQL and jq variables must reach gh literally, without shell expansion.
+    # shellcheck disable=SC2016
     gh api graphql --hostname github.com \
         -f owner="${repository%%/*}" -f name="${repository#*/}" \
         -f query='query($owner: String!, $name: String!) {
