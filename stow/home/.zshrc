@@ -112,6 +112,7 @@ ZCD="$_ZSH_CACHE_DIR/.zcompdump"
 
 # Fast completion: refresh periodically so new completions are discovered.
 zmodload -F zsh/stat b:zstat 2>/dev/null
+zmodload zsh/datetime 2>/dev/null # provides EPOCHSECONDS
 
 if [[ ! -f $ZCD ]]; then
   compinit -d "$ZCD"
