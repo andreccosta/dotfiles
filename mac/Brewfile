@@ -1,4 +1,6 @@
-tap "qmk/qmk"
+tap "osx-cross/arm", trusted: true
+tap "osx-cross/avr", trusted: true
+tap "qmk/qmk", trusted: true
 
 brew "asitop"
 brew "ast-grep"
