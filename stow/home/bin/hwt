@@ -9,16 +9,16 @@ Usage: hwt <command> [args]
 
 Commands:
   create <branch> [base]   Create a Worktrunk worktree and open it in Herdr
-  open [branch-or-path]    Switch/select a Worktrunk worktree and open it in Herdr
-  switch [branch-or-path]  Alias for open, close to `wt switch`
+  switch [branch-or-path]  Switch/select a Worktrunk worktree and open it in Herdr
+  open [branch-or-path]    Alias for switch
   remove [branch-or-path]  Remove a Worktrunk worktree, then return Herdr to the primary checkout when possible
 
 Examples:
   hwt create feature/foo
   hwt create hotfix release/1.2
-  hwt open feature/foo
   hwt switch               # uses Worktrunk's picker
   hwt switch feature/foo
+  hwt open feature/foo     # same as switch
   hwt remove               # removes the current worktree
 EOF
 }
