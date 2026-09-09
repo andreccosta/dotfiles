@@ -10,6 +10,7 @@ agent_panel_sort = "priority"
 prompt_new_tab_name = false
 status_indicators = "symbols"
 show_agent_labels_on_pane_borders = false
+hide_tab_bar_when_single_tab = true
 
 [[keys.command]]
 key = "prefix+shift+g"
