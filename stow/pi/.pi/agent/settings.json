@@ -16,5 +16,6 @@
   "showCacheMissNotices": true,
   "warnings": {
     "anthropicExtraUsage": false
-  }
+  },
+  "tuiMode": "fullscreen"
 }
