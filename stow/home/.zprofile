@@ -1,10 +1,9 @@
 # homebrew
 if [[ "$OSTYPE" == darwin* ]]; then
-  if [[ -x /opt/homebrew/bin/brew ]]; then
-    eval "$(/opt/homebrew/bin/brew shellenv)"
-  elif [[ -x /usr/local/bin/brew ]]; then
-    eval "$(/usr/local/bin/brew shellenv)"
-  fi
+  for brew in /opt/homebrew/bin/brew /usr/local/bin/brew; do
+    [[ -x $brew ]] && { _zsh_cached_init "$brew" shellenv; break }
+  done
+  unset brew
   [[ -d "/opt/homebrew/opt/coreutils/libexec/gnubin" ]] && path=("/opt/homebrew/opt/coreutils/libexec/gnubin" $path)
   [[ -d "/opt/homebrew/opt/ncurses/bin" ]] && path=("/opt/homebrew/opt/ncurses/bin" $path)
 fi

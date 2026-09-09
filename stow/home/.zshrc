@@ -1,7 +1,3 @@
-# performance optimizations
-_ZSH_CACHE_DIR="$HOME/.zsh_cache"
-[[ -d "$_ZSH_CACHE_DIR" ]] || mkdir -p "$_ZSH_CACHE_DIR"
-
 # interactive colors
 export CLICOLOR=1
 export LSCOLORS="exfxcxdxbxegedabagacad"
@@ -148,25 +144,13 @@ if [[ -o interactive ]]; then
     return 1
   }
 
-  # mise version manager
-  if command -v mise > /dev/null 2>&1; then
-    eval "$(mise activate zsh)"
-  fi
-
-  # zoxide smart cd
-  if command -v zoxide > /dev/null 2>&1; then
-    eval "$(zoxide init zsh --cmd cd)"
-  fi
-
-  # starship prompt
-  if command -v starship > /dev/null 2>&1; then
-    eval "$(starship init zsh)"
-  fi
-
-  # worktrunk
-  if command -v wt >/dev/null 2>&1; then
-    eval "$(command wt config shell init zsh)"
-  fi
+  # Tool integrations.  Each `init` produces a static script, so it is cached
+  # by _zsh_cached_init (defined in .zshenv) and only regenerated on upgrade.
+  # Delete ~/.zsh_cache/init-*.zsh to force a refresh.
+  _zsh_cached_init mise activate zsh
+  _zsh_cached_init zoxide init zsh --cmd cd
+  _zsh_cached_init starship init zsh
+  _zsh_cached_init wt config shell init zsh
 
   # Interactive plugins
   _source_first_readable \
@@ -183,6 +167,6 @@ if [[ -o interactive ]]; then
 fi
 
 # fzf integration
-if [[ -o interactive && -t 0 ]] && command -v fzf > /dev/null 2>&1; then
-  eval "$(fzf --zsh)"
+if [[ -o interactive && -t 0 ]]; then
+  _zsh_cached_init fzf --zsh
 fi
