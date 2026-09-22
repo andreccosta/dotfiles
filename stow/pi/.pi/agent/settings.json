@@ -2,7 +2,7 @@
   "lastChangelogVersion": "0.87.1",
   "theme": "terminal",
   "defaultProvider": "work",
-  "defaultModel": "gpt-5.6-sol-fast",
+  "defaultModel": "gpt-6-sol",
   "defaultThinkingLevel": "medium",
   "packages": [
     "git:github.com/dmmulroy/pi-mcp",
