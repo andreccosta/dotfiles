@@ -5,6 +5,7 @@ const CODEX_FAST_ALIASES: Readonly<Record<string, string>> = {
   "gpt-5.6-sol-fast": "gpt-5.6-sol",
   "gpt-6-astra-fast": "gpt-6-astra",
   "gpt-6-sol-fast": "gpt-6-sol",
+  "gpt-6-luna-fast": "gpt-6-luna",
 };
 
 export function resolveCodexModelAlias(modelId: string): string {

@@ -65,10 +65,7 @@
           "thinkingLevelMap": {
             "off": "none",
             "minimal": null,
-            "low": "medium",
-            "medium": "high",
-            "high": "xhigh",
-            "xhigh": "max"
+            "xhigh": "xhigh"
           },
           "input": [
             "text",
@@ -90,10 +87,7 @@
           "thinkingLevelMap": {
             "off": "none",
             "minimal": null,
-            "low": "medium",
-            "medium": "high",
-            "high": "xhigh",
-            "xhigh": "max"
+            "xhigh": "xhigh"
           },
           "input": [
             "text",
@@ -115,10 +109,7 @@
           "thinkingLevelMap": {
             "off": "none",
             "minimal": null,
-            "low": "medium",
-            "medium": "high",
-            "high": "xhigh",
-            "xhigh": "max"
+            "xhigh": "xhigh"
           },
           "input": [
             "text",
@@ -144,10 +135,7 @@
           "thinkingLevelMap": {
             "off": "none",
             "minimal": null,
-            "low": "medium",
-            "medium": "high",
-            "high": "xhigh",
-            "xhigh": "max"
+            "xhigh": "xhigh"
           },
           "input": [
             "text",
@@ -169,10 +157,7 @@
           "thinkingLevelMap": {
             "off": "none",
             "minimal": null,
-            "low": "medium",
-            "medium": "high",
-            "high": "xhigh",
-            "xhigh": "max"
+            "xhigh": "xhigh"
           },
           "input": [
             "text",
@@ -198,10 +183,7 @@
           "thinkingLevelMap": {
             "off": "none",
             "minimal": null,
-            "low": "medium",
-            "medium": "high",
-            "high": "xhigh",
-            "xhigh": "max"
+            "xhigh": "xhigh"
           },
           "input": [
             "text",
@@ -223,10 +205,7 @@
           "thinkingLevelMap": {
             "off": "none",
             "minimal": null,
-            "low": "medium",
-            "medium": "high",
-            "high": "xhigh",
-            "xhigh": "max"
+            "xhigh": "xhigh"
           },
           "input": [
             "text",
@@ -248,10 +227,7 @@
           "thinkingLevelMap": {
             "off": "none",
             "minimal": null,
-            "low": "medium",
-            "medium": "high",
-            "high": "xhigh",
-            "xhigh": "max"
+            "xhigh": "xhigh"
           },
           "input": [
             "text",
@@ -277,10 +253,7 @@
           "thinkingLevelMap": {
             "off": "none",
             "minimal": null,
-            "low": "medium",
-            "medium": "high",
-            "high": "xhigh",
-            "xhigh": "max"
+            "xhigh": "xhigh"
           },
           "input": [
             "text",
@@ -324,6 +297,52 @@
           "maxTokens": 128000
         },
         {
+          "id": "gpt-6-sol-fast",
+          "name": "GPT-6 Sol (Fast)",
+          "api": "openai-codex-responses",
+          "reasoning": true,
+          "thinkingLevelMap": {
+            "off": "none",
+            "minimal": null,
+            "xhigh": "xhigh"
+          },
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 2,
+            "output": 10,
+            "cacheRead": 0.2,
+            "cacheWrite": 2.5
+          },
+          "contextWindow": 272000,
+          "maxTokens": 128000
+        },
+        {
+          "id": "gpt-6-luna-fast",
+          "name": "GPT-6 Luna (Fast)",
+          "api": "openai-codex-responses",
+          "reasoning": true,
+          "thinkingLevelMap": {
+            "off": "none",
+            "minimal": null,
+            "xhigh": "xhigh"
+          },
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 0.1,
+            "output": 0.5,
+            "cacheRead": 0.01,
+            "cacheWrite": 0.125
+          },
+          "contextWindow": 272000,
+          "maxTokens": 128000
+        },
+        {
           "id": "gpt-5.6-sol-fast",
           "name": "GPT-5.6 Sol (Fast)",
           "api": "openai-codex-responses",
@@ -331,10 +350,7 @@
           "thinkingLevelMap": {
             "off": "none",
             "minimal": null,
-            "low": "medium",
-            "medium": "high",
-            "high": "xhigh",
-            "xhigh": "max"
+            "xhigh": "xhigh"
           },
           "input": [
             "text",
