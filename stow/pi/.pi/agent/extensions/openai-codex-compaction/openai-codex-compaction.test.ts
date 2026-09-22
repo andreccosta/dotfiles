@@ -53,7 +53,7 @@ const workModel = model(
   "http://127.0.0.1/backend-api",
 );
 
-for (const modelId of ["gpt-5.5", "gpt-5.6-sol", "gpt-6-astra"]) {
+for (const modelId of ["gpt-5.5", "gpt-5.6-sol", "gpt-6-astra", "gpt-6-sol"]) {
   test(`resolves ${modelId}-fast for nested Codex requests`, () => {
     const baseModel = { ...workModel, id: modelId };
     const aliasedModel = { ...baseModel, id: `${modelId}-fast` };

@@ -41,6 +41,78 @@
         "apiKey": "{env:CODEX_LB_API_KEY}"
       },
       "models": {
+        "gpt-6-sol": {
+          "name": "GPT-6 Sol",
+          "reasoning": true,
+          "tool_call": true,
+          "modalities": {
+            "input": ["text", "image"],
+            "output": ["text"]
+          },
+          "limit": {
+            "context": 272000,
+            "output": 128000
+          },
+          "variants": {
+            "none": {
+              "reasoningEffort": "none"
+            },
+            "low": {
+              "disabled": true
+            },
+            "medium": {
+              "reasoningEffort": "medium"
+            },
+            "high": {
+              "reasoningEffort": "high"
+            },
+            "xhigh": {
+              "reasoningEffort": "xhigh"
+            },
+            "max": {
+              "reasoningEffort": "max"
+            }
+          },
+          "options": {
+            "serviceTier": "priority"
+          }
+        },
+        "gpt-6-luna": {
+          "name": "GPT-6 Luna",
+          "reasoning": true,
+          "tool_call": true,
+          "modalities": {
+            "input": ["text", "image"],
+            "output": ["text"]
+          },
+          "limit": {
+            "context": 272000,
+            "output": 128000
+          },
+          "variants": {
+            "none": {
+              "reasoningEffort": "none"
+            },
+            "low": {
+              "disabled": true
+            },
+            "medium": {
+              "reasoningEffort": "medium"
+            },
+            "high": {
+              "reasoningEffort": "high"
+            },
+            "xhigh": {
+              "reasoningEffort": "xhigh"
+            },
+            "max": {
+              "reasoningEffort": "max"
+            }
+          },
+          "options": {
+            "serviceTier": "priority"
+          }
+        },
         "gpt-6-astra": {
           "name": "GPT-6 Astra",
           "reasoning": true,

@@ -4,6 +4,7 @@ const CODEX_FAST_ALIASES: Readonly<Record<string, string>> = {
   "gpt-5.5-fast": "gpt-5.5",
   "gpt-5.6-sol-fast": "gpt-5.6-sol",
   "gpt-6-astra-fast": "gpt-6-astra",
+  "gpt-6-sol-fast": "gpt-6-sol",
 };
 
 export function resolveCodexModelAlias(modelId: string): string {
@@ -15,7 +16,7 @@ export default function (pi: ExtensionAPI) {
     const model = ctx.model;
     const isCodexProvider =
       (model?.provider === "openai-codex" && model.api === "openai-codex-responses") ||
-      (model?.provider === "work" && model.api === "work-codex-lb-responses");
+      (model?.provider === "work" && model.api === "openai-responses");
     if (!isCodexProvider) return;
 
     const targetModel = resolveCodexModelAlias(model.id);

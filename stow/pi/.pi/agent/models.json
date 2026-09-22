@@ -163,6 +163,85 @@
           "maxTokens": 128000
         },
         {
+          "id": "gpt-6-sol-fast",
+          "name": "GPT-6 Sol (Fast)",
+          "reasoning": true,
+          "thinkingLevelMap": {
+            "off": "none",
+            "minimal": null,
+            "low": "medium",
+            "medium": "high",
+            "high": "xhigh",
+            "xhigh": "max"
+          },
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 5,
+            "output": 30,
+            "cacheRead": 0.5,
+            "cacheWrite": 0
+          },
+          "contextWindow": 272000,
+          "maxTokens": 128000,
+          "samplingParams": {
+            "model": "gpt-6-sol",
+            "service_tier": "priority"
+          }
+        },
+        {
+          "id": "gpt-6-sol",
+          "name": "GPT-6 Sol",
+          "reasoning": true,
+          "thinkingLevelMap": {
+            "off": "none",
+            "minimal": null,
+            "low": "medium",
+            "medium": "high",
+            "high": "xhigh",
+            "xhigh": "max"
+          },
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 5,
+            "output": 30,
+            "cacheRead": 0.5,
+            "cacheWrite": 0
+          },
+          "contextWindow": 272000,
+          "maxTokens": 128000
+        },
+        {
+          "id": "gpt-6-luna",
+          "name": "GPT-6 Luna",
+          "reasoning": true,
+          "thinkingLevelMap": {
+            "off": "none",
+            "minimal": null,
+            "low": "medium",
+            "medium": "high",
+            "high": "xhigh",
+            "xhigh": "max"
+          },
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 5,
+            "output": 30,
+            "cacheRead": 0.5,
+            "cacheWrite": 0
+          },
+          "contextWindow": 272000,
+          "maxTokens": 128000
+        },
+        {
           "id": "gpt-6-astra-fast",
           "name": "GPT-6 Astra (Fast)",
           "reasoning": true,
