@@ -48,7 +48,6 @@ brew "qmk/qmk/qmk"
 
 cask "1password"
 cask "1password-cli"
-cask "codex"
 cask "font-jetbrains-mono"
 cask "font-jetbrains-mono-nerd-font"
 cask "ghostty"
