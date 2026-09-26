@@ -7,6 +7,11 @@
   "formatter": false,
   "snapshot": false,
   "mcp": {
+    "planwright": {
+      "enabled": true,
+      "type": "remote",
+      "url": "https://planwright.taildd771.ts.net/mcp"
+    },
     "linear": {
       "enabled": false,
       "type": "remote",

@@ -3,6 +3,10 @@
     "toolMode": "proxy",
     "startup": "lazy",
     "servers": {
+      "planwright": {
+        "type": "remote",
+        "url": "https://planwright.taildd771.ts.net/mcp"
+      },
       "linear": {
         "type": "remote",
         "url": "https://mcp.linear.app/mcp"
