@@ -1,28 +1,24 @@
 {
-  "mcp": {
-    "toolMode": "proxy",
-    "startup": "lazy",
-    "servers": {
-      "planwright": {
-        "type": "remote",
-        "url": "https://planwright.taildd771.ts.net/mcp"
-      },
-      "linear": {
-        "type": "remote",
-        "url": "https://mcp.linear.app/mcp"
-      },
-      "sentry": {
-        "type": "remote",
-        "url": "https://mcp.sentry.dev/mcp"
-      },
-      "grafana": {
-        "type": "remote",
-        "url": "https://grafana-mcp.gke00.usce1.mgmt.internal.amplemarket.com/mcp"
-      },
-      "pganalyze": {
-        "type": "remote",
-        "url": "https://pganalyze-mcp.gke00.usce1.mgmt.internal.amplemarket.com/mcp"
-      }
+  "mcpServers": {
+    "planwright": {
+      "url": "https://planwright.taildd771.ts.net/mcp",
+      "exposure": "deferred"
+    },
+    "linear": {
+      "url": "https://mcp.linear.app/mcp",
+      "exposure": "deferred"
+    },
+    "sentry": {
+      "url": "https://mcp.sentry.dev/mcp",
+      "exposure": "deferred"
+    },
+    "grafana": {
+      "url": "https://grafana-mcp.gke00.usce1.mgmt.internal.amplemarket.com/mcp",
+      "exposure": "deferred"
+    },
+    "pganalyze": {
+      "url": "https://pganalyze-mcp.gke00.usce1.mgmt.internal.amplemarket.com/mcp",
+      "exposure": "deferred"
     }
   }
 }
