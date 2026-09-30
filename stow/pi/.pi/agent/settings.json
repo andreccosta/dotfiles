@@ -2,7 +2,7 @@
   "lastChangelogVersion": "0.99.2",
   "theme": "terminal",
   "defaultProvider": "work",
-  "defaultModel": "gpt-6-sol",
+  "defaultModel": "gpt-6.1-sol",
   "defaultThinkingLevel": "medium",
   "packages": [
     "npm:@cortexkit/pi-anthropic-auth",
