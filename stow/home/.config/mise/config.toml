@@ -2,6 +2,7 @@
 claude = "latest"
 codex = "latest"
 go = "latest"
+herdr = "latest"
 node = "lts"
 opencode = "latest"
 pi = "latest"
