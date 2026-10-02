@@ -5,7 +5,7 @@
   "defaultModel": "gpt-6.1-sol",
   "defaultThinkingLevel": "medium",
   "packages": [
-    "npm:@cortexkit/pi-anthropic-auth",
+    "npm:@gotgenes/pi-anthropic-auth",
     "npm:@plannotator/pi-extension"
   ],
   "hideThinkingBlock": false,
