@@ -34,14 +34,14 @@ HISTFILE=~/.zsh_history
 HISTSIZE=500000
 SAVEHIST=500000
 
-setopt INC_APPEND_HISTORY
+unsetopt INC_APPEND_HISTORY INC_APPEND_HISTORY_TIME # SHARE_HISTORY handles appending
 setopt EXTENDED_HISTORY
 setopt HIST_EXPIRE_DUPS_FIRST
 setopt HIST_IGNORE_DUPS
 setopt HIST_FIND_NO_DUPS
 setopt HIST_IGNORE_SPACE # ignore history for commands starting with space
 setopt HIST_FCNTL_LOCK # safer history file locking across concurrent shells
-unsetopt SHARE_HISTORY # keep history navigation session-local
+setopt SHARE_HISTORY # append and import history across sessions
 
 # options
 setopt AUTO_PUSHD # push old dir to stack
