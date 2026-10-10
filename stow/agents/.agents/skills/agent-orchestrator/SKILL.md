@@ -1,6 +1,6 @@
 ---
 name: agent-orchestrator
-description: "Orchestrate ticket work in Worktrunk worktrees and Herdr workspaces. Use when asked to start an isolated agent for a Linear ticket or task, monitor or review that work, or clean up its workspace and worktree."
+description: "Launch Pi or another coding agent with an initial prompt in a new Worktrunk worktree and Herdr workspace, preserving the caller's cwd and focus. Use when asked to start an isolated agent for any task or Linear ticket, monitor or review its work, or clean up its workspace and worktree."
 ---
 
 # Agent Orchestrator
@@ -109,6 +109,8 @@ If setup fails partway, record the resources that exist and the blocker. Inspect
 4. Read the removal result, including `branch_outcome`; verify workspace/worktree absence using live lists. Record cleaned-up state only after successful cleanup and report whether the branch was deleted or retained. Keep the task record for future lookup.
 
 ## Example requests
+
+- “Start Pi in a new worktree and workspace with this prompt. Preserve my cwd and focus.”
 
 - “Start AM-1234 in a new workspace and worktree.”
 - “Start an agent to implement this pasted task, then monitor and review it.”
