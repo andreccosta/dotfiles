@@ -6,11 +6,12 @@ remote_name="origin"
 dry_run=false
 assume_yes=false
 check_github=true
+batch_size=50
 main_branch_arg=""
 
 usage() {
     cat <<EOF
-Usage: $(basename "$0") [--dry-run | --yes] [--no-github] [main-branch]
+Usage: $(basename "$0") [--dry-run | --yes] [--no-github] [base-branch]
 
 Options:
   --dry-run   Show branches that would be deleted without deleting them.
@@ -19,10 +20,12 @@ Options:
   --no-github Use Git ancestry only; do not query GitHub PRs.
   -h, --help  Show this help.
 
+The base defaults to origin/HEAD when it resolves to an existing remote branch.
+Otherwise, an explicit base branch is required; main/master are never guessed.
 Deletes branches whose tips are ancestors of the remote base branch.
 For standard github.com remote URLs, authenticated gh also enables deletion
 when a local tip exactly matches a merged PR's head SHA for that base branch.
-Only remaining branch tips are queried, in batches of 20 (not all PR history).
+Only remaining branch tips are queried, in batches of $batch_size (not all PR history).
 Missing commits or incomplete PR lists are skipped, never guessed from diffs.
 Other hosts, SSH aliases, missing gh, or API failures use ancestry checks only.
 The base branch and branches checked out in any worktree are always skipped.
@@ -74,6 +77,12 @@ if [[ "$dry_run" == true && "$assume_yes" == true ]]; then
     exit 1
 fi
 
+main_branch="$main_branch_arg"
+if [[ -n "$main_branch" ]] && ! git check-ref-format --branch "$main_branch" >/dev/null 2>&1; then
+    echo "Error: invalid branch name '$main_branch'." >&2
+    exit 1
+fi
+
 if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
     echo "Error: not inside a git repository." >&2
     exit 1
@@ -90,30 +99,14 @@ if ! git fetch --prune "$remote_name"; then
     exit 1
 fi
 
-detect_default_branch() {
-    local ref candidate
-
-    if ref=$(git symbolic-ref --quiet "refs/remotes/${remote_name}/HEAD" 2>/dev/null); then
-        printf '%s\n' "${ref#"refs/remotes/${remote_name}/"}"
-        return
+if [[ -z "$main_branch" ]]; then
+    default_ref=$(git symbolic-ref --quiet "refs/remotes/${remote_name}/HEAD" 2>/dev/null) || default_ref=""
+    if [[ "$default_ref" != "refs/remotes/${remote_name}/"* ]] ||
+        ! git rev-parse --verify --quiet "${default_ref}^{commit}" >/dev/null; then
+        echo "Error: unable to resolve ${remote_name}/HEAD; an explicit base branch is required." >&2
+        exit 1
     fi
-
-    for candidate in main master; do
-        if git show-ref --verify --quiet "refs/remotes/${remote_name}/${candidate}"; then
-            printf '%s\n' "$candidate"
-            return
-        fi
-    done
-
-    echo "Error: unable to detect default branch. Pass it explicitly." >&2
-    exit 1
-}
-
-main_branch="${main_branch_arg:-$(detect_default_branch)}"
-
-if ! git check-ref-format --branch "$main_branch" >/dev/null 2>&1; then
-    echo "Error: invalid branch name '$main_branch'." >&2
-    exit 1
+    main_branch="${default_ref#"refs/remotes/${remote_name}/"}"
 fi
 
 base_ref="refs/remotes/${remote_name}/${main_branch}"
@@ -194,12 +187,12 @@ lookup_github_pr_heads() {
     awk '$4 == "unmerged" && !seen[$2]++ { print $2 }' \
         "$scratch_dir/candidates" > "$scratch_dir/tips" || return 1
     total=$(wc -l < "$scratch_dir/tips") || return 1
-    batches=$(( (total + 19) / 20 ))
+    batches=$(( (total + batch_size - 1) / batch_size ))
     : > "$scratch_dir/pr-results"
     while IFS= read -r oid; do
         aliases="$aliases tip$count: object(oid: \"$oid\") { ...candidate }"
         count=$((count + 1))
-        if [[ "$count" -eq 20 ]]; then
+        if [[ "$count" -eq "$batch_size" ]]; then
             batch=$((batch + 1))
             query_github_batch "$aliases" "$batch" "$batches" >> "$scratch_dir/pr-results" || return 1
             aliases=""
