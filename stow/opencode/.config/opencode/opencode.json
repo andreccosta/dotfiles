@@ -209,6 +209,7 @@
     }
   },
   "permissions": [
+    { "action": "external_directory", "resource": "*", "effect": "ask" },
     { "action": "shell", "resource": "rm *", "effect": "ask" },
     { "action": "read", "resource": "*", "effect": "allow" },
     { "action": "read", "resource": ".*.vars", "effect": "deny" },
