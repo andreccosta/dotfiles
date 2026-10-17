@@ -11,6 +11,7 @@ alias c='clear'
 alias g='git'
 alias cc='claude'
 alias oc='opencode'
+alias z='cd'
 
 # navigation
 if type eza &>/dev/null; then
