@@ -603,6 +603,10 @@ run_install() {
   if [ "${RUN_STOW_SKIP_RECONCILE:-0}" -eq 0 ] && package_list_contains home; then
     configure_git_signing
     check_github_ssh
+    if command_exists bat; then
+      echo "> bat cache --build"
+      bat cache --build
+    fi
   fi
 
   if [ "${RUN_STOW_SKIP_RECONCILE:-0}" -eq 0 ] && package_list_contains herdr; then

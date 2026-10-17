@@ -64,6 +64,8 @@ sudo pacman -S stow
 3. Configures git commit signing for this machine and checks the GitHub SSH setup (see [Git signing & SSH on a new machine](#git-signing--ssh-on-a-new-machine))
 4. Makes `zsh` the default shell if available
 
+When installing the `home` package, `./dot install` also rebuilds bat's theme cache if `bat` is on PATH. Machines without bat skip this step; after installing it, rerun `./dot install home` or run `bat cache --build`.
+
 ## Stow commands
 
 Install the default package set:
