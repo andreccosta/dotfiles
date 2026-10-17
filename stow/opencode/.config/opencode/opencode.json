@@ -1,56 +1,55 @@
-
 {
   "$schema": "https://opencode.ai/config.json",
   "default_agent": "plan",
   "share": "disabled",
-  "lsp": false,
   "formatter": false,
-  "snapshot": false,
+  "snapshots": false,
   "mcp": {
-    "planwright": {
-      "enabled": true,
-      "type": "remote",
-      "url": "https://planwright.acklabs.dev/mcp"
-    },
-    "linear": {
-      "enabled": false,
-      "type": "remote",
-      "url": "https://mcp.linear.app/mcp"
-    },
-    "sentry": {
-      "enabled": false,
-      "type": "remote",
-      "url": "https://mcp.sentry.dev/mcp"
-    },
-    "grafana": {
-      "enabled": false,
-      "type": "remote",
-      "url": "https://grafana-mcp.gke00.usce1.mgmt.internal.amplemarket.com/mcp"
-    },
-    "pganalyze": {
-      "enabled": false,
-      "type": "remote",
-      "url": "https://app.pganalyze.com/mcp"
-    },
-    "metabase": {
-      "enabled": false,
-      "type": "remote",
-      "url": "https://metabase-engineering.gke00.usce1.prod.internal.amplemarket.com/api/metabase-mcp"
+    "servers": {
+      "planwright": {
+        "disabled": false,
+        "type": "remote",
+        "url": "https://planwright.acklabs.dev/mcp"
+      },
+      "linear": {
+        "disabled": true,
+        "type": "remote",
+        "url": "https://mcp.linear.app/mcp"
+      },
+      "sentry": {
+        "disabled": true,
+        "type": "remote",
+        "url": "https://mcp.sentry.dev/mcp"
+      },
+      "grafana": {
+        "disabled": true,
+        "type": "remote",
+        "url": "https://grafana-mcp.gke00.usce1.mgmt.internal.amplemarket.com/mcp"
+      },
+      "pganalyze": {
+        "disabled": true,
+        "type": "remote",
+        "url": "https://app.pganalyze.com/mcp"
+      },
+      "metabase": {
+        "disabled": true,
+        "type": "remote",
+        "url": "https://metabase-engineering.gke00.usce1.prod.internal.amplemarket.com/api/metabase-mcp"
+      }
     }
   },
-  "provider": {
+  "providers": {
     "work": {
-      "npm": "@ai-sdk/openai",
-      "options": {
+      "package": "aisdk:@ai-sdk/openai",
+      "settings": {
         "baseURL": "{env:CODEX_LB_URL}",
         "apiKey": "{env:CODEX_LB_API_KEY}"
       },
       "models": {
         "gpt-6.1-sol": {
           "name": "GPT-6.1 Sol",
-          "reasoning": true,
-          "tool_call": true,
-          "modalities": {
+          "capabilities": {
+            "tools": true,
             "input": ["text", "image"],
             "output": ["text"]
           },
@@ -58,35 +57,21 @@
             "context": 272000,
             "output": 128000
           },
-          "variants": {
-            "none": {
-              "reasoningEffort": "none"
-            },
-            "low": {
-              "disabled": true
-            },
-            "medium": {
-              "reasoningEffort": "medium"
-            },
-            "high": {
-              "reasoningEffort": "high"
-            },
-            "xhigh": {
-              "reasoningEffort": "xhigh"
-            },
-            "max": {
-              "reasoningEffort": "max"
-            }
-          },
-          "options": {
+          "variants": [
+            { "id": "none", "settings": { "reasoningEffort": "none" } },
+            { "id": "medium", "settings": { "reasoningEffort": "medium" } },
+            { "id": "high", "settings": { "reasoningEffort": "high" } },
+            { "id": "xhigh", "settings": { "reasoningEffort": "xhigh" } },
+            { "id": "max", "settings": { "reasoningEffort": "max" } }
+          ],
+          "settings": {
             "serviceTier": "priority"
           }
         },
         "gpt-6-sol": {
           "name": "GPT-6 Sol",
-          "reasoning": true,
-          "tool_call": true,
-          "modalities": {
+          "capabilities": {
+            "tools": true,
             "input": ["text", "image"],
             "output": ["text"]
           },
@@ -94,35 +79,21 @@
             "context": 272000,
             "output": 128000
           },
-          "variants": {
-            "none": {
-              "reasoningEffort": "none"
-            },
-            "low": {
-              "disabled": true
-            },
-            "medium": {
-              "reasoningEffort": "medium"
-            },
-            "high": {
-              "reasoningEffort": "high"
-            },
-            "xhigh": {
-              "reasoningEffort": "xhigh"
-            },
-            "max": {
-              "reasoningEffort": "max"
-            }
-          },
-          "options": {
+          "variants": [
+            { "id": "none", "settings": { "reasoningEffort": "none" } },
+            { "id": "medium", "settings": { "reasoningEffort": "medium" } },
+            { "id": "high", "settings": { "reasoningEffort": "high" } },
+            { "id": "xhigh", "settings": { "reasoningEffort": "xhigh" } },
+            { "id": "max", "settings": { "reasoningEffort": "max" } }
+          ],
+          "settings": {
             "serviceTier": "priority"
           }
         },
         "gpt-6-luna": {
           "name": "GPT-6 Luna",
-          "reasoning": true,
-          "tool_call": true,
-          "modalities": {
+          "capabilities": {
+            "tools": true,
             "input": ["text", "image"],
             "output": ["text"]
           },
@@ -130,35 +101,21 @@
             "context": 272000,
             "output": 128000
           },
-          "variants": {
-            "none": {
-              "reasoningEffort": "none"
-            },
-            "low": {
-              "disabled": true
-            },
-            "medium": {
-              "reasoningEffort": "medium"
-            },
-            "high": {
-              "reasoningEffort": "high"
-            },
-            "xhigh": {
-              "reasoningEffort": "xhigh"
-            },
-            "max": {
-              "reasoningEffort": "max"
-            }
-          },
-          "options": {
+          "variants": [
+            { "id": "none", "settings": { "reasoningEffort": "none" } },
+            { "id": "medium", "settings": { "reasoningEffort": "medium" } },
+            { "id": "high", "settings": { "reasoningEffort": "high" } },
+            { "id": "xhigh", "settings": { "reasoningEffort": "xhigh" } },
+            { "id": "max", "settings": { "reasoningEffort": "max" } }
+          ],
+          "settings": {
             "serviceTier": "priority"
           }
         },
         "gpt-6-astra": {
           "name": "GPT-6 Astra",
-          "reasoning": true,
-          "tool_call": true,
-          "modalities": {
+          "capabilities": {
+            "tools": true,
             "input": ["text", "image"],
             "output": ["text"]
           },
@@ -166,121 +123,98 @@
             "context": 272000,
             "output": 128000
           },
-          "variants": {
-            "none": {
-              "reasoningEffort": "none"
-            },
-            "low": {
-              "disabled": true
-            },
-            "medium": {
-              "reasoningEffort": "medium"
-            },
-            "high": {
-              "reasoningEffort": "high"
-            },
-            "xhigh": {
-              "reasoningEffort": "xhigh"
-            },
-            "max": {
-              "reasoningEffort": "max"
-            }
-          },
-          "options": {
+          "variants": [
+            { "id": "none", "settings": { "reasoningEffort": "none" } },
+            { "id": "medium", "settings": { "reasoningEffort": "medium" } },
+            { "id": "high", "settings": { "reasoningEffort": "high" } },
+            { "id": "xhigh", "settings": { "reasoningEffort": "xhigh" } },
+            { "id": "max", "settings": { "reasoningEffort": "max" } }
+          ],
+          "settings": {
             "serviceTier": "priority"
           }
         },
         "gpt-5.6-sol": {
           "name": "GPT-5.6 Sol",
-          "reasoning": true,
-          "tool_call": true,
+          "capabilities": {
+            "tools": true
+          },
           "limit": {
             "context": 272000,
             "output": 128000
           },
-          "variants": {
-            "none": {
-              "reasoningEffort": "none"
-            },
-            "low": {
-              "reasoningEffort": "low"
-            },
-            "medium": {
-              "reasoningEffort": "medium"
-            },
-            "high": {
-              "reasoningEffort": "high"
-            },
-            "xhigh": {
-              "reasoningEffort": "xhigh"
-            },
-            "max": {
-              "reasoningEffort": "max"
-            }
-          },
-          "options": {
+          "variants": [
+            { "id": "none", "settings": { "reasoningEffort": "none" } },
+            { "id": "low", "settings": { "reasoningEffort": "low" } },
+            { "id": "medium", "settings": { "reasoningEffort": "medium" } },
+            { "id": "high", "settings": { "reasoningEffort": "high" } },
+            { "id": "xhigh", "settings": { "reasoningEffort": "xhigh" } },
+            { "id": "max", "settings": { "reasoningEffort": "max" } }
+          ],
+          "settings": {
             "serviceTier": "priority"
           }
         },
         "gpt-5.5": {
           "name": "GPT-5.5",
-          "reasoning": true,
-          "tool_call": true,
+          "capabilities": {
+            "tools": true
+          },
           "limit": {
             "context": 272000,
             "output": 128000
           },
-          "variants": {
-            "xhigh": {
-              "reasoningEffort": "xhigh",
-              "reasoningSummary": "auto",
-              "include": [
-                "reasoning.encrypted_content"
-              ]
+          "variants": [
+            {
+              "id": "xhigh",
+              "settings": {
+                "reasoningEffort": "xhigh",
+                "reasoningSummary": "auto",
+                "include": [
+                  "reasoning.encrypted_content"
+                ]
+              }
             }
-          },
-          "options": {
+          ],
+          "settings": {
             "serviceTier": "priority"
           }
         },
         "gpt-5.4-mini": {
           "name": "GPT-5.4 Mini",
-          "reasoning": true,
-          "tool_call": true,
+          "capabilities": {
+            "tools": true
+          },
           "limit": {
             "context": 272000,
             "output": 128000
           },
-          "variants": {
-            "xhigh": {
-              "reasoningEffort": "xhigh",
-              "reasoningSummary": "auto",
-              "include": [
-                "reasoning.encrypted_content"
-              ]
+          "variants": [
+            {
+              "id": "xhigh",
+              "settings": {
+                "reasoningEffort": "xhigh",
+                "reasoningSummary": "auto",
+                "include": [
+                  "reasoning.encrypted_content"
+                ]
+              }
             }
-          },
-          "options": {
+          ],
+          "settings": {
             "serviceTier": "priority"
           }
         }
       }
     }
   },
-  "plugin": [],
-  "permission": {
-    "bash": {
-      "rm *": "ask"
-    },
-    "read": {
-      "*": "allow",
-      ".*.vars": "deny",
-      "*.env": "deny",
-      "*.env.*": "deny",
-      "*.envrc": "deny",
-      "secrets/*": "deny"
-    },
-    "todoread": "allow",
-    "todowrite": "allow"
-  }
+  "permissions": [
+    { "action": "shell", "resource": "rm *", "effect": "ask" },
+    { "action": "read", "resource": "*", "effect": "allow" },
+    { "action": "read", "resource": ".*.vars", "effect": "deny" },
+    { "action": "read", "resource": "*.env", "effect": "deny" },
+    { "action": "read", "resource": "*.env.*", "effect": "deny" },
+    { "action": "read", "resource": "*.envrc", "effect": "deny" },
+    { "action": "read", "resource": "secrets/*", "effect": "deny" }
+  ]
 }
