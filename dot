@@ -345,8 +345,265 @@ EOF
   fi
 }
 
+op_ssh_sign_path() {
+  local candidate
+
+  case "$(uname -s)" in
+    Darwin) candidate="/Applications/1Password.app/Contents/MacOS/op-ssh-sign" ;;
+    Linux) candidate="/opt/1Password/op-ssh-sign" ;;
+    *) return 1 ;;
+  esac
+
+  [ -x "$candidate" ] || return 1
+  printf '%s\n' "$candidate"
+}
+
+op_agent_socket_path() {
+  case "$(uname -s)" in
+    Darwin) printf '%s\n' "$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock" ;;
+    Linux) printf '%s\n' "$HOME/.1password/agent.sock" ;;
+    *) return 1 ;;
+  esac
+}
+
+op_agent_running() {
+  local socket
+
+  socket="$(op_agent_socket_path)" || return 1
+  [ -S "$socket" ]
+}
+
+is_interactive() {
+  [ -t 0 ] && [ -t 1 ]
+}
+
+# Display a path with $HOME shortened to ~.
+# shellcheck disable=SC2088 # a literal ~ is intended for display
+tilde_path() {
+  case "$1" in
+    "$HOME"/*) printf '~/%s\n' "${1#"$HOME"/}" ;;
+    *) printf '%s\n' "$1" ;;
+  esac
+}
+
+signing_note() {
+  echo
+  echo "Git signing: $*"
+}
+
+# Private keys in ~/.ssh that have a matching .pub file.
+local_signing_key_candidates() {
+  local pub
+
+  for pub in "$HOME"/.ssh/*.pub; do
+    [ -f "$pub" ] || continue
+    [ -f "${pub%.pub}" ] || continue
+    printf '%s\n' "${pub%.pub}"
+  done
+}
+
+print_manual_signing_steps() {
+  cat <<EOF
+  To sign with a key stored on this machine (works without an SSH connection):
+    git config --file ~/.gitconfig.local user.signingkey /path/to/private_key
+  To sign through a forwarded 1Password agent (only while connected):
+    git config --file ~/.gitconfig.local dotfiles.signing agent
+  See "Git signing & SSH on a new machine" in INSTALL.md.
+EOF
+}
+
+print_local_key_followup() {
+  local key="$1"
+  local email
+
+  if ! ssh-keygen -y -P "" -f "$key" >/dev/null 2>&1; then
+    echo "  warning: $key is passphrase-protected; unattended signing will fail" >&2
+    echo "  unless the key is loaded in an agent." >&2
+  fi
+
+  email="$(git config --get user.email 2>/dev/null || echo "<email>")"
+  cat <<EOF
+  Make sure this public key is added as a *signing* key on GitHub, and to
+  stow/home/.config/git/allowed_signers for local verification:
+    $email $(cut -d' ' -f1,2 "$key.pub")
+EOF
+}
+
+prompt_signing_choice() {
+  local local_config="$1"
+  local candidates=()
+  local key
+  local choice
+  local i
+  local new_key
+
+  while IFS= read -r key; do
+    candidates+=("$key")
+  done < <(local_signing_key_candidates)
+
+  signing_note "1Password is not available on this machine. Choose how to sign commits:"
+  i=1
+  for key in ${candidates[@]+"${candidates[@]}"}; do
+    printf '  %d) %s  (%s)\n' "$i" "$(tilde_path "$key")" "$(ssh-keygen -lf "$key.pub" 2>/dev/null | cut -d' ' -f2-)"
+    i=$((i + 1))
+  done
+  new_key="$HOME/.ssh/$(hostname -s 2>/dev/null || hostname)_git_signing"
+  if [ ! -e "$new_key" ]; then
+    echo "  g) generate a new dedicated key ($(tilde_path "$new_key"), no passphrase)"
+  fi
+  echo "  a) use a forwarded agent (only works while connected over SSH)"
+  echo "  s) skip for now (ask again next install)"
+
+  while true; do
+    printf 'Choice: '
+    IFS= read -r choice || choice=s
+    case "$choice" in
+      s|S|"")
+        print_manual_signing_steps
+        return 0
+        ;;
+      a|A)
+        echo "> git config --file $local_config dotfiles.signing agent"
+        git config --file "$local_config" dotfiles.signing agent
+        return 0
+        ;;
+      g|G)
+        if [ -e "$new_key" ]; then
+          echo "$new_key already exists; pick it from the list instead." >&2
+          continue
+        fi
+        echo "> ssh-keygen -t ed25519 -N '' -C \"$(hostname) git signing\" -f $new_key"
+        ssh-keygen -q -t ed25519 -N '' -C "$(hostname) git signing" -f "$new_key"
+        key="$new_key"
+        ;;
+      *[!0-9]*)
+        echo "Invalid choice." >&2
+        continue
+        ;;
+      *)
+        if [ "$choice" -lt 1 ] || [ "$choice" -gt "${#candidates[@]}" ]; then
+          echo "Invalid choice." >&2
+          continue
+        fi
+        key="${candidates[$((choice - 1))]}"
+        ;;
+    esac
+
+    echo "> git config --file $local_config user.signingkey $key"
+    git config --file "$local_config" user.signingkey "$key"
+    print_local_key_followup "$key"
+    return 0
+  done
+}
+
+# Commit signing is configured in the shared .gitconfig with the 1Password
+# signing key.  Machine-specific choices live in the untracked
+# ~/.gitconfig.local, which is included last and so overrides it:
+#   - 1Password available: gpg.ssh.program = op-ssh-sign
+#   - otherwise: user.signingkey = a key file on this machine, or
+#     dotfiles.signing = agent to sign through a forwarded agent.
+configure_git_signing() {
+  local local_config="$HOME/.gitconfig.local"
+  local program=""
+  local local_key=""
+  local mode=""
+  local op_program
+
+  require_command git
+
+  if [ -f "$local_config" ]; then
+    program="$(git config --file "$local_config" --get gpg.ssh.program || true)"
+    local_key="$(git config --file "$local_config" --get user.signingkey || true)"
+    mode="$(git config --file "$local_config" --get dotfiles.signing || true)"
+  fi
+
+  if [ -n "$program" ] && [ ! -x "$program" ]; then
+    echo "> git config --file $local_config --unset gpg.ssh.program"
+    git config --file "$local_config" --unset gpg.ssh.program
+    program=""
+  fi
+
+  # An explicit per-machine key always wins.
+  if [ -n "$local_key" ]; then
+    signing_note "using $local_key (from ~/.gitconfig.local)"
+    if [ -n "$program" ]; then
+      echo "  warning: gpg.ssh.program is also set to $program; it can only sign" >&2
+      echo "  with keys stored in 1Password. Unset one of them." >&2
+    fi
+    return 0
+  fi
+
+  if op_program="$(op_ssh_sign_path)"; then
+    if ! op_agent_running; then
+      signing_note "1Password is installed but its SSH agent is not running."
+      echo "  Enable it in 1Password > Settings > Developer > Use the SSH agent," >&2
+      echo "  then rerun ./dot install." >&2
+      return 0
+    fi
+    if [ "$program" != "$op_program" ]; then
+      echo "> git config --file $local_config gpg.ssh.program $op_program"
+      git config --file "$local_config" gpg.ssh.program "$op_program"
+    fi
+    signing_note "using 1Password (op-ssh-sign)"
+    return 0
+  fi
+
+  if [ "$mode" = "agent" ]; then
+    signing_note "using the forwarded agent in SSH_AUTH_SOCK (only works while connected)"
+    return 0
+  fi
+
+  if is_interactive; then
+    prompt_signing_choice "$local_config"
+  else
+    signing_note "not configured on this machine (1Password not available)."
+    print_manual_signing_steps
+  fi
+}
+
+# Report (never edit) SSH settings that the 1Password setup relies on.
+check_github_ssh() {
+  local socket
+  local agent
+
+  command_exists ssh || return 0
+
+  if [ ! -f "$HOME/.ssh/known_hosts" ] || ! ssh-keygen -F github.com >/dev/null 2>&1; then
+    cat <<EOF
+
+Note: github.com is not in ~/.ssh/known_hosts. Add it with:
+  ssh-keyscan github.com >> ~/.ssh/known_hosts
+and compare the fingerprints (ssh-keygen -lf ~/.ssh/known_hosts) against
+https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/githubs-ssh-key-fingerprints
+EOF
+  fi
+
+  op_agent_running || return 0
+  socket="$(op_agent_socket_path)"
+
+  agent="$(ssh -G github.com </dev/null 2>/dev/null | awk '/^identityagent / { sub(/^identityagent /, ""); print }')"
+  if [ -z "$agent" ] || [ "$agent" = "SSH_AUTH_SOCK" ]; then
+    agent="${SSH_AUTH_SOCK:-}"
+  fi
+  agent="${agent/#\~/$HOME}"
+
+  if [ "$agent" != "$socket" ]; then
+    cat <<EOF
+
+Note: ssh does not use the 1Password SSH agent for github.com. Add to ~/.ssh/config:
+  Host *
+    IdentityAgent "$(tilde_path "$socket")"
+EOF
+  fi
+}
+
 run_install() {
   run_stow -R "$@"
+
+  if [ "${RUN_STOW_SKIP_RECONCILE:-0}" -eq 0 ] && package_list_contains home; then
+    configure_git_signing
+    check_github_ssh
+  fi
 
   if [ "${RUN_STOW_SKIP_RECONCILE:-0}" -eq 0 ] && package_list_contains herdr; then
     link_herdr_worktrunk_plugin
