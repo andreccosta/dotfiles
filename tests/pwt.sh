@@ -76,4 +76,14 @@ if LIST_FAIL=true bash "$script" open fix-123 >/dev/null 2>&1; then fail 'ignore
 [[ ! -s "$CALLS" ]] || fail 'created workspace after lookup failure'
 if CREATE_FAIL=true bash "$script" open fix-123 >/dev/null 2>&1; then fail 'ignored registration failure'; fi
 [[ ! -s "$CALLS" ]] || fail 'created workspace after registration failure'
+# A submodule's common dir lives under the superproject's .git; use the submodule itself.
+export SUPER="$sandbox/super" SUB="$sandbox/super/sub"
+git init -q "$SUPER"
+git -C "$SUPER" -c protocol.file.allow=always submodule add -q "$ROOT" sub
+python3 -c 'import json, os; print(json.dumps([{"projectId":"prj_sub", "path":os.environ["SUB"]}]))' > "$PROJECTS"
+cd "$SUB"
+: > "$CALLS"
+TARGET="$SUB" bash "$script" open
+[[ "$(< "$CALLS")" == "$(printf '%s\n' workspace create --isolation local --project prj_sub --path "$SUB")" ]] \
+  || fail 'submodule did not resolve to itself'
 printf 'pwt tests passed\n'
