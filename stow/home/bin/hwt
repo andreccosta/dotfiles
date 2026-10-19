@@ -11,7 +11,10 @@ Commands:
   create <branch> [base]   Create a Worktrunk worktree and open it in Herdr
   switch [branch-or-path]  Switch/select a Worktrunk worktree and open it in Herdr
   open [branch-or-path]    Alias for switch
-  remove [branch-or-path]  Remove a Worktrunk worktree, then return Herdr to the primary checkout when possible
+  review <pr|branch|path>  Open a review worktree (--no-hooks) under
+                           .worktrees/reviews/; a bare number means pr:<n>
+  remove [branch-or-path]  Remove a worktree and return Herdr to the primary checkout
+                           Review paths use --no-hooks --force-delete
 
 Examples:
   hwt create feature/foo
@@ -19,7 +22,9 @@ Examples:
   hwt switch               # uses Worktrunk's picker
   hwt switch feature/foo
   hwt open feature/foo     # same as switch
-  hwt remove               # removes the current worktree
+  hwt review 123           # review GitHub PR 123 in an isolated worktree
+  hwt review feature/foo   # review an existing branch
+  hwt remove               # detects review worktrees automatically
 EOF
 }
 
@@ -128,20 +133,74 @@ cmd_create() {
   open_in_herdr "$source" "$path"
 }
 
-cmd_open() {
-  local target="${1:-}" cwd source out path
-  [[ $# -le 1 ]] || fail "open accepts at most: [branch-or-path]"
-
-  cwd="$(checkout_root)"
+open_worktree() {
+  local cwd="$1" target="$2"; shift 2
+  local extra=("$@") source out path
   source="$(source_root "$cwd")"
 
   if [[ -n "$target" ]]; then
-    out="$(wt -C "$cwd" switch "$target" --no-cd --format=json)"
+    out="$(wt -C "$cwd" switch ${extra[@]+"${extra[@]}"} "$target" --no-cd --format=json)"
   else
-    out="$(wt -C "$cwd" switch --no-cd --format=json)"
+    out="$(wt -C "$cwd" switch ${extra[@]+"${extra[@]}"} --no-cd --format=json)"
   fi
   path="$(printf '%s' "$out" | worktrunk_path)" || fail "Worktrunk did not return a worktree path"
   open_in_herdr "$source" "$path"
+}
+
+cmd_open() {
+  local target="${1:-}" cwd
+  [[ $# -le 1 ]] || fail "open accepts at most: [branch-or-path]"
+  cwd="$(checkout_root)"
+  open_worktree "$cwd" "$target"
+}
+
+expand_pr_target() {
+  local target="$1"
+  if [[ "$target" =~ ^[0-9]+$ ]]; then
+    printf 'pr:%s\n' "$target"
+  else
+    printf '%s\n' "$target"
+  fi
+}
+
+is_review_path() {
+  case "$1" in
+    */.worktrees/reviews/*) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+resolve_worktree_path() {
+  local root="$1" target="$2"
+  if [[ -z "$target" ]]; then
+    checkout_root "$root"
+    return
+  fi
+  wt -C "$root" list --format=json | python3 -c '
+import json, os, sys
+target = sys.argv[1]
+data = json.load(sys.stdin)
+for item in data.get("items", []):
+    wt = item.get("worktree") or {}
+    path = wt.get("path")
+    if not path:
+        continue
+    if item.get("branch") == target or path == target \
+            or os.path.abspath(path) == os.path.abspath(target):
+        print(path)
+        sys.exit(0)
+sys.exit(1)
+' "$target"
+}
+
+cmd_review() {
+  local target="${1:-}" cwd
+  [[ -n "$target" ]] || fail "review requires a pr-number, branch, or path"
+  [[ $# -le 1 ]] || fail "review accepts at most: [pr-number|branch-or-path]"
+  cwd="$(checkout_root)"
+  open_worktree "$cwd" "$(expand_pr_target "$target")" \
+    --no-hooks \
+    --config-set "worktree-path='{{ repo_path }}/.worktrees/reviews/{{ branch | sanitize }}'"
 }
 
 cmd_remove() {
@@ -150,19 +209,23 @@ cmd_remove() {
 
   cwd="$(checkout_root)"
   source="$(source_root "$cwd")"
-  removed_root="$cwd"
+  removed_root="$(resolve_worktree_path "$cwd" "$target" 2>/dev/null || true)"
+  local extra=(--foreground)
+  if [[ -n "$removed_root" ]] && is_review_path "$removed_root"; then
+    extra+=(--no-hooks --force-delete)
+  fi
 
   if [[ -n "$target" ]]; then
-    wt -C "$cwd" remove --foreground "$target"
+    wt -C "$cwd" remove "${extra[@]}" "$target"
   else
-    wt -C "$cwd" remove --foreground
+    wt -C "$cwd" remove "${extra[@]}"
   fi
 
   # If this runs inside Herdr, return to the primary/source checkout. Close the
   # removed workspace only when Herdr told us which workspace invoked the command.
   ensure_herdr_server
   "$HERDR_BIN" worktree open --cwd "$source" --path "$source" --focus || true
-  if [[ -n "${HERDR_WORKSPACE_ID:-}" && "$removed_root" != "$source" ]]; then
+  if [[ -n "${HERDR_WORKSPACE_ID:-}" && "$removed_root" == "$cwd" && "$removed_root" != "$source" ]]; then
     "$HERDR_BIN" workspace close "$HERDR_WORKSPACE_ID" || true
   fi
   attach_herdr_if_needed
@@ -177,6 +240,7 @@ main() {
   case "${1:-}" in
     create) shift; cmd_create "$@" ;;
     open|switch) shift; cmd_open "$@" ;;
+    review) shift; cmd_review "$@" ;;
     remove) shift; cmd_remove "$@" ;;
     -h|--help|help|"") usage ;;
     *) fail "unknown command: $1" ;;

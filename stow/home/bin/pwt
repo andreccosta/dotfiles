@@ -11,7 +11,7 @@ Commands:
   create <branch> [base]   Create a Worktrunk worktree and open it in Paseo
   switch [branch-or-path]  Switch/select a Worktrunk worktree and open it in Paseo
   open [branch-or-path]    Alias for switch
-  review <pr|branch|path>  Open a shallow review worktree (--no-hooks) under
+  review <pr|branch|path>  Open a review worktree (--no-hooks) under
                            .worktrees/reviews/; a bare number means pr:<n>
   remove [branch-or-path]  Remove a Worktrunk worktree; review worktrees are
                            detected by path and removed with --no-hooks
