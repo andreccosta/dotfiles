@@ -179,7 +179,7 @@ resolve_worktree_path() {
   wt -C "$root" list --format=json | python3 -c '
 import json, os, sys
 root, target = sys.argv[1:]
-# Worktrunk runs with -C "$root", so resolve relative paths the same way, and
+# Worktrunk runs from the checkout root, so resolve relative paths the same way, and
 # compare real paths so symlinked checkouts still match.
 real_target = os.path.realpath(os.path.join(root, target))
 data = json.load(sys.stdin)
