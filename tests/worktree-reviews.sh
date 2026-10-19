@@ -89,13 +89,26 @@ for tool in hwt pwt; do
       assert_call paseo workspace archive review-ws
     fi
   done
+  ln -sfn "$ROOT" "$sandbox/link"
   if [[ "$tool" == pwt ]]; then
     # Paseo may report the workspace through a symlinked path.
-    ln -sfn "$ROOT" "$sandbox/link"
     : > "$CALLS"
     WS_CWD="$sandbox/link/.worktrees/reviews/feature-review" bash "$script" remove feature/review
     assert_call paseo workspace archive review-ws
   fi
+  # Targets given through a symlinked checkout still resolve as review paths.
+  link_target="$sandbox/link/.worktrees/reviews/feature-review"
+  (cd "$sandbox/link" && : > "$CALLS" && bash "$script" remove "$link_target")
+  assert_call wt -C "$ROOT" remove --foreground --no-hooks --force-delete "$link_target"
+  [[ "$tool" == hwt ]] || assert_call paseo workspace archive review-ws
+  # Relative paths resolve from the checkout root, like `wt -C`.
+  (cd "$ROOT/.worktrees" && : > "$CALLS" && bash "$script" remove .worktrees/reviews/feature-review)
+  assert_call wt -C "$ROOT" remove --foreground --no-hooks --force-delete .worktrees/reviews/feature-review
+  # Unresolvable targets warn before falling back to a regular removal.
+  : > "$CALLS"
+  bash "$script" remove missing 2> "$sandbox/stderr"
+  grep -q "could not resolve missing" "$sandbox/stderr"
+  assert_call wt -C "$ROOT" remove --foreground missing
   for target in feature/normal "$NORMAL"; do
     : > "$CALLS"
     bash "$script" remove "$target"
