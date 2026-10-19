@@ -90,10 +90,18 @@ worktrunk_path() {
 }
 
 open_in_paseo() {
-  local path="$1"
+  local path="$1" root project_id
   [[ -n "$path" ]] || fail "empty worktree path"
+  root="$(source_root "$path")"
+  project_id="$(paseo_project_id_for_path "$root")" \
+    || fail "could not list Paseo projects"
+  if [[ -z "$project_id" ]]; then
+    project_id="$("$PASEO_BIN" project create "$root" --json | json_field projectId)" \
+      || fail "could not register Paseo project for $root"
+  fi
   "$PASEO_BIN" workspace create \
     --isolation local \
+    --project "$project_id" \
     --path "$path"
 }
 
@@ -118,6 +126,19 @@ for item in data.get("items", []):
         sys.exit(0)
 sys.exit(1)
 ' "$target"
+}
+
+paseo_project_id_for_path() {
+  local path="$1"
+  "$PASEO_BIN" project ls --json | python3 -c '
+import json, os, sys
+target = os.path.realpath(sys.argv[1])
+for project in json.load(sys.stdin):
+    path = project.get("path")
+    if path and os.path.realpath(path) == target:
+        print(project["projectId"])
+        break
+' "$path"
 }
 
 paseo_workspace_id_for_path() {
