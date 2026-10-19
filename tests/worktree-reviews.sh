@@ -37,7 +37,8 @@ elif name == 'paseo':
     if args[:2] == ['project', 'ls']:
         print(json.dumps([{'path': os.environ['ROOT'], 'projectId': 'project'}]))
     elif args[:2] == ['workspace', 'ls']:
-        print(json.dumps([{'cwd': os.environ['REVIEW'], 'workspaceId': 'review-ws'}]))
+        cwd = os.environ.get('WS_CWD', os.environ['REVIEW'])
+        print(json.dumps([{'cwd': cwd, 'workspaceId': 'review-ws'}]))
 PY
 chmod +x "$sandbox/bin/mock"
 for name in wt herdr paseo; do ln -s mock "$sandbox/bin/$name"; done
@@ -88,6 +89,13 @@ for tool in hwt pwt; do
       assert_call paseo workspace archive review-ws
     fi
   done
+  if [[ "$tool" == pwt ]]; then
+    # Paseo may report the workspace through a symlinked path.
+    ln -sfn "$ROOT" "$sandbox/link"
+    : > "$CALLS"
+    WS_CWD="$sandbox/link/.worktrees/reviews/feature-review" bash "$script" remove feature/review
+    assert_call paseo workspace archive review-ws
+  fi
   for target in feature/normal "$NORMAL"; do
     : > "$CALLS"
     bash "$script" remove "$target"

@@ -146,11 +146,11 @@ paseo_workspace_id_for_path() {
   local path="$1"
   "$PASEO_BIN" workspace ls --json | python3 -c '
 import json, os, sys
-target = os.path.abspath(sys.argv[1])
+target = os.path.realpath(sys.argv[1])
 data = json.load(sys.stdin)
 for ws in data:
     cwd = ws.get("cwd")
-    if cwd and os.path.abspath(cwd) == target:
+    if cwd and os.path.realpath(cwd) == target:
         print(ws.get("workspaceId"))
         sys.exit(0)
 sys.exit(1)
