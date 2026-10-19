@@ -1,0 +1,202 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+PASEO_BIN="${PASEO_BIN_PATH:-paseo}"
+
+usage() {
+  cat <<'EOF'
+Usage: pwt <command> [args]
+
+Commands:
+  create <branch> [base]   Create a Worktrunk worktree and open it in Paseo
+  switch [branch-or-path]  Switch/select a Worktrunk worktree and open it in Paseo
+  open [branch-or-path]    Alias for switch
+  remove [branch-or-path]  Remove a Worktrunk worktree
+
+Examples:
+  pwt create feature/foo
+  pwt create hotfix release/1.2
+  pwt switch               # uses Worktrunk's picker
+  pwt switch feature/foo
+  pwt open feature/foo     # same as switch
+  pwt remove               # removes the current worktree
+EOF
+}
+
+fail() {
+  printf 'pwt: %s\n' "$*" >&2
+  exit 1
+}
+
+need() {
+  command -v "$1" >/dev/null 2>&1 || fail "missing required command: $1"
+}
+
+checkout_root() {
+  git -C "${1:-$PWD}" rev-parse --path-format=absolute --show-toplevel 2>/dev/null \
+    || fail "not inside a git repository"
+}
+
+source_root() {
+  local root common primary
+  root="$(checkout_root "${1:-$PWD}")"
+
+  # If invoked from a linked worktree, resolve the source checkout so the opened
+  # workspace can attach to the existing worktree group.
+  common="$(git -C "$root" rev-parse --path-format=absolute --git-common-dir 2>/dev/null || true)"
+  if [[ -n "$common" ]]; then
+    primary="$(dirname "$common")"
+    if git -C "$primary" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+      checkout_root "$primary"
+      return
+    fi
+  fi
+
+  printf '%s\n' "$root"
+}
+
+json_field() {
+  python3 -c '
+import json, sys
+try:
+    data = json.load(sys.stdin)
+except Exception:
+    sys.exit(1)
+for name in sys.argv[1:]:
+    value = data.get(name)
+    if value:
+        print(value)
+        sys.exit(0)
+# Worktrunk schema variants used by older/newer versions.
+worktree = data.get("worktree")
+if isinstance(worktree, dict):
+    for name in ("path", "worktree_path", "checkout_path"):
+        value = worktree.get(name)
+        if value:
+            print(value)
+            sys.exit(0)
+sys.exit(1)
+' "$@"
+}
+
+worktrunk_path() {
+  json_field path worktree_path checkout_path
+}
+
+open_in_paseo() {
+  local path="$1"
+  [[ -n "$path" ]] || fail "empty worktree path"
+  "$PASEO_BIN" workspace create \
+    --isolation local \
+    --path "$path"
+}
+
+resolve_worktree_path() {
+  local root="$1" target="$2"
+  if [[ -z "$target" ]]; then
+    checkout_root "$root"
+    return
+  fi
+  wt -C "$root" list --format=json | python3 -c '
+import json, os, sys
+target = sys.argv[1]
+data = json.load(sys.stdin)
+for item in data.get("items", []):
+    wt = item.get("worktree") or {}
+    path = wt.get("path")
+    if not path:
+        continue
+    if item.get("branch") == target or path == target \
+            or os.path.abspath(path) == os.path.abspath(target):
+        print(path)
+        sys.exit(0)
+sys.exit(1)
+' "$target"
+}
+
+paseo_workspace_id_for_path() {
+  local path="$1"
+  "$PASEO_BIN" workspace ls --json | python3 -c '
+import json, os, sys
+target = os.path.abspath(sys.argv[1])
+data = json.load(sys.stdin)
+for ws in data:
+    cwd = ws.get("cwd")
+    if cwd and os.path.abspath(cwd) == target:
+        print(ws.get("workspaceId"))
+        sys.exit(0)
+sys.exit(1)
+' "$path"
+}
+
+cmd_create() {
+  local branch="${1:-}" base="${2:-}" cwd out path
+  [[ -n "$branch" ]] || fail "create requires a branch name"
+  [[ $# -le 2 ]] || fail "create accepts at most: <branch> [base]"
+
+  cwd="$(checkout_root)"
+
+  if [[ -n "$base" ]]; then
+    out="$(wt -C "$cwd" switch --create "$branch" --base "$base" --no-cd --format=json)"
+  else
+    out="$(wt -C "$cwd" switch --create "$branch" --no-cd --format=json)"
+  fi
+  path="$(printf '%s' "$out" | worktrunk_path)" || fail "Worktrunk did not return a worktree path"
+  open_in_paseo "$path"
+}
+
+cmd_open() {
+  local target="${1:-}" cwd out path
+  [[ $# -le 1 ]] || fail "open accepts at most: [branch-or-path]"
+
+  cwd="$(checkout_root)"
+
+  if [[ -n "$target" ]]; then
+    out="$(wt -C "$cwd" switch "$target" --no-cd --format=json)"
+  else
+    out="$(wt -C "$cwd" switch --no-cd --format=json)"
+  fi
+  path="$(printf '%s' "$out" | worktrunk_path)" || fail "Worktrunk did not return a worktree path"
+  open_in_paseo "$path"
+}
+
+cmd_remove() {
+  local target="${1:-}" cwd path wsid
+  [[ $# -le 1 ]] || fail "remove accepts at most: [branch-or-path]"
+
+  cwd="$(checkout_root)"
+
+  # Resolve the worktree path and its Paseo workspace before Worktrunk deletes
+  # the directory, then archive the workspace once removal succeeds.
+  path="$(resolve_worktree_path "$cwd" "$target" 2>/dev/null || true)"
+  if [[ -n "$path" ]]; then
+    wsid="$(paseo_workspace_id_for_path "$path" 2>/dev/null || true)"
+  fi
+
+  if [[ -n "$target" ]]; then
+    wt -C "$cwd" remove --foreground "$target"
+  else
+    wt -C "$cwd" remove --foreground
+  fi
+
+  if [[ -n "${wsid:-}" ]]; then
+    "$PASEO_BIN" workspace archive "$wsid" >/dev/null || true
+  fi
+}
+
+main() {
+  need git
+  need wt
+  need python3
+  need "$PASEO_BIN"
+
+  case "${1:-}" in
+    create) shift; cmd_create "$@" ;;
+    open|switch) shift; cmd_open "$@" ;;
+    remove) shift; cmd_remove "$@" ;;
+    -h|--help|help|"") usage ;;
+    *) fail "unknown command: $1" ;;
+  esac
+}
+
+main "$@"
