@@ -11,7 +11,11 @@ Commands:
   create <branch> [base]   Create a Worktrunk worktree and open it in Paseo
   switch [branch-or-path]  Switch/select a Worktrunk worktree and open it in Paseo
   open [branch-or-path]    Alias for switch
-  remove [branch-or-path]  Remove a Worktrunk worktree
+  review <pr|branch|path>  Open a shallow review worktree (--no-hooks) under
+                           .worktrees/reviews/; a bare number means pr:<n>
+  remove [branch-or-path]  Remove a Worktrunk worktree; review worktrees are
+                           detected by path and removed with --no-hooks
+                           --force-delete
 
 Examples:
   pwt create feature/foo
@@ -19,6 +23,8 @@ Examples:
   pwt switch               # uses Worktrunk's picker
   pwt switch feature/foo
   pwt open feature/foo     # same as switch
+  pwt review 123           # review GitHub PR 123 in an isolated worktree
+  pwt review feature/foo   # review an existing branch
   pwt remove               # removes the current worktree
 EOF
 }
@@ -145,26 +151,43 @@ cmd_create() {
   open_in_paseo "$path"
 }
 
-cmd_open() {
-  local target="${1:-}" cwd out path
-  [[ $# -le 1 ]] || fail "open accepts at most: [branch-or-path]"
-
-  cwd="$(checkout_root)"
-
-  if [[ -n "$target" ]]; then
-    out="$(wt -C "$cwd" switch "$target" --no-cd --format=json)"
+expand_pr_target() {
+  local target="$1"
+  if [[ "$target" =~ ^[0-9]+$ ]]; then
+    printf 'pr:%s\n' "$target"
   else
-    out="$(wt -C "$cwd" switch --no-cd --format=json)"
+    printf '%s\n' "$target"
+  fi
+}
+
+# Review worktrees are created under .worktrees/reviews/ so removal can detect
+# them without a marker file or Worktrunk metadata.
+is_review_path() {
+  case "$1" in
+    */.worktrees/reviews/*) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+# Switch to (or create) a Worktrunk worktree and open it in Paseo. Extra flags
+# (e.g. --no-hooks) are forwarded to `wt switch`.
+open_worktree() {
+  local cwd="$1" target="$2"; shift 2
+  local extra=("$@") out path
+  if [[ -n "$target" ]]; then
+    out="$(wt -C "$cwd" switch ${extra[@]+"${extra[@]}"} "$target" --no-cd --format=json)"
+  else
+    out="$(wt -C "$cwd" switch ${extra[@]+"${extra[@]}"} --no-cd --format=json)"
   fi
   path="$(printf '%s' "$out" | worktrunk_path)" || fail "Worktrunk did not return a worktree path"
   open_in_paseo "$path"
 }
 
-cmd_remove() {
-  local target="${1:-}" cwd path wsid
-  [[ $# -le 1 ]] || fail "remove accepts at most: [branch-or-path]"
-
-  cwd="$(checkout_root)"
+# Remove a Worktrunk worktree and archive its matching Paseo workspace. Extra
+# flags (e.g. --no-hooks --force-delete) are forwarded to `wt remove`.
+remove_worktree() {
+  local cwd="$1" target="$2"; shift 2
+  local extra=("$@") path wsid
 
   # Resolve the worktree path and its Paseo workspace before Worktrunk deletes
   # the directory, then archive the workspace once removal succeeds.
@@ -174,13 +197,49 @@ cmd_remove() {
   fi
 
   if [[ -n "$target" ]]; then
-    wt -C "$cwd" remove --foreground "$target"
+    wt -C "$cwd" remove ${extra[@]+"${extra[@]}"} "$target"
   else
-    wt -C "$cwd" remove --foreground
+    wt -C "$cwd" remove ${extra[@]+"${extra[@]}"}
   fi
 
   if [[ -n "${wsid:-}" ]]; then
     "$PASEO_BIN" workspace archive "$wsid" >/dev/null || true
+  fi
+}
+
+cmd_open() {
+  local target="${1:-}" cwd
+  [[ $# -le 1 ]] || fail "open accepts at most: [branch-or-path]"
+
+  cwd="$(checkout_root)"
+  open_worktree "$cwd" "$target"
+}
+
+cmd_review() {
+  local target="${1:-}" cwd
+  [[ -n "$target" ]] || fail "review requires a pr-number, branch, or path"
+  [[ $# -le 1 ]] || fail "review accepts at most: [pr-number|branch-or-path]"
+
+  cwd="$(checkout_root)"
+  open_worktree "$cwd" "$(expand_pr_target "$target")" \
+    --no-hooks \
+    --config-set "worktree-path='{{ repo_path }}/.worktrees/reviews/{{ branch | sanitize }}'"
+}
+
+cmd_remove() {
+  local target="${1:-}" cwd
+  [[ $# -le 1 ]] || fail "remove accepts at most: [branch-or-path]"
+
+  cwd="$(checkout_root)"
+
+  # Review worktrees live under .worktrees/reviews/ and skipped setup hooks, so
+  # tear them down the same way: no hooks, and delete the (PR) branch.
+  local path
+  path="$(resolve_worktree_path "$cwd" "$target" 2>/dev/null || true)"
+  if [[ -n "$path" ]] && is_review_path "$path"; then
+    remove_worktree "$cwd" "$target" --foreground --no-hooks --force-delete
+  else
+    remove_worktree "$cwd" "$target" --foreground
   fi
 }
 
@@ -193,6 +252,7 @@ main() {
   case "${1:-}" in
     create) shift; cmd_create "$@" ;;
     open|switch) shift; cmd_open "$@" ;;
+    review) shift; cmd_review "$@" ;;
     remove) shift; cmd_remove "$@" ;;
     -h|--help|help|"") usage ;;
     *) fail "unknown command: $1" ;;
