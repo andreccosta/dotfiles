@@ -6,7 +6,7 @@
       "apiKey": "$OPENCODE_ZEN_API_KEY"
     },
     "work": {
-      "baseUrl": "http://localhost:2455/v1",
+      "baseUrl": "$CODEX_LB_URL",
       "api": "openai-responses",
       "apiKey": "$CODEX_LB_API_KEY",
       "models": [
