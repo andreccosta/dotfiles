@@ -144,10 +144,11 @@ if [[ -o interactive ]]; then
     return 1
   }
 
+  (( $+commands[mise] )) && eval "$(mise activate zsh)"
+
   # Tool integrations.  Each `init` produces a static script, so it is cached
   # by _zsh_cached_init (defined in .zshenv) and only regenerated on upgrade.
   # Delete ~/.zsh_cache/init-*.zsh to force a refresh.
-  _zsh_cached_init mise activate zsh
   _zsh_cached_init zoxide init zsh --cmd cd
   _zsh_cached_init starship init zsh
   _zsh_cached_init wt config shell init zsh
