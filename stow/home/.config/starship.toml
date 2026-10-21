@@ -4,15 +4,13 @@ $directory\
 $git_branch\
 $git_state\
 $git_status\
-$fill\
-$cmd_duration\
-$battery\
-${custom.tmux}\
 $line_break\
 $jobs\
 $status\
 $character\
 """
+
+right_format = "$cmd_duration$battery${custom.tmux}"
 
 add_newline = false
 
@@ -39,9 +37,6 @@ format = " [$duration]($style)"
 format = "[$path]($style) "
 truncation_length = 2
 truncate_to_repo = true
-
-[fill]
-symbol = ' '
 
 [git_branch]
 format = "[$symbol$branch]($style) "
