@@ -10,7 +10,7 @@ $status\
 $character\
 """
 
-right_format = "$cmd_duration$battery${custom.tmux}"
+right_format = "$cmd_duration$battery"
 
 add_newline = false
 
@@ -52,9 +52,3 @@ staged = " "
 renamed = " "
 untracked = " "
 ignore_submodules = true
-
-[custom.tmux]
-when = 'test -n "$TMUX"'
-symbol = " "
-style = "bold blue"
-format = " [$symbol]($style)"
