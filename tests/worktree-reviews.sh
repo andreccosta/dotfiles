@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Shared hwt/pwt contract: real linked checkouts, mocked Worktrunk and UIs.
+# Shared hwt/pwt/rwt contract: real linked checkouts, mocked Worktrunk and UIs.
 set -euo pipefail
 repo=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 sandbox=$(mktemp -d "${TMPDIR:-/tmp}/worktree-reviews.XXXXXX")
@@ -39,11 +39,22 @@ elif name == 'paseo':
     elif args[:2] == ['workspace', 'ls']:
         cwd = os.environ.get('WS_CWD', os.environ['REVIEW'])
         print(json.dumps([{'cwd': cwd, 'workspaceId': 'review-ws'}]))
+elif name == 'rex':
+    if args[:2] == ['ls', '--json']:
+        default = [{'session_id': 'source-session', 'label': 'source checkout'},
+                   {'session_id': 'review-session', 'label': 'source checkout/feature/review'}]
+        sessions = json.loads(os.environ['REX_SESSIONS']) if 'REX_SESSIONS' in os.environ else default
+        print(json.dumps({'sessions': sessions}))
+    elif args[0] == 'new':
+        print(json.dumps({'session_id': 'new-session'}))
+    elif args[0] == 'do':
+        sys.exit(int(os.environ.get('SELECT_FAIL', '0')))
 PY
 chmod +x "$sandbox/bin/mock"
-for name in wt herdr paseo; do ln -s mock "$sandbox/bin/$name"; done
+for name in wt herdr paseo rex; do ln -s mock "$sandbox/bin/$name"; done
 export PATH="$sandbox/bin:$PATH" HERDR_ENV=1 HERDR_WORKSPACE_ID=current-ws
 export HERDR_BIN_PATH="$sandbox/bin/herdr" PASEO_BIN_PATH="$sandbox/bin/paseo"
+export REX_BIN_PATH="$sandbox/bin/rex" REX_SESSION=current-session
 assert_call() {
   python3 - "$@" <<'PY'
 import json, os, sys
@@ -55,10 +66,10 @@ assert_no_ui() {
   python3 - <<'PY'
 import json, os
 calls = [json.loads(line) for line in open(os.environ['CALLS'])]
-assert not any(c[0] == 'herdr' or c[:2] == ['paseo', 'workspace'] and c[2] == 'archive' for c in calls), calls
+assert not any(c[0] in ('herdr', 'rex') or c[:2] == ['paseo', 'workspace'] and c[2] == 'archive' for c in calls), calls
 PY
 }
-for tool in hwt pwt; do
+for tool in hwt pwt rwt; do
   script="$repo/stow/home/bin/$tool"
   cd "$ROOT"
   for target in 123 pr:123 feature/review "$REVIEW"; do
@@ -71,6 +82,12 @@ for tool in hwt pwt; do
       "$expected" --no-cd --format=json
     if [[ "$tool" == hwt ]]; then
       assert_call herdr worktree open --cwd "$ROOT" --path "$REVIEW" --focus
+    elif [[ "$tool" == rwt ]]; then
+      # An existing session with the worktree's label is reused.
+      assert_call rex "do" session.select session_id=review-session
+      if grep -q '"rex", "new"' "$CALLS"; then
+        printf 'FAIL: created a duplicate Rex session\n' >&2; exit 1
+      fi
     else
       assert_call paseo workspace create --isolation local --project project --path "$REVIEW"
     fi
@@ -85,10 +102,25 @@ for tool in hwt pwt; do
         printf 'FAIL: closed the invoking workspace when removing another checkout\n' >&2
         exit 1
       fi
+    elif [[ "$tool" == rwt ]]; then
+      assert_call rex "do" session.select session_id=source-session
+      assert_call rex kill review-session
+      if grep -q '"kill", "current-session"' "$CALLS"; then
+        printf 'FAIL: killed the invoking session when removing another checkout\n' >&2
+        exit 1
+      fi
     else
       assert_call paseo workspace archive review-ws
     fi
   done
+  if [[ "$tool" == rwt ]]; then
+    # Without a matching session one is created, and a failed focus only warns.
+    : > "$CALLS"
+    REX_SESSIONS='[]' SELECT_FAIL=1 bash "$script" review feature/review 2> "$sandbox/stderr"
+    assert_call rex new "source checkout/feature/review" --cwd "$REVIEW" --json
+    assert_call rex "do" session.select session_id=new-session
+    grep -q "enable Remote Control" "$sandbox/stderr"
+  fi
   ln -sfn "$ROOT" "$sandbox/link"
   if [[ "$tool" == pwt ]]; then
     # Paseo may report the workspace through a symlinked path.
@@ -100,7 +132,8 @@ for tool in hwt pwt; do
   link_target="$sandbox/link/.worktrees/reviews/feature-review"
   (cd "$sandbox/link" && : > "$CALLS" && bash "$script" remove "$link_target")
   assert_call wt -C "$ROOT" remove --foreground --no-hooks --force-delete "$link_target"
-  [[ "$tool" == hwt ]] || assert_call paseo workspace archive review-ws
+  [[ "$tool" != pwt ]] || assert_call paseo workspace archive review-ws
+  [[ "$tool" != rwt ]] || assert_call rex kill review-session
   # Relative paths resolve from the checkout root, like `wt -C`.
   (cd "$ROOT/.worktrees" && : > "$CALLS" && bash "$script" remove .worktrees/reviews/feature-review)
   assert_call wt -C "$ROOT" remove --foreground --no-hooks --force-delete .worktrees/reviews/feature-review
@@ -120,6 +153,9 @@ for tool in hwt pwt; do
   assert_call wt -C "$REVIEW" remove --foreground --no-hooks --force-delete
   if [[ "$tool" == hwt ]]; then
     assert_call herdr workspace close current-ws
+  elif [[ "$tool" == rwt ]]; then
+    assert_call rex kill review-session
+    assert_call rex kill current-session
   else
     assert_call paseo workspace archive review-ws
   fi

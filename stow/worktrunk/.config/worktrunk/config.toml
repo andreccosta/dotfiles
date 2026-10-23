@@ -3,4 +3,4 @@ worktree-path = '{{ repo_path }}/.worktrees/{{ branch | sanitize }}'
 [aliases]
 review = "wt switch --no-hooks --config-set \"worktree-path='{% raw %}{{ repo_path }}/.worktrees/reviews/{{ branch | sanitize }}{% endraw %}'\" {{ args }}"
 # Compatibility for older review worktrees outside .worktrees/reviews/.
-review-remove = "echo 'wt review-remove is deprecated; use hwt remove or pwt remove for .worktrees/reviews/ worktrees' >&2; wt remove --no-hooks --force-delete {{ args }}"
+review-remove = "echo 'wt review-remove is deprecated; use hwt, pwt, or rwt remove for .worktrees/reviews/ worktrees' >&2; wt remove --no-hooks --force-delete {{ args }}"

@@ -122,6 +122,12 @@ hwt remove [branch-or-path]
 
 Use `hm` to open the current checkout in Herdr, `hwt` to let Worktrunk manage a worktree before opening it in Herdr, and `hwta` to create a Worktrunk worktree and start an OpenCode agent there. `hwt open` remains available as an alias for `hwt switch`.
 
+## Rex worktrees
+
+`rwt` takes the same commands as `hwt` (`create`, `switch`/`open`, `review`, `remove`) but opens each worktree in a Rex session instead of Herdr. Rex doesn't track worktrees, so sessions are labelled `<repo>/<branch>` (just `<repo>` for the primary checkout) and an existing session with that label is reused. `rwt remove` switches to the primary checkout's session and kills the removed worktree's session.
+
+To let `rwt` switch Rex.app to the session, turn on Remote Control in Rex.app's Settings under Rex Server. Without it, `rwt` still creates the session and tells you its label.
+
 ## Git signing & SSH on a new machine
 
 Commits and tags are signed with SSH keys. The shared `stow/home/.gitconfig` uses the 1Password **Github Signing Key**, and per-machine choices go in the untracked `~/.gitconfig.local`. That file is included last, so it overrides the shared config.

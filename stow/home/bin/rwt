@@ -1,0 +1,288 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+REX_BIN="${REX_BIN_PATH:-rex}"
+
+usage() {
+  cat <<'EOF'
+Usage: rwt <command> [args]
+
+Commands:
+  create <branch> [base]   Create a Worktrunk worktree and open it in a Rex session
+  switch [branch-or-path]  Switch/select a Worktrunk worktree and open it in a Rex session
+  open [branch-or-path]    Alias for switch
+  review <pr|branch|path>  Open a review worktree (--no-hooks) under
+                           .worktrees/reviews/; a bare number means pr:<n>
+  remove [branch-or-path]  Remove a worktree, kill its Rex session, and return to
+                           the primary checkout's session
+                           Review paths use --no-hooks --force-delete
+
+Sessions are labelled <repo>/<branch> (just <repo> for the primary checkout)
+and reused when one with that label already exists. Focusing a session needs
+Remote Control turned on in Rex.app (Settings > Rex Server).
+
+Examples:
+  rwt create feature/foo
+  rwt create hotfix release/1.2
+  rwt switch               # uses Worktrunk's picker
+  rwt switch feature/foo
+  rwt open feature/foo     # same as switch
+  rwt review 123           # review GitHub PR 123 in an isolated worktree
+  rwt review feature/foo   # review an existing branch
+  rwt remove               # detects review worktrees automatically
+EOF
+}
+
+fail() {
+  printf 'rwt: %s\n' "$*" >&2
+  exit 1
+}
+
+need() {
+  command -v "$1" >/dev/null 2>&1 || fail "missing required command: $1"
+}
+
+checkout_root() {
+  git -C "${1:-$PWD}" rev-parse --path-format=absolute --show-toplevel 2>/dev/null \
+    || fail "not inside a git repository"
+}
+
+source_root() {
+  local root common primary
+  root="$(checkout_root "${1:-$PWD}")"
+
+  # If invoked from a linked worktree, resolve the source checkout so session
+  # labels group under the same repo name.
+  common="$(git -C "$root" rev-parse --path-format=absolute --git-common-dir 2>/dev/null || true)"
+  if [[ -n "$common" ]]; then
+    primary="$(dirname "$common")"
+    # Inside a git dir (submodules, bare layouts) this prints "false" yet exits 0.
+    if [[ "$(git -C "$primary" rev-parse --is-inside-work-tree 2>/dev/null)" == true ]]; then
+      checkout_root "$primary"
+      return
+    fi
+  fi
+
+  printf '%s\n' "$root"
+}
+
+json_field() {
+  python3 -c '
+import json, sys
+try:
+    data = json.load(sys.stdin)
+except Exception:
+    sys.exit(1)
+for name in sys.argv[1:]:
+    value = data.get(name)
+    if value:
+        print(value)
+        sys.exit(0)
+# Worktrunk schema variants used by older/newer versions.
+worktree = data.get("worktree")
+if isinstance(worktree, dict):
+    for name in ("path", "worktree_path", "checkout_path"):
+        value = worktree.get(name)
+        if value:
+            print(value)
+            sys.exit(0)
+sys.exit(1)
+' "$@"
+}
+
+worktrunk_path() {
+  json_field path worktree_path checkout_path
+}
+
+# Rex has no notion of worktrees, so the label is what ties a session to a checkout.
+session_label() {
+  local source="$1" path="$2" repo name
+  repo="$(basename "$source")"
+  if [[ "$(cd "$path" && pwd -P)" == "$(cd "$source" && pwd -P)" ]]; then
+    printf '%s\n' "$repo"
+    return
+  fi
+  name="$(git -C "$path" branch --show-current 2>/dev/null || true)"
+  printf '%s/%s\n' "$repo" "${name:-$(basename "$path")}"
+}
+
+find_session() {
+  "$REX_BIN" ls --json | python3 -c '
+import json, sys
+label = sys.argv[1]
+for session in json.load(sys.stdin).get("sessions", []):
+    if session.get("label") == label:
+        print(session["session_id"])
+        sys.exit(0)
+sys.exit(1)
+' "$1"
+}
+
+ensure_session() {
+  local label="$1" path="$2" id
+  if id="$(find_session "$label")"; then
+    printf '%s\n' "$id"
+    return
+  fi
+  "$REX_BIN" new "$label" --cwd "$path" --json | json_field session_id \
+    || fail "Rex did not return a session id"
+}
+
+focus_session() {
+  local id="$1" label="$2"
+  "$REX_BIN" "do" session.select "session_id=$id" >/dev/null 2>&1 \
+    || printf 'rwt: session %s is ready; enable Remote Control in Rex.app to focus it automatically\n' "$label" >&2
+}
+
+open_in_rex() {
+  local source="$1" path="$2" label id
+  [[ -n "$path" ]] || fail "empty worktree path"
+  label="$(session_label "$source" "$path")"
+  id="$(ensure_session "$label" "$path")"
+  focus_session "$id" "$label"
+}
+
+cmd_create() {
+  local branch="${1:-}" base="${2:-}" cwd source out path
+  [[ -n "$branch" ]] || fail "create requires a branch name"
+  [[ $# -le 2 ]] || fail "create accepts at most: <branch> [base]"
+
+  cwd="$(checkout_root)"
+  source="$(source_root "$cwd")"
+
+  if [[ -n "$base" ]]; then
+    out="$(wt -C "$cwd" switch --create "$branch" --base "$base" --no-cd --format=json)"
+  else
+    out="$(wt -C "$cwd" switch --create "$branch" --no-cd --format=json)"
+  fi
+  path="$(printf '%s' "$out" | worktrunk_path)" || fail "Worktrunk did not return a worktree path"
+  open_in_rex "$source" "$path"
+}
+
+open_worktree() {
+  local cwd="$1" target="$2"; shift 2
+  local extra=("$@") source out path
+  source="$(source_root "$cwd")"
+
+  if [[ -n "$target" ]]; then
+    out="$(wt -C "$cwd" switch ${extra[@]+"${extra[@]}"} "$target" --no-cd --format=json)"
+  else
+    out="$(wt -C "$cwd" switch ${extra[@]+"${extra[@]}"} --no-cd --format=json)"
+  fi
+  path="$(printf '%s' "$out" | worktrunk_path)" || fail "Worktrunk did not return a worktree path"
+  open_in_rex "$source" "$path"
+}
+
+cmd_open() {
+  local target="${1:-}" cwd
+  [[ $# -le 1 ]] || fail "open accepts at most: [branch-or-path]"
+  cwd="$(checkout_root)"
+  open_worktree "$cwd" "$target"
+}
+
+expand_pr_target() {
+  local target="$1"
+  if [[ "$target" =~ ^[0-9]+$ ]]; then
+    printf 'pr:%s\n' "$target"
+  else
+    printf '%s\n' "$target"
+  fi
+}
+
+is_review_path() {
+  case "$1" in
+    */.worktrees/reviews/*) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+resolve_worktree_path() {
+  local root="$1" target="$2"
+  if [[ -z "$target" ]]; then
+    checkout_root "$root"
+    return
+  fi
+  wt -C "$root" list --format=json | python3 -c '
+import json, os, sys
+root, target = sys.argv[1:]
+# Worktrunk runs from the checkout root, so resolve relative paths the same way, and
+# compare real paths so symlinked checkouts still match.
+real_target = os.path.realpath(os.path.join(root, target))
+data = json.load(sys.stdin)
+for item in data.get("items", []):
+    wt = item.get("worktree") or {}
+    path = wt.get("path")
+    if not path:
+        continue
+    if item.get("branch") == target or os.path.realpath(path) == real_target:
+        print(path)
+        sys.exit(0)
+sys.exit(1)
+' "$root" "$target"
+}
+
+cmd_review() {
+  local target="${1:-}" cwd
+  [[ -n "$target" ]] || fail "review requires a pr-number, branch, or path"
+  [[ $# -le 1 ]] || fail "review accepts at most: [pr-number|branch-or-path]"
+  cwd="$(checkout_root)"
+  open_worktree "$cwd" "$(expand_pr_target "$target")" \
+    --no-hooks \
+    --config-set "worktree-path='{{ repo_path }}/.worktrees/reviews/{{ branch | sanitize }}'"
+}
+
+cmd_remove() {
+  local target="${1:-}" cwd source removed_root removed_label="" removed_id=""
+  [[ $# -le 1 ]] || fail "remove accepts at most: [branch-or-path]"
+
+  cwd="$(checkout_root)"
+  source="$(source_root "$cwd")"
+  removed_root="$(resolve_worktree_path "$cwd" "$target" 2>/dev/null || true)"
+  if [[ -n "$target" && -z "$removed_root" ]]; then
+    printf 'rwt: could not resolve %s; removing it as a regular worktree\n' "$target" >&2
+  fi
+  local extra=(--foreground)
+  if [[ -n "$removed_root" ]] && is_review_path "$removed_root"; then
+    extra+=(--no-hooks --force-delete)
+  fi
+  # The label needs the branch, so compute it while the checkout still exists.
+  if [[ -n "$removed_root" && "$removed_root" != "$source" ]]; then
+    removed_label="$(session_label "$source" "$removed_root")"
+  fi
+
+  if [[ -n "$target" ]]; then
+    wt -C "$cwd" remove "${extra[@]}" "$target"
+  else
+    wt -C "$cwd" remove "${extra[@]}"
+  fi
+
+  open_in_rex "$source" "$source"
+  if [[ -n "$removed_label" ]]; then
+    removed_id="$(find_session "$removed_label" || true)"
+  fi
+  # Kill the invoking session last: it is the terminal this script runs in.
+  if [[ -n "$removed_id" && "$removed_id" != "${REX_SESSION:-}" ]]; then
+    "$REX_BIN" kill "$removed_id" >/dev/null || true
+  fi
+  if [[ -n "${REX_SESSION:-}" && "$removed_root" == "$cwd" && "$removed_root" != "$source" ]]; then
+    "$REX_BIN" kill "$REX_SESSION" >/dev/null || true
+  fi
+}
+
+main() {
+  need git
+  need wt
+  need python3
+  need "$REX_BIN"
+
+  case "${1:-}" in
+    create) shift; cmd_create "$@" ;;
+    open|switch) shift; cmd_open "$@" ;;
+    review) shift; cmd_review "$@" ;;
+    remove) shift; cmd_remove "$@" ;;
+    -h|--help|help|"") usage ;;
+    *) fail "unknown command: $1" ;;
+  esac
+}
+
+main "$@"
