@@ -1,5 +1,5 @@
 {
-  "lastChangelogVersion": "1.3.0",
+  "lastChangelogVersion": "1.4.0",
   "theme": "terminal",
   "defaultProvider": "work",
   "defaultModel": "gpt-6.1-sol",
@@ -21,6 +21,7 @@
     "anthropic/claude-opus-5-5",
     "anthropic/claude-fable-5-1",
     "openai-codex/gpt-6.1-sol",
-    "openai-codex/gpt-6-astra"
+    "openai-codex/gpt-6-astra",
+    "work/gpt-6.1-sol"
   ]
 }
