@@ -106,16 +106,17 @@ bindkey -- $'\e[8~' end-of-line
 autoload -Uz compinit add-zsh-hook
 ZCD="$_ZSH_CACHE_DIR/.zcompdump"
 
+# Trust shared Homebrew completions owned by my other local account.
 # Fast completion: refresh periodically so new completions are discovered.
 zmodload -F zsh/stat b:zstat 2>/dev/null
 zmodload zsh/datetime 2>/dev/null # provides EPOCHSECONDS
 
 if [[ ! -f $ZCD ]]; then
-  compinit -d "$ZCD"
+  compinit -u -d "$ZCD"
 elif zmodload -e zsh/stat && zstat -H zcd_stat -- "$ZCD" 2>/dev/null && (( EPOCHSECONDS - zcd_stat[mtime] < 86400 )); then
   compinit -C -d "$ZCD"
 else
-  compinit -d "$ZCD"
+  compinit -u -d "$ZCD"
 fi
 
 if [[ -f $ZCD && ( ! -f ${ZCD}.zwc || $ZCD -nt ${ZCD}.zwc ) ]]; then
