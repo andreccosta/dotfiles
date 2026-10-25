@@ -63,8 +63,6 @@ EOF
     Linux)
       cat <<'EOF'
 linux-hypr
-linux-waybar
-linux-wofi
 EOF
       if [ -f /etc/arch-release ]; then
         echo linux-arch
