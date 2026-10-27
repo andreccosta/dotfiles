@@ -1,0 +1,340 @@
+#!/usr/bin/env bash
+# Have another coding agent review the current changes in a new Herdr tab and
+# print only its findings. See `herdr-review --help`.
+set -euo pipefail
+
+HERDR_BIN="${HERDR_BIN_PATH:-herdr}"
+STATE_ROOT="${HERDR_REVIEW_DIR:-${TMPDIR:-/tmp}/herdr-review}"
+DEFAULT_TIMEOUT=540
+
+usage() {
+  cat <<'EOF'
+Usage:
+  herdr-review [options] [-- <agent-args...>]  Start a reviewer and wait for its findings
+  herdr-review wait <name> [--timeout SECS]    Keep waiting for a reviewer started earlier
+  herdr-review cleanup <name>                  Close the reviewer's tab, remove its worktree and files
+
+Starts a different coding agent in a new tab of the current Herdr workspace,
+asks it to review the diff between the default branch (merge base) and the
+current working tree (including uncommitted and untracked changes), waits for
+it, and prints only its findings (Markdown) on stdout. The reviewer's tab stays
+open so you can follow up with it.
+
+Options:
+  -a, --agent KIND     Reviewer harness: claude, codex, pi, opencode, ...
+                       Default: a different harness than the caller
+                       (codex when called from claude, otherwise claude).
+  -m, --model MODEL    Reviewer model, passed to the harness as --model.
+  -b, --base REF       Compare against REF instead of the default branch.
+  -w, --worktree       Run the reviewer in a detached worktree at HEAD, so it
+                       can run checks without touching your checkout. Reviews
+                       committed changes only.
+  -f, --focus TEXT     Extra review instructions.
+  -t, --timeout SECS   How long to wait for findings (default: 540).
+  -h, --help           Show this help.
+  -- <agent-args...>   Extra arguments for the reviewer harness.
+
+Exit codes:
+  0  findings printed
+  1  error
+  2  usage error
+  3  reviewer is blocked on an approval or question; answer it in its tab,
+     then run `herdr-review wait <name>`
+  4  timed out while the reviewer is still working; run `herdr-review wait <name>`
+  5  reviewer finished without writing findings; inspect its tab
+
+Examples:
+  herdr-review
+  herdr-review --agent codex
+  herdr-review --agent claude --model opus --focus "error handling and tests"
+  herdr-review --worktree --base origin/release-1.2
+  herdr-review wait review-1a2b3c
+  herdr-review cleanup review-1a2b3c
+EOF
+}
+
+fail() {
+  printf 'herdr-review: %s\n' "$*" >&2
+  exit 1
+}
+
+usage_error() {
+  printf 'herdr-review: %s\n' "$*" >&2
+  printf "Run 'herdr-review --help' for usage.\n" >&2
+  exit 2
+}
+
+need() {
+  command -v "$1" >/dev/null 2>&1 || fail "missing required command: $1"
+}
+
+# Prints the value at a dotted path of the JSON document on stdin; fails when absent.
+json_get() {
+  python3 -c '
+import json, sys
+data = json.load(sys.stdin)
+for key in sys.argv[1].split("."):
+    data = data.get(key) if isinstance(data, dict) else None
+    if data is None:
+        sys.exit(1)
+print(data)
+' "$1"
+}
+
+positive_int() {
+  [[ "$1" =~ ^[1-9][0-9]*$ ]] || usage_error "--timeout must be a positive number of seconds"
+}
+
+require_herdr() {
+  [[ "${HERDR_ENV:-}" == 1 ]] || fail "must run inside a Herdr pane (HERDR_ENV=1)"
+}
+
+caller_kind() {
+  [[ -n "${HERDR_PANE_ID:-}" ]] || return 0
+  "$HERDR_BIN" agent get "$HERDR_PANE_ID" 2>/dev/null | json_get result.agent.agent 2>/dev/null || true
+}
+
+default_branch() {
+  local root="$1" ref branch
+  if ref="$(git -C "$root" symbolic-ref -q --short refs/remotes/origin/HEAD)"; then
+    printf '%s\n' "$ref"
+    return
+  fi
+  for branch in main master; do
+    if git -C "$root" show-ref --verify -q "refs/heads/$branch"; then
+      printf '%s\n' "$branch"
+      return
+    fi
+  done
+  fail "cannot determine the default branch; pass --base"
+}
+
+agent_status() {
+  "$HERDR_BIN" agent get "$1" 2>/dev/null | json_get result.agent.agent_status 2>/dev/null || printf 'gone\n'
+}
+
+review_dir() {
+  local name="$1"
+  [[ "$name" =~ ^review-[0-9a-f]{6}$ ]] || usage_error "invalid reviewer name: $name"
+  printf '%s/%s\n' "$STATE_ROOT" "$name"
+}
+
+state_read() {
+  [[ -f "$1/$2" ]] && cat "$1/$2"
+}
+
+# Sends the saved prompt once and waits for the reviewer to settle.
+prompt_reviewer() {
+  local name="$1" dir="$2" timeout="$3" err
+  if "$HERDR_BIN" agent prompt "$name" "$(cat "$dir/prompt.md")" --wait --timeout "$((timeout * 1000))" \
+    >/dev/null 2>"$dir/herdr.err"; then
+    touch "$dir/prompted"
+    return
+  fi
+  err="$(cat "$dir/herdr.err")"
+  # These are rejected before any input is sent; anything else means the prompt went through.
+  if [[ "$err" != *agent_blocked* && "$err" != *agent_not_found* && "$err" != *not_found* ]]; then
+    touch "$dir/prompted"
+  fi
+}
+
+wait_reviewer() {
+  local name="$1" dir="$2" timeout="$3"
+  "$HERDR_BIN" agent wait "$name" --timeout "$((timeout * 1000))" >/dev/null 2>"$dir/herdr.err" || true
+}
+
+# Prints the findings, or explains why there are none, and exits with the documented code.
+finish() {
+  local name="$1" dir="$2" status tab
+  status="$(agent_status "$name")"
+  tab="$(state_read "$dir" tab_id || true)"
+  case "$status" in
+    blocked)
+      printf 'herdr-review: %s (tab %s) is blocked on an approval or question.\n' "$name" "$tab" >&2
+      printf 'Answer it in that tab, then run: herdr-review wait %s\n' "$name" >&2
+      exit 3
+      ;;
+    working | unknown)
+      printf 'herdr-review: %s (tab %s) is still working.\n' "$name" "$tab" >&2
+      printf 'Keep waiting with: herdr-review wait %s\n' "$name" >&2
+      exit 4
+      ;;
+  esac
+  if [[ ! -f "$dir/prompted" ]]; then
+    printf 'herdr-review: %s (tab %s) never received the review prompt (status: %s).\n' "$name" "$tab" "$status" >&2
+    [[ -s "$dir/herdr.err" ]] && cat "$dir/herdr.err" >&2
+    printf 'Once it is ready, run: herdr-review wait %s\n' "$name" >&2
+    exit 3
+  fi
+  if [[ -s "$dir/findings.md" ]]; then
+    cat "$dir/findings.md"
+    printf '\nherdr-review: reviewer %s is still open in tab %s; close it with: herdr-review cleanup %s\n' \
+      "$name" "$tab" "$name" >&2
+    exit 0
+  fi
+  printf 'herdr-review: %s (tab %s, status: %s) finished without writing %s.\n' \
+    "$name" "$tab" "$status" "$dir/findings.md" >&2
+  [[ -s "$dir/herdr.err" ]] && cat "$dir/herdr.err" >&2
+  printf 'Inspect it with: herdr agent read %s --source recent-unwrapped --lines 120\n' "$name" >&2
+  exit 5
+}
+
+build_prompt() {
+  local cwd="$1" base="$2" merge_base="$3" findings="$4" worktree="$5" focus="$6" scope
+  if [[ "$worktree" == 1 ]]; then
+    scope="the commits between $base and HEAD: inspect them with \`git diff $merge_base HEAD\` and \`git log $merge_base..HEAD\`"
+  else
+    scope="the changes between $base and the current working tree: inspect them with \`git diff $merge_base\` plus any untracked files listed by \`git status --short\`"
+  fi
+  printf '%s' "You are reviewing code changes in $cwd. Review $scope (merge base $merge_base). Read surrounding code as needed and run read-only checks if useful. Do not modify, stage, or commit any repository files."
+  [[ -n "$focus" ]] && printf ' %s' "Additional instructions: $focus"
+  printf ' %s' "Report only actionable findings (bugs, regressions, security issues, missing tests or edge cases, clear maintainability problems), ordered by severity. For each, give file:line, the problem, and a concrete fix. Skip style nits and praise; if there are no findings, say so. When done, write your complete findings as Markdown to $findings (create or overwrite it), then reply only with: Review written to $findings"
+}
+
+cmd_start() {
+  local agent="" model="" base="" worktree=0 focus="" timeout="$DEFAULT_TIMEOUT"
+  local -a extra=()
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      -a | --agent) [[ $# -ge 2 ]] || usage_error "$1 requires a value"; agent="$2"; shift 2 ;;
+      -m | --model) [[ $# -ge 2 ]] || usage_error "$1 requires a value"; model="$2"; shift 2 ;;
+      -b | --base) [[ $# -ge 2 ]] || usage_error "$1 requires a value"; base="$2"; shift 2 ;;
+      -f | --focus) [[ $# -ge 2 ]] || usage_error "$1 requires a value"; focus="$2"; shift 2 ;;
+      -t | --timeout) [[ $# -ge 2 ]] || usage_error "$1 requires a value"; positive_int "$2"; timeout="$2"; shift 2 ;;
+      -w | --worktree) worktree=1; shift ;;
+      -h | --help) usage; exit 0 ;;
+      --) shift; extra=("$@"); break ;;
+      *) usage_error "unknown option: $1" ;;
+    esac
+  done
+
+  require_herdr
+  local root merge_base caller name dir findings cwd out tab_id pane_id
+  root="$(git rev-parse --path-format=absolute --show-toplevel 2>/dev/null)" || fail "not inside a git repository"
+  base="${base:-$(default_branch "$root")}"
+  merge_base="$(git -C "$root" merge-base HEAD "$base" 2>/dev/null)" || fail "no merge base between HEAD and $base"
+
+  if [[ -z "$agent" ]]; then
+    caller="$(caller_kind)"
+    if [[ "$caller" == claude ]]; then agent=codex; else agent=claude; fi
+  fi
+
+  mkdir -p "$STATE_ROOT"
+  # Physical path, so harness permission rules match after symlink resolution.
+  STATE_ROOT="$(cd "$STATE_ROOT" && pwd -P)"
+  name="$(printf 'review-%06x' "$(((RANDOM << 15 | RANDOM) & 0xffffff))")"
+  dir="$STATE_ROOT/$name"
+  findings="$dir/findings.md"
+  mkdir -p "$dir"
+  printf '%s\n' "$root" >"$dir/repo"
+
+  cwd="$root"
+  if [[ "$worktree" == 1 ]]; then
+    if [[ -n "$(git -C "$root" status --porcelain)" ]]; then
+      printf 'herdr-review: warning: uncommitted changes are not part of a --worktree review\n' >&2
+    fi
+    git -C "$root" worktree add --detach "$dir/worktree" HEAD >/dev/null 2>&1 \
+      || fail "could not create a worktree at $dir/worktree"
+    cwd="$dir/worktree"
+    printf '%s\n' "$cwd" >"$dir/worktree_path"
+  fi
+
+  build_prompt "$cwd" "$base" "$merge_base" "$findings" "$worktree" "$focus" >"$dir/prompt.md"
+
+  out="$("$HERDR_BIN" tab create --workspace "${HERDR_WORKSPACE_ID:?}" --cwd "$cwd" \
+    --label "review: $agent" --no-focus)" || fail "could not create a Herdr tab"
+  tab_id="$(printf '%s' "$out" | json_get result.tab.tab_id)" || fail "Herdr did not return a tab id"
+  pane_id="$(printf '%s' "$out" | json_get result.root_pane.pane_id)" || fail "Herdr did not return a pane id"
+  printf '%s\n' "$tab_id" >"$dir/tab_id"
+
+  local -a args=()
+  [[ -n "$model" ]] && args+=(--model "$model")
+  case "$agent" in
+    # Let the reviewer write its findings file without an approval prompt.
+    claude) args+=(--add-dir "$dir" --allowedTools "Write(/$dir/**)") ;;
+    # Codex rejects --add-dir under its read-only sandbox (its default outside trusted projects).
+    codex) args+=(--sandbox workspace-write --add-dir "$dir") ;;
+  esac
+  args+=(${extra[@]+"${extra[@]}"})
+
+  printf 'herdr-review: starting %s reviewer %s in tab %s\n' "$agent" "$name" "$tab_id" >&2
+  if ! "$HERDR_BIN" agent start "$name" --kind "$agent" --pane "$pane_id" -- ${args[@]+"${args[@]}"} \
+    >/dev/null 2>"$dir/herdr.err"; then
+    # Startup can stop at a trust or login dialog; give the user a moment to answer it.
+    if [[ "$(agent_status "$name")" == gone ]]; then
+      cat "$dir/herdr.err" >&2
+      fail "could not start $agent in tab $tab_id (run 'herdr-review cleanup $name' to close it)"
+    fi
+    "$HERDR_BIN" agent wait "$name" --until idle --until "done" --timeout 120000 >/dev/null 2>&1 || true
+  fi
+
+  case "$(agent_status "$name")" in
+    idle | done) prompt_reviewer "$name" "$dir" "$timeout" ;;
+  esac
+  finish "$name" "$dir"
+}
+
+cmd_wait() {
+  local name="" timeout="$DEFAULT_TIMEOUT" dir
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      -t | --timeout) [[ $# -ge 2 ]] || usage_error "$1 requires a value"; positive_int "$2"; timeout="$2"; shift 2 ;;
+      -h | --help) usage; exit 0 ;;
+      -*) usage_error "unknown option: $1" ;;
+      *) [[ -z "$name" ]] || usage_error "unexpected argument: $1"; name="$1"; shift ;;
+    esac
+  done
+  [[ -n "$name" ]] || usage_error "wait requires a reviewer name"
+  require_herdr
+  dir="$(review_dir "$name")"
+  [[ -d "$dir" ]] || fail "unknown reviewer: $name"
+
+  if [[ -f "$dir/prompted" ]]; then
+    wait_reviewer "$name" "$dir" "$timeout"
+  else
+    case "$(agent_status "$name")" in
+      idle | done) prompt_reviewer "$name" "$dir" "$timeout" ;;
+    esac
+  fi
+  finish "$name" "$dir"
+}
+
+cmd_cleanup() {
+  local name="${1:-}" dir tab live_tab worktree repo
+  [[ -n "$name" ]] || usage_error "cleanup requires a reviewer name"
+  [[ $# -le 1 ]] || usage_error "cleanup accepts one reviewer name"
+  dir="$(review_dir "$name")"
+  [[ -d "$dir" ]] || fail "unknown reviewer: $name"
+
+  require_herdr
+  tab="$(state_read "$dir" tab_id || true)"
+  # Tab IDs are per Herdr session, so only close the tab while it still hosts this reviewer.
+  live_tab="$("$HERDR_BIN" agent get "$name" 2>/dev/null | json_get result.agent.tab_id 2>/dev/null || true)"
+  if [[ -n "$tab" && "$live_tab" == "$tab" ]]; then
+    "$HERDR_BIN" tab close "$tab" >/dev/null || fail "could not close tab $tab; nothing removed"
+  elif [[ -n "$tab" ]]; then
+    printf 'herdr-review: %s is no longer running in tab %s; leaving that tab alone\n' "$name" "$tab" >&2
+  fi
+  worktree="$(state_read "$dir" worktree_path || true)"
+  repo="$(state_read "$dir" repo || true)"
+  if [[ -n "$worktree" && -n "$repo" && -d "$worktree" ]]; then
+    git -C "$repo" worktree remove --force "$worktree" >/dev/null \
+      || fail "could not remove worktree $worktree; kept $dir"
+  fi
+  rm -rf -- "$dir"
+  printf 'herdr-review: cleaned up %s\n' "$name" >&2
+}
+
+main() {
+  need git
+  need python3
+  need "$HERDR_BIN"
+  case "${1:-}" in
+    wait) shift; cmd_wait "$@" ;;
+    cleanup) shift; cmd_cleanup "$@" ;;
+    help) usage ;;
+    *) cmd_start "$@" ;;
+  esac
+}
+
+main "$@"
