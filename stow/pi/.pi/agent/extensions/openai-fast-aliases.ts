@@ -6,6 +6,7 @@ const CODEX_FAST_ALIASES: Readonly<Record<string, string>> = {
   "gpt-6-astra-fast": "gpt-6-astra",
   "gpt-6-sol-fast": "gpt-6-sol",
   "gpt-6.1-sol-fast": "gpt-6.1-sol",
+  "gpt-6.1-terra-fast": "gpt-6.1-terra",
   "gpt-6-luna-fast": "gpt-6-luna",
 };
 
