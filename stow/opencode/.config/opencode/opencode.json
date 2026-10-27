@@ -40,170 +40,27 @@
   },
   "providers": {
     "work": {
-      "package": "aisdk:@ai-sdk/openai",
+      "package": "@opencode/ai/providers/openai",
       "settings": {
         "baseURL": "{env:CODEX_LB_URL}",
-        "apiKey": "{env:CODEX_LB_API_KEY}"
+        "apiKey": "{env:CODEX_LB_API_KEY}",
+        "transport": "websocket"
       },
       "models": {
         "gpt-6.1-sol": {
-          "name": "GPT-6.1 Sol",
-          "capabilities": {
-            "tools": true,
-            "input": ["text", "image"],
-            "output": ["text"]
-          },
-          "limit": {
-            "context": 272000,
-            "output": 128000
-          },
-          "variants": [
-            { "id": "none", "settings": { "reasoningEffort": "none" } },
-            { "id": "medium", "settings": { "reasoningEffort": "medium" } },
-            { "id": "high", "settings": { "reasoningEffort": "high" } },
-            { "id": "xhigh", "settings": { "reasoningEffort": "xhigh" } },
-            { "id": "max", "settings": { "reasoningEffort": "max" } }
-          ],
-          "settings": {
-            "serviceTier": "priority"
-          }
+          "name": "GPT-6.1 Sol"
         },
         "gpt-6-sol": {
-          "name": "GPT-6 Sol",
-          "capabilities": {
-            "tools": true,
-            "input": ["text", "image"],
-            "output": ["text"]
-          },
-          "limit": {
-            "context": 272000,
-            "output": 128000
-          },
-          "variants": [
-            { "id": "none", "settings": { "reasoningEffort": "none" } },
-            { "id": "medium", "settings": { "reasoningEffort": "medium" } },
-            { "id": "high", "settings": { "reasoningEffort": "high" } },
-            { "id": "xhigh", "settings": { "reasoningEffort": "xhigh" } },
-            { "id": "max", "settings": { "reasoningEffort": "max" } }
-          ],
-          "settings": {
-            "serviceTier": "priority"
-          }
+          "name": "GPT-6 Sol"
         },
         "gpt-6-luna": {
-          "name": "GPT-6 Luna",
-          "capabilities": {
-            "tools": true,
-            "input": ["text", "image"],
-            "output": ["text"]
-          },
-          "limit": {
-            "context": 272000,
-            "output": 128000
-          },
-          "variants": [
-            { "id": "none", "settings": { "reasoningEffort": "none" } },
-            { "id": "medium", "settings": { "reasoningEffort": "medium" } },
-            { "id": "high", "settings": { "reasoningEffort": "high" } },
-            { "id": "xhigh", "settings": { "reasoningEffort": "xhigh" } },
-            { "id": "max", "settings": { "reasoningEffort": "max" } }
-          ],
-          "settings": {
-            "serviceTier": "priority"
-          }
+          "name": "GPT-6 Luna"
         },
         "gpt-6-astra": {
-          "name": "GPT-6 Astra",
-          "capabilities": {
-            "tools": true,
-            "input": ["text", "image"],
-            "output": ["text"]
-          },
-          "limit": {
-            "context": 272000,
-            "output": 128000
-          },
-          "variants": [
-            { "id": "none", "settings": { "reasoningEffort": "none" } },
-            { "id": "medium", "settings": { "reasoningEffort": "medium" } },
-            { "id": "high", "settings": { "reasoningEffort": "high" } },
-            { "id": "xhigh", "settings": { "reasoningEffort": "xhigh" } },
-            { "id": "max", "settings": { "reasoningEffort": "max" } }
-          ],
-          "settings": {
-            "serviceTier": "priority"
-          }
-        },
-        "gpt-5.6-sol": {
-          "name": "GPT-5.6 Sol",
-          "capabilities": {
-            "tools": true
-          },
-          "limit": {
-            "context": 272000,
-            "output": 128000
-          },
-          "variants": [
-            { "id": "none", "settings": { "reasoningEffort": "none" } },
-            { "id": "low", "settings": { "reasoningEffort": "low" } },
-            { "id": "medium", "settings": { "reasoningEffort": "medium" } },
-            { "id": "high", "settings": { "reasoningEffort": "high" } },
-            { "id": "xhigh", "settings": { "reasoningEffort": "xhigh" } },
-            { "id": "max", "settings": { "reasoningEffort": "max" } }
-          ],
-          "settings": {
-            "serviceTier": "priority"
-          }
-        },
-        "gpt-5.5": {
-          "name": "GPT-5.5",
-          "capabilities": {
-            "tools": true
-          },
-          "limit": {
-            "context": 272000,
-            "output": 128000
-          },
-          "variants": [
-            {
-              "id": "xhigh",
-              "settings": {
-                "reasoningEffort": "xhigh",
-                "reasoningSummary": "auto",
-                "include": [
-                  "reasoning.encrypted_content"
-                ]
-              }
-            }
-          ],
-          "settings": {
-            "serviceTier": "priority"
-          }
+          "name": "GPT-6 Astra"
         },
         "gpt-5.4-mini": {
-          "name": "GPT-5.4 Mini",
-          "capabilities": {
-            "tools": true
-          },
-          "limit": {
-            "context": 272000,
-            "output": 128000
-          },
-          "variants": [
-            {
-              "id": "xhigh",
-              "settings": {
-                "reasoningEffort": "xhigh",
-                "reasoningSummary": "auto",
-                "include": [
-                  "reasoning.encrypted_content"
-                ]
-              }
-            }
-          ],
-          "settings": {
-            "serviceTier": "priority"
-          }
+          "name": "GPT-5.4 Mini"
         }
       }
     }
