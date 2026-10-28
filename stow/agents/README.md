@@ -2,6 +2,24 @@
 
 Shared agent skills, linked to `~/.agents/skills` (read by pi and other harnesses that support Agent Skills).
 
+## Claude Code
+
+`./dot install` (or `./dot install agents`) also creates one relative symlink
+per shared skill under `~/.claude/skills/`. Claude's discovery root remains a
+real directory, so its `synced/` downloads stay separate from the shared skills.
+
+- Edits to existing shared skills are visible through the links immediately.
+- Run `./dot install agents` after adding, renaming, or removing a skill to
+  create missing links and remove stale links owned by this integration.
+- Existing local skills and unrelated symlinks are preserved, with a warning
+  on name conflicts. Move a conflicting local entry aside and rerun installation
+  if you want the shared version instead.
+- The name `synced` is reserved by Claude and is never linked.
+- Stow dry runs (`./dot install --simulate agents`) do not change Claude skills.
+
+The sync step refuses to operate if `~/.claude/skills` itself is a symlink.
+No startup hook or background synchronization is installed.
+
 ## herdr-review
 
 `herdr-review` (the script lives in `stow/home/bin/herdr-review`) asks another coding agent to review your current changes in a new Herdr tab, waits for it, and prints only its findings. Usually you just ask an agent for "a second opinion" and it drives the script through the `herdr-review` skill; you can also run it yourself.

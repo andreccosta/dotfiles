@@ -29,3 +29,4 @@ if [ "$any_failed" = true ]; then
 fi
 
 bash "$(dirname "$0")/tests/git-prune-local-branches.sh"
+bash "$(dirname "$0")/tests/claude-skills.sh"

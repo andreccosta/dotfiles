@@ -312,6 +312,60 @@ EOF
   return 1
 }
 
+sync_claude_skills() {
+  local source_dir="$HOME/.agents/skills"
+  local target_dir="$HOME/.claude/skills"
+  local skill name target link
+
+  # Never reconcile through a redirected discovery root: it may be shared
+  # with another harness, or contain files this installer does not own.
+  if [ -L "$target_dir" ] || { [ -e "$target_dir" ] && [ ! -d "$target_dir" ]; }; then
+    echo "warning: not syncing Claude skills: $target_dir is not a regular directory" >&2
+    return 0
+  fi
+  if [ ! -d "$source_dir" ]; then
+    echo "warning: shared skills directory not found: $source_dir" >&2
+    return 0
+  fi
+
+  mkdir -p "$target_dir"
+
+  # Only the exact relative links we create are ours to remove. Leave
+  # unrelated links, real directories, and Claude's synced/ state alone.
+  for target in "$target_dir"/*; do
+    [ -L "$target" ] || continue
+    name="$(basename "$target")"
+    [ "$name" != synced ] || continue
+    link="../../.agents/skills/$name"
+    [ "$(readlink "$target")" = "$link" ] || continue
+    if [ ! -f "$source_dir/$name/SKILL.md" ]; then
+      echo "> rm $target"
+      rm "$target"
+    fi
+  done
+
+  for skill in "$source_dir"/*; do
+    [ -d "$skill" ] && [ -f "$skill/SKILL.md" ] || continue
+    name="$(basename "$skill")"
+    # Claude reserves this name for its downloaded skills.
+    if [ "$(printf '%s' "$name" | tr '[:upper:]' '[:lower:]')" = synced ]; then
+      echo "warning: skipping reserved Claude skill name: $name" >&2
+      continue
+    fi
+    target="$target_dir/$name"
+    link="../../.agents/skills/$name"
+    if [ -L "$target" ] && [ "$(readlink "$target")" = "$link" ]; then
+      continue
+    fi
+    if [ -e "$target" ] || [ -L "$target" ]; then
+      echo "warning: keeping existing Claude skill: $target (shared skill not linked)" >&2
+      continue
+    fi
+    echo "> ln -s $link $target"
+    ln -s "$link" "$target"
+  done
+}
+
 link_herdr_worktrunk_plugin() {
   local plugin_path="$HOME/.config/herdr/plugins/worktrunk"
 
@@ -597,6 +651,10 @@ EOF
 
 run_install() {
   run_stow -R "$@"
+
+  if [ "${RUN_STOW_SKIP_RECONCILE:-0}" -eq 0 ] && package_list_contains agents; then
+    sync_claude_skills
+  fi
 
   if [ "${RUN_STOW_SKIP_RECONCILE:-0}" -eq 0 ] && package_list_contains home; then
     configure_git_signing
