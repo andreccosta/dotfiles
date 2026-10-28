@@ -13,6 +13,7 @@
   "steeringMode": "all",
   "followUpMode": "all",
   "showCacheMissNotices": true,
+  "showHardwareCursor": true,
   "warnings": {
     "anthropicExtraUsage": false
   },
