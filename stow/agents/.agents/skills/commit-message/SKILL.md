@@ -3,8 +3,7 @@ name: commit-message
 description: Generate Conventional Commit style messages for repository changes. Use when the user asks to commit, create a commit message, write a conventional commit, or simply says "commit".
 ---
 
-## When to use
-Use this when preparing a new commit.
+Use the format below as the base. When the repository's history follows its own convention (scopes, other types, casing), match it instead.
 
 ## Format (Conventional Commits)
 ```
@@ -16,43 +15,20 @@ Use this when preparing a new commit.
 ## Types
 - `feat`: New feature
 - `fix`: Bug fix
-- `ref`: Code change that neither fixes a bug nor adds a feature
+- `refactor`: Code change that neither fixes a bug nor adds a feature
+- `perf`: Performance improvement
 - `test`: Adding or updating tests
+- `docs`: Documentation only
 - `chore`: Build process, dependencies, or tooling changes
-- `perf`: Performance improvements
 
 ## Rules
-- Prefer a concise summary line; around 50 characters is ideal, but clarity matters more
-- Use imperative mood ("add" not "added")
-- No period at the end of summary
-- Body wrapped at 72 characters
+- Summary: imperative mood ("add" not "added"), no trailing period, around 50 characters, but clarity matters more
+- Prefer a summary only; add a short body for complex or non-obvious changes, wrapped at 72 characters
 
-## Body (Use Sparingly)
-- Prefer title only when sufficient
-- Use short body only for complex or non-obvious changes
-
-## Examples
+## Example
 ```text
-feat: add search filters
-```
+fix: load plugins sequentially
 
-```text
-fix: handle missing config file
+Parallel loading raced on the shared registry, so hooks registered
+by later plugins were sometimes dropped.
 ```
-
-```text
-ref: simplify cache invalidation
-```
-
-```text
-test: add coverage for login flow
-```
-
-```text
-chore: update eslint dependencies
-```
-
-```text
-perf: reduce query allocations
-```
-
