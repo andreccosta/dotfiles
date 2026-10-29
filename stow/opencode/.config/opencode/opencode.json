@@ -77,5 +77,6 @@
     { "action": "read", "resource": "*.env.*", "effect": "deny" },
     { "action": "read", "resource": "*.envrc", "effect": "deny" },
     { "action": "read", "resource": "secrets/*", "effect": "deny" }
-  ]
+  ],
+  "plugin": ["@plannotator/opencode@latest"]
 }
