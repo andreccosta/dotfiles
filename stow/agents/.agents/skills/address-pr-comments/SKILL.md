@@ -1,21 +1,15 @@
 ---
 name: address-pr-comments
-description: Use when the user asks to review unresolved comments in the current branch pull request.
+description: Use when the user asks to review, address, or fix unresolved review comments or feedback on a pull request (the current branch's PR by default).
 ---
-
-## When to use
-
-Use this when the user asks to review unresolved comments in the current branch pull request.
-This includes phrases like:
-* "review unresolved comments in the PR"
-* "review pr comments"
 
 ## Workflow
 
 1. Resolve the PR.
    - If the user provides a repository and PR number or URL, use that directly.
    - If the request is about the current branch PR, use local git context plus `gh pr view --json number,url` to resolve it
-2. Identify all unresolved comments in the pull request
+2. Identify all unresolved review threads.
+   - `gh pr view` does not report thread resolution; query it with `gh api graphql` (`pullRequest.reviewThreads { isResolved isOutdated path line comments { body author { login } } }`) and paginate.
 3. Cluster actionable review threads.
    - Group comments by file or behavior area.
    - Separate actionable change requests from informational comments, approvals, already-resolved threads, and duplicates.
