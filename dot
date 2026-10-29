@@ -345,7 +345,8 @@ sync_claude_skills() {
   done
 
   for skill in "$source_dir"/*; do
-    [ -d "$skill" ] && [ -f "$skill/SKILL.md" ] || continue
+    [ -d "$skill" ] || continue
+    [ -f "$skill/SKILL.md" ] || continue
     name="$(basename "$skill")"
     # Claude reserves this name for its downloaded skills.
     if [ "$(printf '%s' "$name" | tr '[:upper:]' '[:lower:]')" = synced ]; then
