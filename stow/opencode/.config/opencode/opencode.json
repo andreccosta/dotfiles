@@ -78,5 +78,9 @@
     { "action": "read", "resource": "*.envrc", "effect": "deny" },
     { "action": "read", "resource": "secrets/*", "effect": "deny" }
   ],
-  "plugin": ["@plannotator/opencode@latest"]
+  "plugin": [
+    ["@plannotator/opencode@latest", {
+      "workflow": "manual"
+    }]
+  ]
 }
