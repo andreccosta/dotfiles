@@ -12,7 +12,8 @@ Commands:
   switch [branch-or-path]  Switch/select a Worktrunk worktree and open it in Herdr
   open [branch-or-path]    Alias for switch
   review <pr|branch|path>  Open a review worktree (--no-hooks) under
-                           .worktrees/reviews/; a bare number means pr:<n>
+                           .worktrees/reviews/; label: review/[<pr>/]<branch>
+                           A bare number means pr:<n>
   remove [branch-or-path]  Remove a worktree and return Herdr to the primary checkout
                            Review paths use --no-hooks --force-delete
 
@@ -109,10 +110,12 @@ worktrunk_path() {
 }
 
 open_in_herdr() {
-  local source="$1" path="$2"
+  local source="$1" path="$2" label="${3:-}"
+  local extra=()
   [[ -n "$path" ]] || fail "empty worktree path"
+  [[ -z "$label" ]] || extra=(--label "$label")
   ensure_herdr_server
-  "$HERDR_BIN" worktree open --cwd "$source" --path "$path" --focus >/dev/null
+  "$HERDR_BIN" worktree open --cwd "$source" --path "$path" --focus ${extra[@]+"${extra[@]}"} >/dev/null
   attach_herdr_if_needed
 }
 
@@ -134,8 +137,8 @@ cmd_create() {
 }
 
 open_worktree() {
-  local cwd="$1" target="$2"; shift 2
-  local extra=("$@") source out path
+  local cwd="$1" target="$2" label_prefix="$3"; shift 3
+  local extra=("$@") source out path branch label=""
   source="$(source_root "$cwd")"
 
   if [[ -n "$target" ]]; then
@@ -144,14 +147,18 @@ open_worktree() {
     out="$(wt -C "$cwd" switch ${extra[@]+"${extra[@]}"} --no-cd --format=json)"
   fi
   path="$(printf '%s' "$out" | worktrunk_path)" || fail "Worktrunk did not return a worktree path"
-  open_in_herdr "$source" "$path"
+  if [[ -n "$label_prefix" ]]; then
+    branch="$(git -C "$path" branch --show-current)"
+    label="$label_prefix${branch:-$(basename "$path")}"
+  fi
+  open_in_herdr "$source" "$path" "$label"
 }
 
 cmd_open() {
   local target="${1:-}" cwd
   [[ $# -le 1 ]] || fail "open accepts at most: [branch-or-path]"
   cwd="$(checkout_root)"
-  open_worktree "$cwd" "$target"
+  open_worktree "$cwd" "$target" ""
 }
 
 expand_pr_target() {
@@ -196,11 +203,15 @@ sys.exit(1)
 }
 
 cmd_review() {
-  local target="${1:-}" cwd
+  local target="${1:-}" cwd label_prefix="review/"
   [[ -n "$target" ]] || fail "review requires a pr-number, branch, or path"
   [[ $# -le 1 ]] || fail "review accepts at most: [pr-number|branch-or-path]"
   cwd="$(checkout_root)"
-  open_worktree "$cwd" "$(expand_pr_target "$target")" \
+  target="$(expand_pr_target "$target")"
+  if [[ "$target" =~ ^pr:[0-9]+$ ]]; then
+    label_prefix+="${target#pr:}/"
+  fi
+  open_worktree "$cwd" "$target" "$label_prefix" \
     --no-hooks \
     --config-set "worktree-path='{{ repo_path }}/.worktrees/reviews/{{ branch | sanitize }}'"
 }

@@ -81,7 +81,9 @@ for tool in hwt pwt rwt; do
       "worktree-path='{{ repo_path }}/.worktrees/reviews/{{ branch | sanitize }}'" \
       "$expected" --no-cd --format=json
     if [[ "$tool" == hwt ]]; then
-      assert_call herdr worktree open --cwd "$ROOT" --path "$REVIEW" --focus
+      label='review/feature/review'
+      [[ "$expected" != pr:123 ]] || label='review/123/feature/review'
+      assert_call herdr worktree open --cwd "$ROOT" --path "$REVIEW" --focus --label "$label"
     elif [[ "$tool" == rwt ]]; then
       # An existing session with the worktree's label is reused.
       assert_call rex "do" session.select session_id=review-session
@@ -113,6 +115,28 @@ for tool in hwt pwt rwt; do
       assert_call paseo workspace archive review-ws
     fi
   done
+  if [[ "$tool" == hwt ]]; then
+    # Normal opens leave Herdr's label alone, even for a review checkout.
+    : > "$CALLS"
+    bash "$script" switch feature/review
+    assert_call herdr worktree open --cwd "$ROOT" --path "$REVIEW" --focus
+    if grep -q '"workspace", "rename"' "$CALLS"; then
+      printf 'FAIL: renamed a normal workspace\n' >&2; exit 1
+    fi
+    # Repeated reviews use the same label without parsing Herdr's output.
+    : > "$CALLS"
+    bash "$script" review pr:123
+    assert_call herdr worktree open --cwd "$ROOT" --path "$REVIEW" --focus --label 'review/123/feature/review'
+    if grep -q '"workspace", "rename"' "$CALLS"; then
+      printf 'FAIL: renamed a workspace separately\n' >&2; exit 1
+    fi
+    # Detached checkouts use their directory name instead of an empty branch.
+    git -C "$REVIEW" checkout -q --detach
+    : > "$CALLS"
+    bash "$script" review pr:123
+    assert_call herdr worktree open --cwd "$ROOT" --path "$REVIEW" --focus --label 'review/123/feature-review'
+    git -C "$REVIEW" checkout -q feature/review
+  fi
   if [[ "$tool" == rwt ]]; then
     # Without a matching session one is created, and a failed focus only warns.
     : > "$CALLS"
