@@ -11,7 +11,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v6
-      - name: Install shellcheck
-        run: sudo apt-get update && sudo apt-get install -y shellcheck file
+      - name: Install test dependencies
+        run: sudo apt-get update && sudo apt-get install -y shellcheck file stow
       - name: Run tests
         run: ./test.sh
