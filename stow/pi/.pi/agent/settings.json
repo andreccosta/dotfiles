@@ -4,6 +4,7 @@
   "defaultProvider": "work",
   "defaultModel": "gpt-6.1-sol",
   "defaultThinkingLevel": "medium",
+  "defaultTools": ["+codemode"],
   "packages": [
     "npm:@gotgenes/pi-anthropic-auth",
     "npm:@plannotator/pi-extension"

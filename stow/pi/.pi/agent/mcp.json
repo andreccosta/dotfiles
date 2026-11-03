@@ -3,31 +3,6 @@
     "planwright": {
       "url": "https://planwright.acklabs.dev/mcp",
       "exposure": "deferred"
-    },
-    "linear": {
-      "url": "https://mcp.linear.app/mcp",
-      "exposure": "deferred"
-    },
-    "sentry": {
-      "url": "https://mcp.sentry.dev/mcp",
-      "exposure": "deferred"
-    },
-    "grafana": {
-      "url": "https://grafana-mcp.gke00.usce1.mgmt.internal.amplemarket.com/mcp",
-      "exposure": "deferred",
-      "oauth": {
-        "clientId": "opencode",
-        "callbackUrl": "http://127.0.0.1:19876/mcp/oauth/callback",
-        "scope": "mcp:grafana offline_access"
-      }
-    },
-    "pganalyze": {
-      "url": "https://app.pganalyze.com/mcp",
-      "exposure": "deferred"
-    },
-    "metabase": {
-      "url": "https://metabase-engineering.gke00.usce1.prod.internal.amplemarket.com/api/metabase-mcp",
-      "exposure": "deferred"
     }
   }
 }
