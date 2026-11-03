@@ -1,5 +1,5 @@
 {
-  "lastChangelogVersion": "1.4.0",
+  "lastChangelogVersion": "1.5.0",
   "theme": "terminal",
   "defaultProvider": "work",
   "defaultModel": "gpt-6.1-sol",
@@ -26,5 +26,8 @@
     "openai-codex/gpt-6-astra",
     "work/gpt-6.1-sol",
     "work/gpt-6.1-terra"
-  ]
+  ],
+  "extensionChangelogVersions": {
+    "{\"source\":\"npm:@gotgenes/pi-anthropic-auth\",\"scope\":\"user\"}": "3.4.4"
+  }
 }
