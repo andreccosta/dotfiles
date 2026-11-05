@@ -62,4 +62,4 @@ Tests run with shellcheck.
 
 ## Agent skills
 
-Shared agent skills live in the `agents` Stow package. See [stow/agents/README.md](stow/agents/README.md) for the `herdr-review` workflow.
+Shared agent skills live in the `agents` Stow package. See [stow/agents/README.md](stow/agents/README.md) for the `second-opinion` workflow.

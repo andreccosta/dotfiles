@@ -20,11 +20,15 @@ real directory, so its `synced/` downloads stay separate from the shared skills.
 The sync step refuses to operate if `~/.claude/skills` itself is a symlink.
 No startup hook or background synchronization is installed.
 
-## herdr-review
+## second-opinion
 
-`herdr-review` (the script lives in `stow/home/bin/herdr-review`) asks another coding agent to review your current changes in a new Herdr tab, waits for it, and prints only its findings. Usually you just ask an agent for "a second opinion" and it drives the script through the `herdr-review` skill; you can also run it yourself.
+The initial reviewer must start with fresh conversation context, not resume, continue, or fork an existing conversation. Pass only the review scope, focus, and repository context—not the implementing agent's conclusions. Repository instructions still apply. Follow-up rounds deliberately reuse this new reviewer's conversation.
 
-By default it uses a different harness than the caller (codex from claude, claude from anything else) and reviews the diff from the default branch's merge base to the working tree, including uncommitted and untracked files. The reviewer's tab stays open between rounds.
+`second-opinion` is a skill for coordinating another coding agent's review through native Herdr or Rex commands. It opens a background Herdr tab or a separate Rex session and keeps the same reviewer for follow-ups. There is no `second-opinion` shell command; the old `herdr-review` helper is removed.
+
+Runtime selection matches `delegate`: prefer Herdr when `HERDR_ENV=1`, otherwise use Rex when `REX_SESSION` is set and live; outside both, stop with an error. The agent loads the corresponding runtime skill and uses its native launch, prompt, inspection, and cleanup commands. It saves scope, resource IDs, round state, and delivery status in temporary recovery notes, so a timeout or compaction need not create another reviewer. Rex uses a fresh, fully published findings file for each round plus terminal inspection because it has no Herdr-style agent-status wait. Startup dialogs require the user's attention; they are never auto-approved. Run `./dot install agents` after the skill rename to refresh Claude's links.
+
+By default it uses a different harness than the caller (codex from claude, claude from anything else) and reviews the diff from the default branch's merge base to the working tree, including uncommitted and untracked files. Name a reviewer explicitly when needed. The reviewer's tab/session stays open between rounds and is closed only on request.
 
 ### Review loop
 
@@ -33,11 +37,11 @@ Asking an agent for "a second opinion" runs the whole loop; you don't need to sp
 1. The reviewer reports numbered findings (F1, F2, ...) and a verdict.
 2. The implementing agent checks each finding against the code and decides: fix (with a proposed change), discard (with a reason), or ask you.
 3. **Every round, it shows you all findings with those decisions** and waits for your go-ahead before changing code.
-4. It applies what you approved and tells the reviewer what was fixed, discarded or deferred, and why (`herdr-review reply`).
+4. It applies what you approved and tells the same reviewer what was fixed, discarded or deferred, and why, using native runtime commands.
 5. The reviewer confirms fixes, accepts or disputes each discard, and adds any new findings. Back to step 2, until the reviewer approves or accepts the remaining discards. A discard the agents still disagree on after one counter-argument comes to you as a question.
 6. It ends with a summary of what was fixed, what was discarded and why, and the final verdict.
 
-"Fix what you agree with" skips waiting for your go-ahead (you still see every round, and questions are still asked); "just report" stops after the first round. To run it yourself, see `herdr-review --help`.
+"Fix what you agree with" skips waiting for your go-ahead (you still see every round, and questions are still asked); "just report" stops after the first round. See [the skill](.agents/skills/second-opinion/SKILL.md) for native commands, completion checks, and recovery instructions.
 
 ### Asking an agent
 
@@ -51,4 +55,4 @@ A short request is enough; add a reviewer, model or focus only when you care:
 - "Second opinion on only what changed since `origin/release-1.2`."
 - "Keep waiting for the reviewer." / "Close the reviewer."
 
-In pi, `/skill:herdr-review` forces the skill. Add instructions after it, e.g. `/skill:herdr-review use codex, focus on error handling`.
+In pi, `/skill:second-opinion` forces the skill. Add instructions after it, e.g. `/skill:second-opinion use codex, focus on error handling`.
