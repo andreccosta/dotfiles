@@ -20,6 +20,18 @@ real directory, so its `synced/` downloads stay separate from the shared skills.
 The sync step refuses to operate if `~/.claude/skills` itself is a symlink.
 No startup hook or background synchronization is installed.
 
+## gh-stack
+
+The `gh-stack` skill provides GitHub's guidance for stacked branches and pull
+requests, including stack design, command reference, and troubleshooting. It is
+vendored unchanged from [github/gh-stack](https://github.com/github/gh-stack/tree/main/skills/gh-stack);
+the skill's `README.md` records the upstream revision, and its `LICENSE` retains
+the upstream MIT notice.
+
+The skill does not install the CLI extension. If needed, install it separately
+with `gh extension install github/gh-stack`. Run `./dot install agents` to
+refresh skill links after adding it.
+
 ## second-opinion
 
 The initial reviewer must start with fresh conversation context, not resume, continue, or fork an existing conversation. Pass only the review scope, focus, and repository context—not the implementing agent's conclusions. Repository instructions still apply. Follow-up rounds deliberately reuse this new reviewer's conversation.
