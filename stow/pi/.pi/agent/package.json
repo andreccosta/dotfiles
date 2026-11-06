@@ -7,6 +7,9 @@
       "./extensions"
     ]
   },
+  "scripts": {
+    "test:copy-code-block": "node --experimental-strip-types --test tests/copy-code-block.test.ts"
+  },
   "dependencies": {
     "@earendil-works/pi-ai": "*"
   }
