@@ -20,17 +20,54 @@ real directory, so its `synced/` downloads stay separate from the shared skills.
 The sync step refuses to operate if `~/.claude/skills` itself is a symlink.
 No startup hook or background synchronization is installed.
 
-## gh-stack
+## Upstream skills
 
-The `gh-stack` skill provides GitHub's guidance for stacked branches and pull
-requests, including stack design, command reference, and troubleshooting. It is
-vendored unchanged from [github/gh-stack](https://github.com/github/gh-stack/tree/main/skills/gh-stack);
-the skill's `README.md` records the upstream revision, and its `LICENSE` retains
-the upstream MIT notice.
+Use Vercel's `skills` CLI (plural) from **`stow/agents`**, in project scope.
+Stow makes the resulting `.agents/skills` globally available; do not use `-g`
+or run installs from the repository root. `skills-lock.json` records only these
+upstream-managed skills:
 
-The skill does not install the CLI extension. If needed, install it separately
-with `gh extension install github/gh-stack`. Run `./dot install agents` to
-refresh skill links after adding it.
+| Skill | Upstream source |
+| --- | --- |
+| `bro` | [dmmulroy/.dotfiles](https://github.com/dmmulroy/.dotfiles/tree/main/home/.agents/skills/bro) |
+| `herdr` | [dmmulroy/.dotfiles](https://github.com/dmmulroy/.dotfiles/tree/main/home/.agents/skills/herdr) |
+| `gh-stack` | [github/gh-stack](https://github.com/github/gh-stack/tree/main/skills/gh-stack) |
+| `show-me` | [humanlayer/skills](https://github.com/humanlayer/skills/tree/main/plugins/show-me/skills/show-me) |
+| `thermo-nuclear-code-quality-review` | [cursor/plugins](https://github.com/cursor/plugins/tree/main/cursor-team-kit/skills/thermo-nuclear-code-quality-review) |
+
+`delegate` and `second-opinion` are our own skills: edit, review, and commit them
+directly with Git. They are deliberately absent from the lock and must not be
+installed, updated, or restored through `skills`. Other local or installer-owned
+skills remain outside this workflow too (including Plannotator and Rex).
+
+```bash
+cd stow/agents
+
+# Add a specific upstream skill; Pi's project target is .agents/skills.
+DISABLE_TELEMETRY=1 npx --yes skills@1.7.6 add github/gh-stack --skill gh-stack --agent pi --yes
+
+# Update all locked upstream skills, or name just one.
+DISABLE_TELEMETRY=1 npx --yes skills@1.7.6 update --project --yes
+DISABLE_TELEMETRY=1 npx --yes skills@1.7.6 update herdr --project --yes
+git diff
+
+# After adding, renaming, or removing a skill, refresh Claude's links.
+cd ../..
+./dot install agents
+```
+
+Keep managed directories as unchanged upstream copies: updates replace files,
+not merge local edits. `show-me` is an existing exception: it retains local
+cross-platform browser-opening guidance and a Codex invocation policy. Its lock
+hash records the upstream baseline, not those local edits; preserve or reapply
+them when updating. Review and commit the skill contents and lock together.
+Updates are manual, not part of shell startup or `./dot install`.
+
+Repository-only metadata and licenses are excluded from Stow. The retained
+GitHub MIT notice is [licenses/gh-stack.LICENSE](licenses/gh-stack.LICENSE);
+the initial import was from commit `bd0a32504f9ae9f795875a9e6bb90ff7408fda08`.
+The skill does not install the CLI extension; install it separately with
+`gh extension install github/gh-stack` if needed.
 
 ## second-opinion
 

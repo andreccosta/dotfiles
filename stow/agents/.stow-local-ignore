@@ -1,0 +1,21 @@
+# CLI metadata and licensing stay in the dotfiles repository.
+^/skills-lock\.json$
+^/licenses(/.*)?$
+
+# GNU Stow defaults (a local ignore file replaces them).
+RCS
+.+,v
+CVS
+\.\#.+
+\.cvsignore
+\.svn
+_darcs
+\.hg
+\.git
+\.gitignore
+\.gitmodules
+.+~
+\#.*\#
+^/README.*
+^/LICENSE.*
+^/COPYING

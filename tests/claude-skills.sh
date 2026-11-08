@@ -17,6 +17,11 @@ export HOME="$TMP/home"
 FIXTURE="$TMP/repo"
 mkdir -p "$HOME" "$FIXTURE/stow/agents/.agents/skills" "$FIXTURE/stow/other"
 cp "$REPO_DIR/dot" "$FIXTURE/dot"
+cp "$REPO_DIR/stow/agents/.stow-local-ignore" "$FIXTURE/stow/agents/.stow-local-ignore"
+cp "$REPO_DIR/stow/agents/skills-lock.json" "$FIXTURE/stow/agents/skills-lock.json"
+mkdir -p "$FIXTURE/stow/agents/licenses"
+printf 'license\n' > "$FIXTURE/stow/agents/licenses/test.LICENSE"
+printf '# Package documentation\n' > "$FIXTURE/stow/agents/README.md"
 SHARED="$FIXTURE/stow/agents/.agents/skills"
 CLAUDE="$HOME/.claude/skills"
 
@@ -38,6 +43,14 @@ require test "$(readlink "$CLAUDE/alpha")" = '../../.agents/skills/alpha'
 require cmp "$CLAUDE/alpha/SKILL.md" "$SHARED/alpha/SKILL.md"
 require test -f "$CLAUDE/with spaces/SKILL.md"
 require test ! -e "$CLAUDE/not-a-skill"
+require test ! -e "$HOME/skills-lock.json"
+require test ! -e "$HOME/licenses"
+require test ! -e "$HOME/README.md"
+require test ! -e "$HOME/.stow-local-ignore"
+
+# Local workflows are never enrolled in the upstream CLI lock.
+require grep -q '"gh-stack"' "$FIXTURE/stow/agents/skills-lock.json"
+require test "$(grep -Ec '"(delegate|second-opinion)"[[:space:]]*:' "$FIXTURE/stow/agents/skills-lock.json" || true)" -eq 0
 
 # Existing links remain unchanged, and edits propagate without another install.
 install_agents
