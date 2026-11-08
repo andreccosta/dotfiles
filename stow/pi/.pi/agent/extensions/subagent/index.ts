@@ -1,11 +1,12 @@
 // Subagent extension. In the parent Pi it provides the status widget and
 // suspend/resume of children across parent restarts. In a child Pi
 // (PI_SUBAGENT_RUN_DIR set) it reports state to metadata.json and delivers
-// inbox messages. Children run in Rex terminals; the `subagent` CLI (cli.ts) spawns them.
+// inbox messages. The parent exposes a subagent tool; children run in Rex terminals.
 
 import { existsSync, readFileSync, readdirSync, unlinkSync } from "node:fs";
 import { join } from "node:path";
 import type { ExtensionAPI, ExtensionContext } from "@earendil-works/pi-coding-agent";
+import { registerSubagentTool } from "./tool.ts";
 import {
 	childLiveness,
 	effectiveRunStateAsync,
@@ -33,6 +34,7 @@ function isInboxMessage(value: unknown): value is InboxMessage {
 export default function subagentExtension(pi: ExtensionAPI) {
 	const runDir = process.env.PI_SUBAGENT_RUN_DIR;
 	if (!runDir) {
+		registerSubagentTool(pi);
 		pi.on("resources_discover", () => ({ skillPaths: [join(packageDir, "skills")] }));
 
 		let widgetTimer: ReturnType<typeof setInterval> | undefined;

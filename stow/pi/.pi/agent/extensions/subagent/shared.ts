@@ -1,4 +1,4 @@
-// Shared state and Rex helpers for the subagent extension (index.ts) and CLI (cli.ts).
+// Shared state and Rex helpers for the subagent extension and tool operations.
 //
 // Control state for each run lives in ~/.pi/agent/subagents/runs/<handle>/
 // (metadata.json and an inbox/ of queued messages) and is removed by `subagent stop`.
@@ -234,7 +234,7 @@ function withLock<T>(lockDir: string, waitMs: number, staleMs: number, fn: () =>
 	}
 }
 
-/** Serialize read-modify-write of metadata.json across the parent, the child, and the CLI. */
+/** Serialize read-modify-write of metadata.json across the parent, child, and tool calls. */
 function withMetadataLock<T>(runDir: string, fn: () => T): T {
 	return withLock(join(runDir, "metadata.lock"), METADATA_LOCK_WAIT_MS, METADATA_LOCK_STALE_MS, fn);
 }
@@ -296,12 +296,13 @@ function rex(args: string[]): RexResult {
 	return { status: result.status, stdout: result.stdout, stderr: result.stderr };
 }
 
-async function rexAsync(args: string[]): Promise<RexResult> {
+async function rexAsync(args: string[], signal?: AbortSignal): Promise<RexResult> {
 	try {
-		const { stdout, stderr } = await execFileAsync("rex", args, { encoding: "utf8" });
+		const { stdout, stderr } = await execFileAsync("rex", args, { encoding: "utf8", signal });
 		return { status: 0, stdout, stderr };
 	} catch (error) {
 		const failure = error as { code?: unknown; stdout?: string; stderr?: string; message: string };
+		signal?.throwIfAborted();
 		return {
 			status: typeof failure.code === "number" ? failure.code : null,
 			stdout: failure.stdout ?? "",
@@ -355,9 +356,9 @@ export function childLiveness(terminal: RexTerminal | undefined): ChildLiveness 
 	return livenessFromProcessReport(rex(processReportArgs(terminal)));
 }
 
-export async function childLivenessAsync(terminal: RexTerminal | undefined): Promise<ChildLiveness> {
+export async function childLivenessAsync(terminal: RexTerminal | undefined, signal?: AbortSignal): Promise<ChildLiveness> {
 	if (!terminal) return "exited";
-	return livenessFromProcessReport(await rexAsync(processReportArgs(terminal)));
+	return livenessFromProcessReport(await rexAsync(processReportArgs(terminal), signal));
 }
 
 function succeededOrTargetGone(result: RexResult): boolean {
@@ -528,8 +529,8 @@ export function effectiveRunState(metadata: RunMetadata): RunState {
 	return resolveRunState(metadata, metadata.terminal ? childLiveness(metadata.terminal) : "exited");
 }
 
-export async function effectiveRunStateAsync(metadata: RunMetadata): Promise<RunState> {
-	return resolveRunState(metadata, metadata.terminal ? await childLivenessAsync(metadata.terminal) : "exited");
+export async function effectiveRunStateAsync(metadata: RunMetadata, signal?: AbortSignal): Promise<RunState> {
+	return resolveRunState(metadata, metadata.terminal ? await childLivenessAsync(metadata.terminal, signal) : "exited");
 }
 
 // --- Project trust -------------------------------------------------------------

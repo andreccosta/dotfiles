@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# Pi subagent CLI. Source: ~/.pi/agent/extensions/subagent/cli.ts
-exec node "${PI_CODING_AGENT_DIR:-$HOME/.pi/agent}/extensions/subagent/cli.ts" "$@"

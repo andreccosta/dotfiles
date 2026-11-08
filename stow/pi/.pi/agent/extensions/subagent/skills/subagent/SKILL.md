@@ -1,94 +1,87 @@
 ---
 name: subagent
-description: Spawn and communicate with observable Pi subagents for second opinions, independent investigations, and delegated implementation work.
+description: Use the subagent tool to spawn and communicate with observable Pi child agents for independent investigations and delegated implementation work.
 ---
 
 # Subagent
 
-Use the `subagent` CLI to delegate work to a separate Pi process with its own context. Subagents spawned by the same Pi session share one Rex session, one tab each. Managed subagents cannot spawn nested subagents, and this skill is not loaded into their sessions.
+Use the **subagent tool**, not bash or a CLI. Each child is a separate Pi process
+with its own context. Children of one parent share a Rex session, one tab per child.
+Managed children cannot manage nested subagents and do not load this skill.
 
 ## Spawn
 
-Give each child a short, descriptive name. The name appears in the parent UI, while the generated handle remains its stable identifier:
+Call the tool with:
 
-```sh
-subagent spawn --name implementation --group "auth refactor" --prompt "Complete task"
+```json
+{
+  "action": "spawn",
+  "name": "investigation",
+  "group": "auth refactor",
+  "prompts": ["Investigate the authentication flow and report findings without modifying files."]
+}
 ```
 
-Always pass `--group` with 2 to 4 words (max 24 characters) that describe your own current task, for example `auth refactor` or `flaky ci fix`. It labels the Rex session that holds all subagents of this Pi session, so the user can tell sessions apart. The first spawn sets the label; later values are ignored.
+Give children descriptive names. Use a short group label (2–4 words, at most 24
+characters) describing the parent's task. The first spawn sets the shared Rex
+session label; later spawns reuse it. Keep the returned handle for later calls.
 
-By default, the child inherits the current Pi provider, model, and reasoning level from the bash environment. Use `--provider`, `--model`, or `--thinking` only when deliberately choosing a different configuration, for example a faster model for simple investigation or a stronger model for difficult review. Never pass `$PI_PROVIDER`, `$PI_MODEL`, or `$PI_REASONING_LEVEL` back to the CLI explicitly.
+Provider, model, reasoning level, working directory, and parent session identity
+come directly from the current Pi context, not shell environment variables.
+Set `provider`, `model`, or `thinking` only when deliberately choosing overrides.
+`cwd` is relative to the parent's working directory. `files` paths are also resolved
+relative to the parent, and are sent as Pi file attachments. Provide at least one
+nonempty prompt or file. Multiple `prompts` and `files` are supported.
 
-`--cwd` defaults to the current directory. Repeat `--prompt` and `--file` as needed; Pi receives all of them in the first user turn. Run `subagent spawn` directly without piping or redirecting its concise output.
+## Tools and isolation
 
-## Tools
+Omit `tools` to inherit normal child defaults and configuration. To constrain a
+read-only investigation, use `tools: ["read", "grep", "find", "ls"]`. Bash can
+modify files and is not a read-only capability.
 
-Without `--tools`, Pi enables its four default tools:
+Optional spawn flags:
 
-- `read` - Read text files and images.
-- `bash` - Execute shell commands. This can also modify files, so it is not a read-only capability.
-- `edit` - Apply exact text replacements to existing files.
-- `write` - Create or overwrite files.
+- `noExtensions`: disable normal extension discovery; the child control bridge is still explicitly loaded.
+- `noSkills`: hide installed skills.
+- `noPromptTemplates`: disable prompt templates.
+- `noContextFiles`: ignore repository instruction files; avoid for implementation work.
 
-Three additional built-in tools are available but off by default:
+An unrecognized project trust context is declined rather than leaving the child
+blocked on a trust prompt. Stored project trust decisions are respected.
 
-- `grep` - Search file contents.
-- `find` - Find files by glob pattern.
-- `ls` - List directory contents.
+## Inspect, communicate, and wait
 
-`--tools` is a comma-separated allowlist across built-in, extension, and custom tools. Common choices:
-
-```sh
-# Enforced read-only repository investigation
---tools read,grep,find,ls
-
-# Investigation that may run tests or other commands; bash can modify files
---tools read,bash,grep,find,ls
-
-# Implementation work: omit --tools to use the defaults
+```json
+{"action": "list"}
+{"action": "status", "handle": "abc123"}
+{"action": "rename", "handle": "abc123", "name": "auth review"}
+{"action": "send", "handle": "abc123", "message": "Also check token expiry"}
+{"action": "send", "handle": "abc123", "message": "Review the tests next", "followUp": true}
+{"action": "wait", "handle": "abc123", "timeoutSeconds": 1800}
 ```
 
-## Isolation flags
+`list` and handle-based actions are scoped to the current parent session.
+`send` prompts an idle child or steers a busy one. With `followUp`, the message
+waits until the busy child finishes. Use this tool's inbox, not `rex send`.
 
-- `--no-extensions` - Disable normal extension discovery. Use for an independent run that should not inherit unrelated extension behavior or extension-provided tools. The subagent control bridge is still explicitly loaded.
-- `--no-skills` - Hide installed skills from the child. Use for tightly specified tasks that should rely only on the supplied prompt and files.
-- `--no-prompt-templates` - Disable prompt-template commands. Usually unnecessary, but useful when testing a minimal child environment.
-- `--no-context-files` - Ignore repository instruction files such as `AGENTS.md` and `CLAUDE.md`. Use only when those instructions would bias an independent investigation. Do not use for implementation unless intentionally bypassing repository guidance.
+`wait` returns the latest assistant response from the durable active session
+branch. Do not infer completion from terminal text. It defaults to 1800 seconds;
+cancelling the call stops waiting but leaves the child running. Responses are
+limited to 50KB/2000 lines; the result includes the transcript path for full output.
 
-Spawn prints a random handle and the label of its Rex tab. Keep the handle for later commands. Subagents persist after their current turn completes: `wait`, completion, and becoming idle do not terminate them. They survive `/reload`. When the spawning Pi session quits or is replaced, they are suspended and relaunched idle with their history when that session is resumed. They are only removed by `subagent stop`.
+## Lifecycle and cleanup
 
-## Inspect and wait
+Children remain alive after completing a turn and survive `/reload`. Quitting or
+switching away from the parent suspends them; resuming the parent relaunches them
+with their saved transcripts. Becoming idle, waiting, and cancellation do not
+terminate children.
 
-```sh
-subagent status <handle>
-subagent list
-subagent wait <handle>
+Explicitly stop every child when it is no longer needed:
+
+```json
+{"action": "stop", "handle": "abc123"}
 ```
 
-Run `subagent list` at any time to rediscover active subagents and their handles, names, and current states if you no longer remember them.
-
-`wait` follows the durable session state and prints the latest final assistant response. Run it directly so the bash tool returns that response; do not redirect it to a file or pipe it unless the user explicitly asks for an artifact. Do not infer completion from captured terminal text. Set the bash timeout above `wait`'s default 1800-second deadline.
-
-## Communicate
-
-```sh
-# Change the name shown in the parent UI.
-subagent rename <handle> "new name"
-
-# Idle: starts a new prompt. Busy: steers the current work.
-subagent send <handle> "message"
-
-# Busy: waits until current work finishes, then starts another turn.
-subagent send <handle> --follow-up "message"
-```
-
-Names are 1–64 characters and need not be unique. Messages use the subagent extension's control inbox; do not use `rex send`.
-
-## Stop
-
-```sh
-subagent stop <handle>
-```
-
-Explicitly stop every subagent when it is no longer needed; do not leave completed subagents running idle. This closes its Rex tab (and the shared Rex session after the last tab) and removes the run metadata. The transcript is kept under `~/.pi/agent/subagents/sessions/`; `stop` prints its path. Keep an idle subagent alive only when concrete follow-up work is expected, then stop it afterward.
-
+This closes the Rex tab (and its shared session after the last tab) and removes run
+metadata. Transcripts remain under `~/.pi/agent/subagents/sessions/` (or the custom
+`PI_CODING_AGENT_DIR`). Keep a child idle only for concrete expected follow-up work.
