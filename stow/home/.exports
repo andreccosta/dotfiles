@@ -6,3 +6,6 @@ export GH_TELEMETRY=false
 export DO_NOT_TRACK=true
 export DOTNET_CLI_TELEMETRY_OPTOUT=1
 
+# Plannotator: keep review/annotate/last, disable the Inbox
+export PLANNOTATOR_INBOX_TOOL=0
+export PLANNOTATOR_INBOX_CONNECT=0
