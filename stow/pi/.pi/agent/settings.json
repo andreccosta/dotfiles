@@ -22,11 +22,12 @@
   "enabledModels": [
     "anthropic/claude-opus-5-5",
     "anthropic/claude-fable-5-1",
-    "openai-codex/gpt-6.1-terra",
     "openai-codex/gpt-6.1-sol",
+    "openai-codex/gpt-6.1-terra",
     "openai-codex/gpt-6-astra",
     "work/gpt-6.1-sol",
-    "work/gpt-6.1-terra"
+    "work/gpt-6.1-terra",
+    "work/gpt-6-astra"
   ],
   "extensionChangelogVersions": {
     "{\"source\":\"npm:@gotgenes/pi-anthropic-auth\",\"scope\":\"user\"}": "3.4.4"
