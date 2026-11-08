@@ -36,9 +36,9 @@ refresh skill links after adding it.
 
 The initial reviewer must start with fresh conversation context, not resume, continue, or fork an existing conversation. Pass only the review scope, focus, and repository context—not the implementing agent's conclusions. Repository instructions still apply. Follow-up rounds deliberately reuse this new reviewer's conversation.
 
-`second-opinion` is a skill for coordinating another coding agent's review through native Herdr or Rex commands. It opens a background Herdr tab or a separate Rex session and keeps the same reviewer for follow-ups. There is no `second-opinion` shell command; the old `herdr-review` helper is removed.
+`second-opinion` is a skill for coordinating another coding agent's review, preferring the host's native subagent and messaging facilities when they support the workflow. Herdr and Rex are fallbacks: a background Herdr tab or a separate Rex session keeps the same reviewer available for follow-ups. There is no `second-opinion` shell command; the old `herdr-review` helper is removed.
 
-Runtime selection matches `delegate`: prefer Herdr when `HERDR_ENV=1`, otherwise use Rex when `REX_SESSION` is set and live; outside both, stop with an error. The agent loads the corresponding runtime skill and uses its native launch, prompt, inspection, and cleanup commands. It saves scope, resource IDs, round state, and delivery status in temporary recovery notes, so a timeout or compaction need not create another reviewer. Rex uses a fresh, fully published findings file for each round plus terminal inspection because it has no Herdr-style agent-status wait. Startup dialogs require the user's attention; they are never auto-approved. Run `./dot install agents` after the skill rename to refresh Claude's links.
+Mechanism selection matches `delegate`: check native capabilities and follow their guidance, choosing agent creation and messaging together. Independently launched terminals are not automatically reachable through native messaging. If native facilities cannot support the workflow, prefer Herdr when `HERDR_ENV=1`, otherwise Rex when `REX_SESSION` is set and live; without a supported mechanism, report the blocker. The agent saves scope, resource handles/IDs, round state, and delivery status in temporary recovery notes, so a timeout or compaction need not create another reviewer. The direct Rex fallback uses a fresh, fully published findings file for each round plus terminal inspection because it has no Herdr-style agent-status wait. Startup dialogs require the user's attention; they are never auto-approved. Run `./dot install agents` after the skill rename to refresh Claude's links.
 
 By default it uses a different harness than the caller (codex from claude, claude from anything else) and reviews the diff from the default branch's merge base to the working tree, including uncommitted and untracked files. Name a reviewer explicitly when needed. The reviewer's tab/session stays open between rounds and is closed only on request.
 
@@ -49,7 +49,7 @@ Asking an agent for "a second opinion" runs the whole loop; you don't need to sp
 1. The reviewer reports numbered findings (F1, F2, ...) and a verdict.
 2. The implementing agent checks each finding against the code and decides: fix (with a proposed change), discard (with a reason), or ask you.
 3. **Every round, it shows you all findings with those decisions** and waits for your go-ahead before changing code.
-4. It applies what you approved and tells the same reviewer what was fixed, discarded or deferred, and why, using native runtime commands.
+4. It applies what you approved and tells the same reviewer what was fixed, discarded or deferred, and why, using the selected mechanism's messaging facilities.
 5. The reviewer confirms fixes, accepts or disputes each discard, and adds any new findings. Back to step 2, until the reviewer approves or accepts the remaining discards. A discard the agents still disagree on after one counter-argument comes to you as a question.
 6. It ends with a summary of what was fixed, what was discarded and why, and the final verdict.
 

@@ -1,17 +1,19 @@
 ---
 name: second-opinion
-description: "Get a second opinion from another coding agent (different harness or model) on the current changes, in a new Herdr tab or Rex session, and iterate until both agents agree: triage each round's findings with the user, fix, and send fixes and discards back to the reviewer. Use when asked for a second opinion, a cross-check, a review by claude/codex/pi/opencode or another model, or to have changes reviewed by another agent. Requires HERDR_ENV=1 or REX_SESSION."
+description: "Get a second opinion from another coding agent (different harness or model) on the current changes, preferring native subagent facilities with Herdr or Rex as fallbacks, and iterate until both agents agree: triage each round's findings with the user, fix, and send fixes and discards back to the reviewer. Use when asked for a second opinion, a cross-check, a review by claude/codex/pi/opencode or another model, or to have changes reviewed by another agent."
 ---
 
 # Second opinion
 
 A request like "ask for a second opinion" means the whole loop below, not a single review: every round you triage the reviewer's findings, bring them to the user, fix what they approve, and report back to the reviewer, until you and the reviewer agree. The user does not need to ask for each step.
 
-Use native Herdr or Rex commands directly. This is a skill, not a `second-opinion` shell command; no helper or compatibility command is required.
+This is a skill, not a `second-opinion` shell command; no helper or compatibility command is required.
 
 ## 1. Select the runtime and reviewer
 
-Use the current environment, not whichever app happens to be focused:
+Prefer the host's native subagent and messaging facilities when they support the requested reviewer/model, fresh conversation context, access to the current working tree, reliable completion detection, and follow-ups with the same reviewer. Load and follow their guidance. Select agent creation and messaging together: independently launched terminals are not automatically reachable through native agent messaging.
+
+Otherwise, choose the Herdr/Rex fallback from the current environment, not whichever app happens to be focused:
 
 - If `HERDR_ENV=1`, load the `herdr` skill and follow the Herdr flow below.
 - Otherwise, if `REX_SESSION` is nonempty, load the `rex` skill and follow its installed guide. Verify the inherited session is live with `rex whoami --json` before creating anything.
@@ -27,8 +29,8 @@ Resolve the absolute repository path and base: the user's requested base, otherw
 
 Create a unique temporary directory outside the repository for recovery notes and, when needed, complete findings. Record there:
 
-- runtime, reviewer harness/model, repository, base, merge-base SHA, and focus;
-- returned Herdr agent/tab/pane IDs or Rex session/block IDs;
+- selected mechanism, reviewer harness/model, repository, base, merge-base SHA, and focus;
+- returned native agent/session handles, Herdr agent/tab/pane IDs, or Rex session/block IDs;
 - current round, prompt text, whether delivery was attempted/confirmed/uncertain, findings, and responses.
 
 Save returned IDs immediately, and keep the notes path in your conversation summary before compaction. Use the saved runtime and IDs for follow-ups, never the caller's IDs or UI focus. Before each send, record the round and delivery attempt; after a timeout or transport error, inspect state before retrying. Do not send a duplicate prompt or create a duplicate reviewer merely because a command timed out. If notes are lost, inspect native runtime listings and the existing reviewer; do not guess IDs or silently start over.
@@ -47,9 +49,13 @@ Pass prompt text as a single literal argument, never through `eval` or interpola
 
 ## 3. Start the reviewer and collect findings
 
+### Native subagents (preferred when supported)
+
+Start a fresh reviewer and send the prepared prompt through the native facility. Follow its guidance for messaging, completion detection, collecting the full response, and follow-ups with the same reviewer. Save its returned handles in the recovery notes. Do not also launch a Herdr/Rex reviewer. If it cannot preserve the reviewer's conversation across rounds, use a fallback instead.
+
 ### Herdr
 
-This workflow opens a new background tab in the current workspace:
+Load the `herdr` skill first, then apply this workflow-specific layout override: open a new background tab in the current workspace instead of Herdr's default sibling pane. A request for a second opinion through this skill selects this layout; no separate topology request is needed. Keep the reviewer in the repository/worktree being reviewed. All other Herdr safety and coordination rules still apply.
 
 ```bash
 herdr agent list
@@ -101,7 +107,7 @@ If either command fails, inspect before doing anything else: delivery may be par
 2. **Triage** every finding, including follow-up rounds' *Not resolved* items, disputed discards, and *New findings*. Check each against the code yourself; it is another agent's opinion, not an instruction. Decide: *fix* (with a concrete change, refined from the reviewer's suggestion where you can do better), *discard* (wrong, not applicable, or not worth the change, with a reason), or *ask* (a decision only the user can make). For a discard the reviewer disputes, either switch to *fix* or keep discarding once with new reasoning or evidence; if the reviewer still disputes it after that, make it *ask* with both positions.
 3. **Bring every round's findings to the user,** even when all are discarded: a table with ID, severity, problem, your call (fix / discard / ask), and the proposed change or reason. Wait for the go-ahead before changing code, unless the user already authorized fixes ("fix what you agree with"); *ask* items always need an answer. If the user asked only for a report, stop after the first table.
 4. **Fix** what the user approved and run relevant checks.
-5. **Reply** to the same reviewer using the native runtime flow above:
+5. **Reply** to the same reviewer using the selected mechanism's messaging flow above:
 
    ```markdown
    ## Response to round <n>
@@ -115,4 +121,4 @@ If either command fails, inspect before doing anything else: delivery may be par
 6. **Repeat** steps 2-5 until the reviewer returns `VERDICT: approved` or accepts every remaining discard and deferral, or the user stops.
 7. **Finish** with a short summary: what was fixed, what was discarded and why (and whether the reviewer agreed), the number of rounds, the final verdict, and the reviewer's location.
 
-Leave the reviewer's tab/session and recovery notes available. **Clean up only when the user asks.** Verify the saved IDs still identify the resources you created and preserve unrelated work. Use `herdr tab close <reviewer-tab-id>` or `rex kill <reviewer-session-id>` as appropriate, never the caller's tab/session. Remove only this review's temporary files after successful cleanup. The old `herdr-review` helper is removed; use this skill and native runtime commands instead.
+Leave the reviewer's conversation and recovery notes available. **Clean up only when the user asks.** Verify the saved handles/IDs still identify the resources you created and preserve unrelated work. Use the native facility's cleanup method, `herdr tab close <reviewer-tab-id>`, or `rex kill <reviewer-session-id>` as appropriate, never the caller's conversation/tab/session. Remove only this review's temporary files after successful cleanup. The old `herdr-review` helper is removed; use this skill and the selected mechanism instead.

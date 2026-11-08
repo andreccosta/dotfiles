@@ -1,6 +1,6 @@
 ---
 name: delegate
-description: "Delegate a particular Linear ticket to a new coding agent in its own worktrunk branch/worktree, with a Herdr workspace or Rex session matching the current environment. Use when the user asks to delegate, hand over or spin off work on an identified Linear ticket to another agent. Not applicable to requests without a Linear ticket."
+description: "Delegate a particular Linear ticket to a new coding agent in its own worktrunk branch/worktree, preferring the host's native subagent facilities with Herdr or Rex as fallbacks. Use when the user asks to delegate, hand over or spin off work on an identified Linear ticket to another agent. Not applicable to requests without a Linear ticket."
 ---
 
 # Delegate
@@ -29,19 +29,21 @@ Always create with worktrunk, not `git worktree add` or `herdr worktree create`,
 
 ## 3. Choose the runtime and prepare the handoff
 
-Use the current environment, not whichever app happens to be focused:
+Prefer the host's native subagent and messaging facilities when they support the requested harness, a fresh agent in the isolated worktree, and a handoff that can continue independently. Load and follow their guidance. Select agent creation and messaging together: independently launched terminals are not automatically reachable through native agent messaging.
+
+Otherwise, choose the Herdr/Rex fallback from the current environment, not whichever app happens to be focused:
 
 - If `test "${HERDR_ENV:-}" = 1` passes, follow the Herdr flow below and load the `herdr` skill first.
 - Otherwise, if `REX_SESSION` is nonempty, follow the Rex flow below and load the `rex` skill first. Verify the inherited session is live with `rex whoami --json` before creating anything.
 - If neither applies, do not control either app. Look up the worktree path with the command below, report the branch and path, suggest `wt switch <branch> -x <agent-cli>`, and stop.
 
-For Rex or the outside-app fallback, obtain the absolute worktree path with structured output; require exactly one nonempty matching path before continuing:
+For native subagents, Rex, or the outside-app fallback, obtain the absolute worktree path with structured output; require exactly one nonempty matching path before continuing:
 
 ```bash
 wt list --format=json | jq -er --arg branch '<branch>' '[.items[] | select(.branch == $branch) | .worktree.path | select(type == "string" and length > 0)] | if length == 1 then .[0] else error("expected one worktree path") end'
 ```
 
-Prepare one handoff for either runtime. It should:
+Prepare one handoff for the selected mechanism. It should:
 
 - name the ticket and its title, and tell the agent to read the full ticket and its comments with the Linear tools first;
 - name the branch and base, and tell it to check any background setup hooks have finished before running tests;
@@ -53,7 +55,13 @@ Prepare one handoff for either runtime. It should:
 
 Pass handoff text as a single literal argument, never as shell code or through `eval`. Preserve the user's focus. Inspect startup failures or approval dialogs and report blockers rather than approving them. After a timeout, inspect state before retrying to avoid duplicates.
 
+### Native subagents (preferred when supported)
+
+Use the native facility to start a fresh agent in the resolved worktree and deliver the prepared handoff. Follow its guidance for messaging, pickup confirmation, and any completion notifications. Save the returned agent/session handle and report it to the user. Do not also launch a Herdr/Rex agent.
+
 ### Herdr: open a workspace for the worktree
+
+Load the `herdr` skill first, then apply this workflow-specific layout override: open the isolated worktree in its own background workspace instead of Herdr's default sibling pane in the caller's working directory. A request to delegate through this skill selects this layout; no separate topology request is needed. All other Herdr safety and coordination rules still apply.
 
 ```bash
 herdr worktree open --cwd "$PWD" --branch <branch> --label <ticket-id-lowercase> --no-focus
@@ -90,7 +98,9 @@ rex block call -s <new-session-id> -b <new-block-id> process
 
 ## 5. Report
 
-Tell the user the branch, the worktree path, the harness, and whether the handoff succeeded or startup is blocked. Include the runtime-specific location and how to check on it:
+Tell the user the branch, the worktree path, the harness, and whether the handoff succeeded or startup is blocked. Include the mechanism-specific location and how to check on it:
+
+- **Native subagents**: returned agent/session handle and the facility's supported inspection or continuation method.
 
 - **Herdr**: workspace label/ID, agent name, and `herdr agent read <name>` (or switch to the workspace).
 - **Rex**: new session label/ID, agent block ID, and `rex capture -s <new-session-id> -b <new-block-id> --trim --unwrap` (or select the session in Rex).
