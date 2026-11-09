@@ -20,14 +20,14 @@
   },
   "tuiMode": "fullscreen",
   "enabledModels": [
-    "anthropic/claude-opus-5-5",
-    "anthropic/claude-fable-5-1",
-    "openai/gpt-6.1-sol",
-    "openai/gpt-6.1-terra",
-    "openai/gpt-6-astra",
-    "work/gpt-6.1-sol",
-    "work/gpt-6.1-terra",
-    "work/gpt-6-astra"
+    "anthropic/claude-opus-5-5:medium",
+    "anthropic/claude-fable-5-1:high",
+    "openai/gpt-6.1-sol:medium",
+    "openai/gpt-6.1-terra:medium",
+    "openai/gpt-6-astra:high",
+    "work/gpt-6.1-sol:medium",
+    "work/gpt-6.1-terra:medium",
+    "work/gpt-6-astra:high"
   ],
   "extensionChangelogVersions": {
     "{\"source\":\"npm:@gotgenes/pi-anthropic-auth\",\"scope\":\"user\"}": "3.4.4"
