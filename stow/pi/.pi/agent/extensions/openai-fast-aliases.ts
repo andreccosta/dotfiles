@@ -19,7 +19,8 @@ export default function (pi: ExtensionAPI) {
     const model = ctx.model;
     const isCodexProvider =
       (model?.provider === "openai-codex" && model.api === "openai-codex-responses") ||
-      (model?.provider === "work" && model.api === "openai-responses");
+      (model?.provider === "work" &&
+        (model.api === "openai-responses" || model.api === "work-codex-responses"));
     if (!isCodexProvider) return;
 
     const targetModel = resolveCodexModelAlias(model.id);
