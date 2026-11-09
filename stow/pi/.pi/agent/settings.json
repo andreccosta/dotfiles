@@ -23,7 +23,7 @@
   "tuiMode": "fullscreen",
   "enabledModels": [
     "anthropic/claude-opus-5-5:medium",
-    "anthropic/claude-fable-5-1:high",
+    "anthropic/claude-fable-5-2:high",
     "openai/gpt-6.1-sol:medium",
     "openai/gpt-6.1-terra:medium",
     "openai/gpt-6-astra:high",
