@@ -124,26 +124,6 @@ hm() {
   fi
 }
 
-tm() {
-  local name git_root
-  name=$(basename "$PWD")
-
-  if git_root=$(git rev-parse --show-toplevel 2>/dev/null); then
-    name=$(basename "$git_root")
-  fi
-
-  if ! tmux has-session -t "=${name}" 2>/dev/null; then
-    tmux new-session -d -s "$name" -n main "$@"
-    tmux new-window -d -t "=${name}" -n zsh
-  fi
-
-  if [ -n "$TMUX" ]; then
-    tmux switch-client -t "=${name}"
-  else
-    tmux attach-session -t "=${name}"
-  fi
-}
-
 zombies() {
   ps -eo pid,ppid,stat,command | awk '
     NR == 1 { next }
