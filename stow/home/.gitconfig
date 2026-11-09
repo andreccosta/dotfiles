@@ -4,7 +4,6 @@
 [user]
 	name = André Costa
 	email = andreccosta@me.com
-	signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIITJwUfCq2Vv/1SZ1pPD51fgrJDGo3gQs1LkuegDAsZ0
 
 [gpg]
 	format = ssh

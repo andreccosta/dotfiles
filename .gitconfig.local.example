@@ -1,0 +1,23 @@
+# Copy this file to ~/.gitconfig.local and enable ONE signing configuration.
+# This example lives outside stow and is not installed automatically.
+# Shared Git configuration enables SSH signing; each machine selects its key here.
+# Work-directory-specific includes may intentionally override these settings.
+
+# Option 1: 1Password on macOS.
+# Replace the placeholder with the SSH public key stored in 1Password.
+# The helper avoids depending on SSH_AUTH_SOCK or ~/.ssh/config.
+# [user]
+#     signingkey = ssh-ed25519 REPLACE_WITH_YOUR_PUBLIC_KEY
+# [gpg "ssh"]
+#     program = /Applications/1Password.app/Contents/MacOS/op-ssh-sign
+
+# Option 2: a local SSH private key (use your actual key path).
+# Leave gpg.ssh.program unset to use ssh-keygen.
+# An encrypted private key may require a passphrase prompt.
+# [user]
+#     signingkey = ~/.ssh/git_signing_key
+
+# To require an agent instead, use the public-key (.pub) path and ensure
+# SSH_AUTH_SOCK points to the agent holding the matching private key.
+# Keep private keys out of this repository. Add trusted signing PUBLIC keys
+# to stow/home/.config/git/allowed_signers for local signature verification.
