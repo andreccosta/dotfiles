@@ -60,6 +60,21 @@ $ ./test.sh
 
 Tests run with shellcheck.
 
+## Rex
+
+The `rex` package tracks `~/.config/rex/init.lua`. It swaps the default shortcuts:
+
+- **Cmd+N**: new session
+- **Cmd+Shift+N**: new app window
+
+Install and reload it with:
+
+```sh
+./dot install rex
+rex config check
+rex config reload
+```
+
 ## Agent skills
 
 Shared agent skills live in the `agents` Stow package. See [stow/agents/README.md](stow/agents/README.md) for the `second-opinion` workflow.
