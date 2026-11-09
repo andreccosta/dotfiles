@@ -12,7 +12,7 @@
         "url": "https://planwright.acklabs.dev/mcp"
       },
       "linear": {
-        "disabled": true,
+        "disabled": false,
         "type": "remote",
         "url": "https://mcp.linear.app/mcp"
       },
