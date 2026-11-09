@@ -1,10 +1,5 @@
 {
   "providers": {
-    "opencode": {
-      "baseUrl": "https://opencode.ai/zen/v1",
-      "api": "openai-completions",
-      "apiKey": "$OPENCODE_ZEN_API_KEY"
-    },
     "work": {
       "baseUrl": "$CODEX_LB_URL",
       "api": "openai-responses",
