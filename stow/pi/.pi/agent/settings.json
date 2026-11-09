@@ -31,5 +31,6 @@
   ],
   "extensionChangelogVersions": {
     "{\"source\":\"npm:@gotgenes/pi-anthropic-auth\",\"scope\":\"user\"}": "3.4.4"
-  }
+  },
+  "enableInstallTelemetry": false
 }
