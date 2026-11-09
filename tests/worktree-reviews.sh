@@ -25,7 +25,7 @@ with open(os.environ['CALLS'], 'a') as f:
 if name == 'wt':
     command = args[2]
     if command == 'switch':
-        print(json.dumps({'path': os.environ['REVIEW']}))
+        print(json.dumps({'path': os.environ['REVIEW'], 'action': os.environ.get('WT_ACTION', 'created')}))
     elif command == 'list':
         print(json.dumps({'items': [
             {'branch': 'feature/review', 'worktree': {'path': os.environ['REVIEW']}},
@@ -41,10 +41,7 @@ elif name == 'paseo':
         print(json.dumps([{'cwd': cwd, 'workspaceId': 'review-ws'}]))
 elif name == 'rex':
     if args[:2] == ['ls', '--json']:
-        default = [{'session_id': 'source-session', 'label': 'source checkout'},
-                   {'session_id': 'review-session', 'label': 'source checkout/feature/review'}]
-        sessions = json.loads(os.environ['REX_SESSIONS']) if 'REX_SESSIONS' in os.environ else default
-        print(json.dumps({'sessions': sessions}))
+        raise AssertionError('rwt must not look up sessions by label')
     elif args[0] == 'new':
         print(json.dumps({'session_id': 'new-session'}))
     elif args[0] == 'do':
@@ -85,11 +82,10 @@ for tool in hwt pwt rwt; do
       [[ "$expected" != pr:123 ]] || label='review/123/feature/review'
       assert_call herdr worktree open --cwd "$ROOT" --path "$REVIEW" --focus --label "$label"
     elif [[ "$tool" == rwt ]]; then
-      # An existing session with the worktree's label is reused.
-      assert_call rex "do" session.select session_id=review-session
-      if grep -q '"rex", "new"' "$CALLS"; then
-        printf 'FAIL: created a duplicate Rex session\n' >&2; exit 1
-      fi
+      label='source checkout/review/feature/review'
+      [[ "$expected" != pr:123 ]] || label='source checkout/review/123/feature/review'
+      assert_call rex new "$label" --cwd "$REVIEW" --json
+      assert_call rex "do" session.select session_id=new-session
     else
       assert_call paseo workspace create --isolation local --project project --path "$REVIEW"
     fi
@@ -105,8 +101,8 @@ for tool in hwt pwt rwt; do
         exit 1
       fi
     elif [[ "$tool" == rwt ]]; then
-      assert_call rex "do" session.select session_id=source-session
-      assert_call rex kill review-session
+      assert_call rex new "source checkout" --cwd "$ROOT" --json
+      assert_call rex "do" session.select session_id=new-session
       if grep -q '"kill", "current-session"' "$CALLS"; then
         printf 'FAIL: killed the invoking session when removing another checkout\n' >&2
         exit 1
@@ -138,12 +134,38 @@ for tool in hwt pwt rwt; do
     git -C "$REVIEW" checkout -q feature/review
   fi
   if [[ "$tool" == rwt ]]; then
-    # Without a matching session one is created, and a failed focus only warns.
+    # A failed focus only warns; names are never used for lookup.
     : > "$CALLS"
-    REX_SESSIONS='[]' SELECT_FAIL=1 bash "$script" review feature/review 2> "$sandbox/stderr"
-    assert_call rex new "source checkout/feature/review" --cwd "$REVIEW" --json
+    SELECT_FAIL=1 bash "$script" review feature/review 2> "$sandbox/stderr"
+    assert_call rex new "source checkout/review/feature/review" --cwd "$REVIEW" --json
     assert_call rex "do" session.select session_id=new-session
     grep -q "enable Remote Control" "$sandbox/stderr"
+    # Explicit opens always create fresh sessions.
+    : > "$CALLS"
+    bash "$script" open feature/review
+    bash "$script" open feature/review
+    assert_call rex new "source checkout/feature/review" --cwd "$REVIEW" --json
+    # Detached HEAD uses the directory name, with the requested PR number.
+    git -C "$REVIEW" checkout -q --detach
+    : > "$CALLS"
+    bash "$script" review pr:123
+    assert_call rex new "source checkout/review/123/feature-review" --cwd "$REVIEW" --json
+    git -C "$REVIEW" checkout -q feature/review
+    # Existing worktrees fail with an actionable open command, without Rex calls.
+    for action in existing already_at; do
+      : > "$CALLS"
+      if WT_ACTION="$action" bash "$script" review 123 2> "$sandbox/stderr"; then
+        printf 'FAIL: review accepted an existing worktree\n' >&2; exit 1
+      fi
+      grep -q 'worktree already exists; use `rwt open ' "$sandbox/stderr"
+      assert_no_ui
+    done
+    : > "$CALLS"
+    if bash "$script" create feature/review 2> "$sandbox/stderr"; then
+      printf 'FAIL: create accepted an existing worktree\n' >&2; exit 1
+    fi
+    grep -q 'worktree already exists; use `rwt open ' "$sandbox/stderr"
+    assert_no_ui
   fi
   ln -sfn "$ROOT" "$sandbox/link"
   if [[ "$tool" == pwt ]]; then
@@ -157,7 +179,6 @@ for tool in hwt pwt rwt; do
   (cd "$sandbox/link" && : > "$CALLS" && bash "$script" remove "$link_target")
   assert_call wt -C "$ROOT" remove --foreground --no-hooks --force-delete "$link_target"
   [[ "$tool" != pwt ]] || assert_call paseo workspace archive review-ws
-  [[ "$tool" != rwt ]] || assert_call rex kill review-session
   # Relative paths resolve from the checkout root, like `wt -C`.
   (cd "$ROOT/.worktrees" && : > "$CALLS" && bash "$script" remove .worktrees/reviews/feature-review)
   assert_call wt -C "$ROOT" remove --foreground --no-hooks --force-delete .worktrees/reviews/feature-review
@@ -178,7 +199,6 @@ for tool in hwt pwt rwt; do
   if [[ "$tool" == hwt ]]; then
     assert_call herdr workspace close current-ws
   elif [[ "$tool" == rwt ]]; then
-    assert_call rex kill review-session
     assert_call rex kill current-session
   else
     assert_call paseo workspace archive review-ws
