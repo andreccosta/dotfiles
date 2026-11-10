@@ -11,7 +11,19 @@ require() {
 }
 command -v stow >/dev/null 2>&1 || { echo 'error: stow is required' >&2; exit 1; }
 TMP="$(mktemp -d)"
-trap 'rm -rf "$TMP"' EXIT
+cleanup() {
+  local status=$?
+  if [ "$status" -ne 0 ]; then
+    for log in "$TMP"/*.log; do
+      [ -f "$log" ] || continue
+      printf '\n--- %s ---\n' "$(basename "$log")" >&2
+      cat "$log" >&2
+    done
+  fi
+  rm -rf "$TMP"
+  exit "$status"
+}
+trap cleanup EXIT
 FIXTURE="$TMP/repo"
 mkdir -p "$FIXTURE/stow"
 cp "$REPO_DIR/dot" "$FIXTURE/dot"

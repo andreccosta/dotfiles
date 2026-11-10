@@ -177,6 +177,14 @@ reconcile_targets() {
       resolved="$(resolve_link_target "$target")"
       case "$resolved" in
         "$STOW_DIR"/*)
+          # Stow 2.3 ignores absolute links, even when they point into its
+          # own tree. Let restow recreate these managed links relatively.
+          case "$(readlink "$target")" in
+            /*)
+              echo "> rm $target"
+              rm -f "$target"
+              ;;
+          esac
           return 0
           ;;
         "$DOTFILES_DIR"/*)
