@@ -44,7 +44,11 @@ elif name == 'rex':
         raise AssertionError('rwt must not look up sessions by label')
     elif args[0] == 'new':
         print(json.dumps({'session_id': 'new-session'}))
-    elif args[0] == 'do':
+    elif args[:2] == ['block', 'call']:
+        print(json.dumps({'owner': os.environ.get('PANE_OWNER', '')}))
+    elif args[0] == 'do' or args[:1] == ['-C']:
+        if os.environ.get('SELECT_FAIL', '0') != '0':
+            print(os.environ.get('SELECT_ERROR', 'client target default is ambiguous: multiple app clients are connected'), file=sys.stderr)
         sys.exit(int(os.environ.get('SELECT_FAIL', '0')))
 PY
 chmod +x "$sandbox/bin/mock"
@@ -52,6 +56,7 @@ for name in wt herdr paseo rex; do ln -s mock "$sandbox/bin/$name"; done
 export PATH="$sandbox/bin:$PATH" HERDR_ENV=1 HERDR_WORKSPACE_ID=current-ws
 export HERDR_BIN_PATH="$sandbox/bin/herdr" PASEO_BIN_PATH="$sandbox/bin/paseo"
 export REX_BIN_PATH="$sandbox/bin/rex" REX_SESSION=current-session
+unset REX_CLIENT REX_BLOCK
 assert_call() {
   python3 - "$@" <<'PY'
 import json, os, sys
@@ -139,7 +144,28 @@ for tool in hwt pwt rwt; do
     SELECT_FAIL=1 bash "$script" review feature/review 2> "$sandbox/stderr"
     assert_call rex new "source checkout/review/feature/review" --cwd "$REVIEW" --json
     assert_call rex "do" session.select session_id=new-session
-    grep -q "enable Remote Control" "$sandbox/stderr"
+    grep -q 'session source checkout/review/feature/review is ready, but could not be focused' "$sandbox/stderr"
+    grep -q 'client target default is ambiguous: multiple app clients are connected' "$sandbox/stderr"
+    if grep -q 'enable Remote Control' "$sandbox/stderr"; then
+      printf 'FAIL: misdiagnosed focus failure as disabled Remote Control\n' >&2; exit 1
+    fi
+    # Other failures retain their original diagnostic too.
+    SELECT_FAIL=1 SELECT_ERROR='Remote Control is disabled' bash "$script" open feature/review 2> "$sandbox/stderr"
+    grep -q 'Remote Control is disabled' "$sandbox/stderr"
+    # The invoking pane's owner selects the app, even with multiple apps attached.
+    : > "$CALLS"
+    REX_BLOCK=current-block PANE_OWNER=owning-client bash "$script" open feature/review
+    assert_call rex block call -s current-session -b current-block size
+    assert_call rex -C owning-client "do" session.select session_id=new-session
+    # Pane ownership takes priority over an inherited client setting.
+    : > "$CALLS"
+    REX_CLIENT=other-client REX_BLOCK=current-block PANE_OWNER=owning-client bash "$script" open feature/review
+    assert_call rex block call -s current-session -b current-block size
+    assert_call rex -C owning-client "do" session.select session_id=new-session
+    # Missing ownership falls back to Rex's default client selection.
+    : > "$CALLS"
+    REX_BLOCK=current-block bash "$script" open feature/review
+    assert_call rex "do" session.select session_id=new-session
     # Explicit opens always create fresh sessions.
     : > "$CALLS"
     bash "$script" open feature/review

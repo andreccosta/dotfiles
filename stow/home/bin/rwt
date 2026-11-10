@@ -22,6 +22,7 @@ Each open creates a new session, initially labelled <repo>/<branch>
 (just <repo> for the primary checkout). Labels are never used for lookup.
 If a worktree already exists, create/review will suggest using open instead.
 Focusing needs Remote Control turned on in Rex.app (Settings > Rex Server).
+Focusing automatically targets the app that owns the invoking terminal pane.
 
 Examples:
   rwt create feature/foo
@@ -109,9 +110,19 @@ session_label() {
 }
 
 focus_session() {
-  local id="$1" label="$2"
-  "$REX_BIN" "do" session.select "session_id=$id" >/dev/null 2>&1 \
-    || printf 'rwt: session %s is ready; enable Remote Control in Rex.app to focus it automatically\n' "$label" >&2
+  local id="$1" label="$2" error client=""
+  local target=()
+  # A session may be attached to several apps; the invoking pane's owner is
+  # more specific than session membership.
+  if [[ -n "${REX_SESSION:-}" && -n "${REX_BLOCK:-}" ]]; then
+    client="$("$REX_BIN" block call -s "$REX_SESSION" -b "$REX_BLOCK" size 2>/dev/null | json_field owner)" || client=""
+  fi
+  [[ -z "$client" ]] || target=(-C "$client")
+  if error="$("$REX_BIN" ${target[@]+"${target[@]}"} "do" session.select "session_id=$id" 2>&1 >/dev/null)"; then
+    return 0
+  fi
+  printf 'rwt: session %s is ready, but could not be focused\n' "$label" >&2
+  [[ -z "$error" ]] || printf '%s\n' "$error" >&2
 }
 
 open_in_rex() {

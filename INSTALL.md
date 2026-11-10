@@ -126,7 +126,7 @@ Use `hm` to open the current checkout in Herdr, `hwt` to let Worktrunk manage a 
 
 `rwt` takes the same commands as `hwt` (`create`, `switch`/`open`, `review`, `remove`) but opens each worktree in a new Rex session instead of Herdr. Initial labels are `<repo>/<branch>` (just `<repo>` for the primary checkout), or `<repo>/review/[<pr>/]<branch>` for reviews; `review 123` and `review pr:123` include the PR number. Labels are display-only: agents can rename sessions freely. If `create` or `review` finds an existing worktree, it suggests `rwt open <path>` instead. `rwt remove` opens a new session for the primary checkout and closes only the invoking session when removing its own worktree; other sessions are left alone.
 
-To let `rwt` switch Rex.app to the session, turn on Remote Control in Rex.app's Settings under Rex Server. Without it, `rwt` still creates the session and tells you its label.
+To let `rwt` switch Rex.app to the session, turn on Remote Control in Rex.app's Settings under Rex Server. If focusing fails, `rwt` still creates the session and reports its label and the Rex error. Inside Rex, `rwt` automatically targets the app that owns the invoking terminal pane. If pane ownership is unavailable, Rex uses its normal client selection.
 
 ## Git signing & SSH on a new machine
 
