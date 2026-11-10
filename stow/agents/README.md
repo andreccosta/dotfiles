@@ -3,6 +3,41 @@
 Shared skills in `.agents/skills`, linked by Stow to `~/.agents/skills` for pi
 and other harnesses that support Agent Skills.
 
+## Global instructions
+
+Edit `.agents/AGENTS.md` for shared global instructions. `~/.agents/AGENTS.md`
+is canonical storage, **not** a universally auto-discovered instructions path.
+The harnesses configured here (via mise and Stow) load these symlinked entries:
+
+| Harness | Default global entry | Stow package |
+| --- | --- | --- |
+| Pi | `~/.pi/agent/AGENTS.md` | `pi` |
+| OpenCode | `~/.config/opencode/AGENTS.md` | `opencode` |
+| Codex | `~/.codex/AGENTS.md` | `agents` |
+| Claude Code | `~/.claude/CLAUDE.md` | `agents` |
+
+Run `./dot install agents pi opencode` (or the default install) to install all
+entries. Existing OpenCode instructions were moved intact to the canonical
+file. The tracked relative links resolve inside the Stow source tree; Stow
+links home entries to those sources, so both folded and unfolded layouts work
+without machine-specific absolute paths. Do not copy these relative links into
+another repository's worktrees; see the `worktrunk` skill for shared assets.
+
+Paths verified against Pi's installed `docs/configuration.md` and
+`docs/environment-variables.md`, Claude Code's installed user-memory help,
+[Codex's AGENTS.md guide](https://developers.openai.com/codex/guides/agents-md),
+and [OpenCode's rules documentation](https://opencode.ai/docs/rules/).
+Non-default config roots (e.g. `PI_CODING_AGENT_DIR`, `CODEX_HOME`, or
+`CLAUDE_CONFIG_DIR`) need corresponding links; override instruction files may
+take precedence. Review existing local instructions before installing: `dot`
+backs up conflicting real files rather than merging their contents.
+
+## Worktrunk
+
+The local [`worktrunk` skill](.agents/skills/worktrunk/SKILL.md) covers worktree
+lifecycle, hooks, shared assets, and agent session directories. Edit it directly;
+it is not managed by the upstream skills CLI or lockfile.
+
 ## Claude Code
 
 `./dot install agents` (also included in `./dot install`) links each shared skill

@@ -30,3 +30,4 @@ fi
 
 bash "$(dirname "$0")/tests/git-prune-local-branches.sh"
 bash "$(dirname "$0")/tests/claude-skills.sh"
+bash "$(dirname "$0")/tests/agent-instructions.sh"
