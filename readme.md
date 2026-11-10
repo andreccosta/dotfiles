@@ -54,11 +54,15 @@ $ ./dot macos
 
 ## Test
 
+Install the repo-local ShellCheck version and run the tests with mise:
+
 ```console
-$ ./test.sh
+$ mise install
+$ mise run test
 ```
 
-Tests run with shellcheck.
+Tests also require `file` and GNU Stow installed on the system. `./test.sh`
+still works directly when these dependencies and ShellCheck are on `PATH`.
 
 ## Rex
 

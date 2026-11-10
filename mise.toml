@@ -1,0 +1,6 @@
+[tools]
+shellcheck = "0.11.0"
+
+[tasks.test]
+description = "Lint shell scripts and run regression tests"
+run = "./test.sh"
