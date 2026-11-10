@@ -59,6 +59,8 @@ export function normalizeBaseUrl(value: string, transport: LbTransport = "respon
 
 /** Codex is the default; standard Responses remains an explicit fallback. */
 export default async function openAICodexLbExtension(pi: ExtensionAPI) {
+	if (process.env[API_KEY_ENV] === undefined) return;
+
 	const transport = resolveTransport();
 	const configuredBaseUrl =
 		process.env[BASE_URL_ENV] ?? process.env[LEGACY_BASE_URL_ENV] ?? DEFAULT_BASE_URL;

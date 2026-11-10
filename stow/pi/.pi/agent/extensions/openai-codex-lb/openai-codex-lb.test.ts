@@ -74,9 +74,10 @@ test("registers work with catalog models, URL precedence, and Codex-only idempot
 			assert.equal(config.baseUrl, "http://fallback.example:2455/v1");
 		} } as unknown as ExtensionAPI);
 		delete process.env.CODEX_LB_API_KEY;
-		await assert.rejects(extension({ registerProvider: () => {
-			assert.fail("must not register work without an environment key");
-		} } as unknown as ExtensionAPI), /CODEX_LB_API_KEY is required/);
+		await extension({
+			registerProvider: () => assert.fail("must not register work without an environment key"),
+			on: () => assert.fail("must not register handlers without an environment key"),
+		} as unknown as ExtensionAPI);
 	} finally {
 		for (const name of names) {
 			if (saved[name] === undefined) delete process.env[name];
