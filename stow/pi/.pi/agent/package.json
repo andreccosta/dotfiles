@@ -10,17 +10,13 @@
   "scripts": {
     "test:copy-code-block": "node --experimental-strip-types --test tests/copy-code-block.test.ts",
     "test:subagent": "node --experimental-strip-types --test tests/subagent.test.ts tests/subagent-shared.test.ts",
-    "test:codex-lb": "node --experimental-strip-types --test extensions/openai-codex-lb/*.test.ts tests/openai-fast-aliases.test.ts",
+    "test:codex-lb": "node --experimental-strip-types --test extensions/openai-codex-lb/*.test.ts",
     "test:codex-lb:live": "CODEX_LB_LIVE_TEST=1 node --experimental-strip-types --test extensions/openai-codex-lb/live.test.ts"
   },
-  "dependencies": {
-    "@earendil-works/pi-ai": "*"
-  },
   "devDependencies": {
-    "@earendil-works/pi-coding-agent": "1.5.0",
-    "@earendil-works/pi-tui": "1.5.0",
-    "@types/node": "^22.20.5",
-    "typebox": "1.3.27",
-    "typescript": "5.9.3"
+    "@earendil-works/pi-ai": "1.5.1",
+    "@earendil-works/pi-coding-agent": "1.5.1",
+    "@earendil-works/pi-tui": "1.5.1",
+    "typebox": "1.3.27"
   }
 }

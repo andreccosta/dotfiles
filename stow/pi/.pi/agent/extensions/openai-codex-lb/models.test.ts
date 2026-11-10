@@ -9,9 +9,6 @@ import { loadOpenAICodexModels, prepareCodexModels } from "./models.ts";
 
 const configPath = fileURLToPath(new URL("../../models.json", import.meta.url));
 const config = JSON.parse(readFileSync(configPath, "utf8"));
-const fastIds = [
-	"gpt-5.5", "gpt-5.6-sol", "gpt-6.1-terra", "gpt-6.1-sol", "gpt-6-sol", "gpt-6-astra",
-];
 
 function fixture(id = "gpt-future"): Model<"openai-codex-responses"> {
 	return {
@@ -65,19 +62,18 @@ test("future catalogs need neither Luna nor a reserve alias, and retain rich met
 	const { api: _api, provider: _provider, baseUrl: _baseUrl, compat: _compat, ...metadata } = upstream;
 	assert.deepEqual(result, metadata);
 	assert.equal(models.some((model) => model.id === "gpt-reserve"), false);
-	assert.equal(models.some((model) => model.id === "gpt-5.6-sol-fast"), false);
 	assert.notEqual(result.cost, upstream.cost);
 	assert.notEqual(result.cost.tiers, upstream.cost.tiers);
 	assert.notEqual(result.inputLimits, upstream.inputLimits);
 	assert.notEqual(result.headers, upstream.headers);
 });
 
-test("does not inherit unverified upstream wire capabilities, including on fast aliases", () => {
+test("does not inherit unverified upstream wire capabilities", () => {
 	const upstream = fixture("gpt-6-sol");
 	const models = prepareCodexModels({ [upstream.id]: upstream });
 	assert.ok(upstream.compat?.supportsAdditionalTools);
 	assert.ok(upstream.compat?.supportsMidConvoSystemMessages);
-	assert.ok(models.some((model) => model.id === "gpt-6-sol-fast"));
+	assert.deepEqual(models.map((model) => model.id), [upstream.id, "gpt-5.5"]);
 	for (const model of models) assert.equal("compat" in model, false);
 	assert.equal(upstream.compat?.supportsAdditionalTools, true, "does not mutate upstream capabilities");
 });
@@ -88,46 +84,24 @@ test("keeps GPT-5.5 as a local fallback but prefers upstream when present", () =
 	const models = prepareCodexModels({ [upstream.id]: upstream });
 	assert.equal(models.filter((model) => model.id === upstream.id).length, 1);
 	assert.equal(models.find((model) => model.id === upstream.id)?.contextWindow, 500000);
-	assert.equal(models.find((model) => model.id === "gpt-5.5-fast")?.contextWindow, 500000);
 });
 
-test("preserves all existing fast aliases as independent priority metadata copies", () => {
-	const models = loadOpenAICodexModels();
-	for (const id of fastIds) {
-		const base = models.find((model) => model.id === id)!;
-		const fast = models.find((model) => model.id === `${id}-fast`)!;
-		assert.ok(base);
-		assert.ok(fast);
-		assert.equal(fast.name, `${base.name} (Fast)`);
-		assert.equal(fast.contextWindow, base.contextWindow);
-		assert.deepEqual(fast.cost, base.cost);
-		assert.notEqual(fast.cost, base.cost);
-		assert.deepEqual(fast.samplingParams, { ...base.samplingParams, model: id, service_tier: "priority" });
-	}
-	const first = models.find((model) => model.id === "gpt-5.5")!;
+test("model metadata copies are independent across loads", () => {
+	const first = loadOpenAICodexModels().find((model) => model.id === "gpt-5.5")!;
 	first.cost.input = 999;
 	assert.notEqual(loadOpenAICodexModels().find((model) => model.id === first.id)?.cost.input, 999);
-});
-
-test("upstream fast IDs are not duplicated or overwritten", () => {
-	const base = fixture("gpt-6-sol");
-	const fast = fixture("gpt-6-sol-fast");
-	fast.name = "Upstream Fast";
-	const models = prepareCodexModels({ [base.id]: base, [fast.id]: fast });
-	assert.equal(models.filter((model) => model.id === fast.id).length, 1);
-	assert.equal(models.find((model) => model.id === fast.id)?.name, fast.name);
 });
 
 test("rejects an empty catalog rather than silently registering only fallback models", () => {
 	assert.throws(() => prepareCodexModels({}), /catalog is empty/);
 });
 
-test("models.json leaves work metadata and aliases to the extension", () => {
+test("models.json leaves work metadata to the extension", () => {
 	assert.equal(config.providers.work, undefined);
 });
 
 for (const api of ["openai-responses", "work-codex-responses"]) {
-	test(`Pi preserves upstream metadata and generated aliases for ${api}`, async () => {
+	test(`Pi preserves upstream metadata for ${api}`, async () => {
 		const runtime = await ModelRuntime.create({
 			modelsPath: configPath,
 			modelsStore: new InMemoryModelsStore(),

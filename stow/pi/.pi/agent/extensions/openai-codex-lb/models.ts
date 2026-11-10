@@ -5,15 +5,6 @@ import { getBuiltinModels } from "@earendil-works/pi-ai/providers/all";
 export type CodexLbModel = Omit<Model<"openai-codex-responses">, "api" | "provider" | "baseUrl" | "compat">;
 type CodexCatalog = Readonly<Record<string, Model<"openai-codex-responses">>>;
 
-const FAST_MODEL_IDS = [
-	"gpt-5.5",
-	"gpt-5.6-sol",
-	"gpt-6.1-terra",
-	"gpt-6.1-sol",
-	"gpt-6-sol",
-	"gpt-6-astra",
-] as const;
-
 // codex-lb still exposes this local model, but Pi's legacy Codex catalog no
 // longer includes it. Prefer upstream metadata automatically if it reappears.
 const GPT_55_FALLBACK: CodexLbModel = {
@@ -44,16 +35,6 @@ export function prepareCodexModels(catalog: CodexCatalog): CodexLbModel[] {
 		models.push(structuredClone(GPT_55_FALLBACK));
 	}
 
-	for (const id of FAST_MODEL_IDS) {
-		const base = models.find((model) => model.id === id);
-		if (!base || models.some((model) => model.id === `${id}-fast`)) continue;
-		models.push({
-			...structuredClone(base),
-			id: `${id}-fast`,
-			name: `${base.name} (Fast)`,
-			samplingParams: { ...base.samplingParams, model: id, service_tier: "priority" },
-		});
-	}
 	return models;
 }
 

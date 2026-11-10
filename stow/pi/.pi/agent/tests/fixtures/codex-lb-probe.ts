@@ -8,16 +8,8 @@ export default function (pi: ExtensionAPI) {
 	let expected = randomBytes(12).toString("hex");
 	let calls = 0;
 	let payloads = 0;
-	let priorityPayloads = 0;
-	pi.on("before_provider_request", (event, ctx) => {
+	pi.on("before_provider_request", () => {
 		payloads += 1;
-		const payload = event.payload as Record<string, unknown>;
-		if (ctx.model?.id.endsWith("-fast")) {
-			if (payload.model !== ctx.model.id.slice(0, -5) || payload.service_tier !== "priority") {
-				throw new Error("Fast alias lost its underlying model or priority tier");
-			}
-			priorityPayloads += 1;
-		}
 	});
 	pi.on("before_agent_start", (event) => {
 		event.systemPromptOptions.forceSystemPrompt = `This is a diagnostic. Call diagnostic_echo with token ${expected}. After its first result, call diagnostic_echo again with the returned token. After its second result, reply with exactly the returned token and nothing else. Never invent a token. No other tools are needed.`;
@@ -39,6 +31,6 @@ export default function (pi: ExtensionAPI) {
 		const stats = process.env.CODEX_LB_TRANSPORT === "codex"
 			? (await loadOpenAICodexLbAdapter()).getOpenAICodexWebSocketDebugStats(ctx.sessionManager.getSessionId())
 			: undefined;
-		console.error(`CODEX_LB_PROBE ${JSON.stringify({ calls, expected, payloads, priorityPayloads, stats })}`);
+		console.error(`CODEX_LB_PROBE ${JSON.stringify({ calls, expected, payloads, stats })}`);
 	});
 }

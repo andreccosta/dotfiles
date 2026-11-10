@@ -1,7 +1,7 @@
 # Work Codex LB
 
-Registers `work` with the Codex adapter, upstream model metadata, and priority fast
-aliases. Requires a filesystem copy of `@earendil-works/pi-ai` compatible with Pi.
+Registers `work` with the Codex adapter and upstream model metadata.
+Requires a filesystem copy of `@earendil-works/pi-ai` compatible with Pi.
 
 ## Configuration
 

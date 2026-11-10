@@ -11,14 +11,13 @@ const enabled = process.env.CODEX_LB_LIVE_TEST === "1";
 
 // Real, billable requests; only the harmless diagnostic tool is exposed to Pi.
 // Both nonce-bearing instructions and two successive tool results must survive.
-for (const [transport, wire, fast, reconnect] of [
-	["responses", "sse", false, false],
-	["codex", "sse", false, false],
-	["codex", "websocket-cached", false, false],
-	["codex", "websocket-cached", true, false],
-	["codex", "websocket-cached", false, true],
+for (const [transport, wire, reconnect] of [
+	["responses", "sse", false],
+	["codex", "sse", false],
+	["codex", "websocket-cached", false],
+	["codex", "websocket-cached", true],
 ] as const) {
-	test(`live Pi ${transport}/${wire}${fast ? " fast alias" : ""}${reconnect ? " reconnect" : ""}: instructions and two tool turns`, {
+	test(`live Pi ${transport}/${wire}${reconnect ? " reconnect" : ""}: instructions and two tool turns`, {
 		skip: !enabled, timeout: 150000,
 	}, async () => {
 		assert.ok(process.env.CODEX_LB_API_KEY, "Set CODEX_LB_API_KEY for the live test");
@@ -26,11 +25,9 @@ for (const [transport, wire, fast, reconnect] of [
 		try {
 			writeFileSync(join(root, "settings.json"), JSON.stringify({ transport: wire, packages: [], enableInstallTelemetry: false }));
 			writeFileSync(join(root, "models.json"), readFileSync(join(agentDir, "models.json")));
-			const baseModel = process.env.CODEX_LB_TEST_MODEL ?? "gpt-6.1-sol";
-			const model = fast ? `${baseModel}-fast` : baseModel;
+			const model = process.env.CODEX_LB_TEST_MODEL ?? "gpt-6.1-sol";
 			const args = ["--no-extensions", "--no-mcp", "--no-skills", "--no-prompt-templates", "--no-approve", "--no-session", "--no-builtin-tools",
 				"-e", join(agentDir, "extensions/openai-codex-lb/index.ts"),
-				"-e", join(agentDir, "extensions/openai-fast-aliases.ts"),
 				"-e", join(agentDir, "tests/fixtures/codex-lb-probe.ts"),
 				"--provider", "work", "--model", model, "--thinking", "low", "-p", "Run the diagnostic now."];
 			const result = await new Promise<{ code: number | null; stdout: string; stderr: string }>((resolveResult, reject) => {
@@ -53,7 +50,6 @@ for (const [transport, wire, fast, reconnect] of [
 			const probe = JSON.parse(marker.slice("CODEX_LB_PROBE ".length));
 			assert.equal(probe.calls, 2, result.stdout);
 			assert.equal(probe.payloads, 3);
-			assert.equal(probe.priorityPayloads, fast ? 3 : 0);
 			assert.equal(result.stdout.trim(), probe.expected, result.stdout);
 			if (wire === "websocket-cached") {
 				assert.ok(probe.stats?.connectionsCreated >= 1, JSON.stringify(probe.stats));
@@ -62,7 +58,7 @@ for (const [transport, wire, fast, reconnect] of [
 				assert.ok(probe.stats?.deltaRequests >= 1, JSON.stringify(probe.stats));
 				if (reconnect) assert.equal(probe.stats?.connectionsCreated, 2, JSON.stringify(probe.stats));
 			}
-			console.log(`${transport}/${wire}${fast ? " fast" : ""}: ${JSON.stringify(probe.stats ?? { toolCalls: probe.calls })}`);
+			console.log(`${transport}/${wire}: ${JSON.stringify(probe.stats ?? { toolCalls: probe.calls })}`);
 		} finally {
 			rmSync(root, { recursive: true, force: true });
 		}
