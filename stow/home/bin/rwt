@@ -14,7 +14,7 @@ Commands:
   review <pr|branch|path>  Open a review worktree (--no-hooks) under
                            .worktrees/reviews/; label: <repo>/review/[<pr>/]<branch>
                            A bare number means pr:<n>
-  remove [branch-or-path]  Remove a worktree and open the primary checkout
+  remove [branch-or-path]  Remove a worktree without opening a session
                            Close the invoking session if removing its worktree
                            Review paths use --no-hooks --force-delete
 
@@ -260,7 +260,6 @@ cmd_remove() {
     wt -C "$cwd" remove "${extra[@]}"
   fi
 
-  open_in_rex "$source" "$source"
   # Only the invoking session has a known ID; never look up sessions by label.
   if [[ -n "${REX_SESSION:-}" && "$removed_root" == "$cwd" && "$removed_root" != "$source" ]]; then
     "$REX_BIN" kill "$REX_SESSION" >/dev/null || true

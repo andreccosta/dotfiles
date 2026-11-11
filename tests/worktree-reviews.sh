@@ -64,6 +64,13 @@ calls = [json.loads(line) for line in open(os.environ['CALLS'])]
 assert sys.argv[1:] in calls, (sys.argv[1:], calls)
 PY
 }
+assert_no_rex_open() {
+  python3 - <<'PY'
+import json, os
+calls = [json.loads(line) for line in open(os.environ['CALLS'])]
+assert not any(c[0] == 'rex' and c[1] != 'kill' for c in calls), calls
+PY
+}
 assert_no_ui() {
   python3 - <<'PY'
 import json, os
@@ -106,8 +113,7 @@ for tool in hwt pwt rwt; do
         exit 1
       fi
     elif [[ "$tool" == rwt ]]; then
-      assert_call rex new "source checkout" --cwd "$ROOT" --json
-      assert_call rex "do" session.select session_id=new-session
+      assert_no_ui
       if grep -q '"kill", "current-session"' "$CALLS"; then
         printf 'FAIL: killed the invoking session when removing another checkout\n' >&2
         exit 1
@@ -213,10 +219,12 @@ for tool in hwt pwt rwt; do
   bash "$script" remove missing 2> "$sandbox/stderr"
   grep -q "could not resolve missing" "$sandbox/stderr"
   assert_call wt -C "$ROOT" remove --foreground missing
+  [[ "$tool" != rwt ]] || assert_no_ui
   for target in feature/normal "$NORMAL"; do
     : > "$CALLS"
     bash "$script" remove "$target"
     assert_call wt -C "$ROOT" remove --foreground "$target"
+    [[ "$tool" != rwt ]] || assert_no_ui
   done
   cd "$REVIEW"
   : > "$CALLS"
@@ -226,6 +234,7 @@ for tool in hwt pwt rwt; do
     assert_call herdr workspace close current-ws
   elif [[ "$tool" == rwt ]]; then
     assert_call rex kill current-session
+    assert_no_rex_open
   else
     assert_call paseo workspace archive review-ws
   fi
@@ -238,6 +247,14 @@ for tool in hwt pwt rwt; do
   : > "$CALLS"
   bash "$script" remove
   assert_call wt -C "$NORMAL" remove --foreground
+  if [[ "$tool" == rwt ]]; then
+    assert_call rex kill current-session
+    assert_no_rex_open
+    # Outside a Rex session, removal must not invoke Rex at all.
+    : > "$CALLS"
+    (unset REX_SESSION; bash "$script" remove)
+    assert_no_ui
+  fi
   cd "$ROOT"
   : > "$CALLS"
   if bash "$script" review >/dev/null 2>&1; then exit 1; fi
