@@ -111,14 +111,14 @@ session_label() {
 
 focus_session() {
   local id="$1" label="$2" error client=""
-  local target=()
+  local client_args=()
   # A session may be attached to several apps; the invoking pane's owner is
   # more specific than session membership.
   if [[ -n "${REX_SESSION:-}" && -n "${REX_BLOCK:-}" ]]; then
     client="$("$REX_BIN" block call -s "$REX_SESSION" -b "$REX_BLOCK" size 2>/dev/null | json_field owner)" || client=""
   fi
-  [[ -z "$client" ]] || target=(-C "$client")
-  if error="$("$REX_BIN" ${target[@]+"${target[@]}"} "do" session.select "session_id=$id" 2>&1 >/dev/null)"; then
+  [[ -z "$client" ]] || client_args=(-C "$client")
+  if error="$("$REX_BIN" ${client_args[@]+"${client_args[@]}"} "do" session.select "session_id=$id" 2>&1 >/dev/null)"; then
     return 0
   fi
   printf 'rwt: session %s is ready, but could not be focused\n' "$label" >&2
