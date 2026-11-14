@@ -49,6 +49,25 @@ Optional spawn flags:
 An unrecognized project trust context is declined rather than leaving the child
 blocked on a trust prompt. Stored project trust decisions are respected.
 
+## Pings: keep working while children run
+
+After spawning, keep working or talking with the user; do not block on `wait`.
+When a child finishes a turn, the parent receives a `subagent-events`
+message such as `Subagent auth review (abc123) finished a turn [entry e1f2]:`
+followed by an excerpt of its response (capped at about 4KB; the full response is
+in the transcript). Failed, aborted, and crashed children are reported the same way.
+Pings are held while you are busy and start a turn once you are idle.
+
+"Finished a turn" is not verified task success: read the excerpt, and treat a
+turn ending in a question as a question to answer. React by sending the child a
+follow-up, redirecting it, or stopping it. To course-correct a busy child, use
+`send`; it steers the current turn. Earlier pings stay valid after a redirect.
+
+Use `notify: false` on spawn, then `wait` (or codemode `Promise.all`/`Promise.race`
+over several waits), only when you need the result before you can continue.
+Responses returned by `wait` are not pinged again. A ping delivered before `wait`
+was called may repeat its result, so `notify: false` is the reliable synchronous mode.
+
 ## Inspect, communicate, and wait
 
 ```json

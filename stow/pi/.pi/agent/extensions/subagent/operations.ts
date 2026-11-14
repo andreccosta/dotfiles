@@ -1,13 +1,13 @@
 // Tool-facing operations adapted from gmcabrita/dotfiles' subagent CLI.
 import { randomBytes } from "node:crypto";
-import { existsSync, mkdirSync, readdirSync, renameSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, renameSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { setTimeout as delay } from "node:timers/promises";
 import {
 	assistantText, childLiveness, childLivenessAsync, closeRunWindow, effectiveRunStateAsync,
-	existingParentGroup, getRunsDir, hasStoredTrustDecision, inboxDir, isValidGroupLabel,
-	isValidRunName, launchRun, listRuns, readLatestAssistant, readMetadata, removeRunDir,
-	renameRexWindow, updateMetadata, waitForRunShutdown, writeMetadata,
+	existingParentGroup, getRunsDir, hasInboxMessages, hasStoredTrustDecision, inboxDir, isValidGroupLabel,
+	isValidRunName, launchRun, listRuns, readLatestAssistantEntry, readMetadata, removeEventsForEntry, removeRunDir,
+	renameRexWindow, stoppingRuns, updateMetadata, waitForRunShutdown, writeMetadata,
 	type RunMetadata,
 } from "./shared.ts";
 
@@ -27,6 +27,7 @@ export interface SubagentInput {
 	noSkills?: boolean;
 	noPromptTemplates?: boolean;
 	noContextFiles?: boolean;
+	notify?: boolean;
 	message?: string;
 	followUp?: boolean;
 	timeoutSeconds?: number;
@@ -103,7 +104,7 @@ function spawn(input: SubagentInput, parent: ParentContext): RunMetadata {
 	const run: RunMetadata = {
 		version: 2, handle, name, group: existingParentGroup(parent.sessionId) ?? group,
 		parentSessionId: parent.sessionId, parentSessionFile: parent.sessionFile,
-		runDir, cwd, provider, model, thinking, launchArgs,
+		runDir, cwd, provider, model, thinking, launchArgs, notify: input.notify ?? true,
 		state: "starting", hasStarted: false, createdAt: now, updatedAt: now,
 	};
 	writeMetadata(run);
@@ -153,11 +154,13 @@ export async function runSubagent(input: SubagentInput, parent: ParentContext, s
 				signal?.throwIfAborted();
 				run = getRun(input.handle, parent);
 				const state = await effectiveRunStateAsync(run, signal);
-				const pending = existsSync(inboxDir(run.runDir)) && readdirSync(inboxDir(run.runDir)).some((file) => file.endsWith(".json"));
+				const pending = hasInboxMessages(run.runDir);
 				if (state === "error" || state === "exited") throw new Error(run.error ?? `${run.handle} ${state} before finishing`);
 				if (run.hasStarted && state === "idle" && !pending && run.sessionFile) {
-					const message = readLatestAssistant(run.sessionFile);
-					if (!message) throw new Error(`${run.handle} finished without an assistant response`);
+					const latest = readLatestAssistantEntry(run.sessionFile);
+					if (!latest) throw new Error(`${run.handle} finished without an assistant response`);
+					removeEventsForEntry(parent.sessionId, run.handle, latest.id);
+					const message = latest.message;
 					return result([{ ...run, state }], assistantText(message), message.stopReason === "error" || message.stopReason === "aborted");
 				}
 				await delay(Math.min(500, Math.max(1, deadline - Date.now())), undefined, { signal });
@@ -165,11 +168,17 @@ export async function runSubagent(input: SubagentInput, parent: ParentContext, s
 			throw new Error(`Timed out after ${timeout}s waiting for ${run.handle}`);
 		}
 		case "stop": {
-			const wasRunning = childLiveness(run.terminal) === "running";
-			if (!closeRunWindow(run)) throw new Error("Could not close Rex window; run kept");
-			if (wasRunning) await waitForRunShutdown(run.runDir);
-			if (await childLivenessAsync(run.terminal) !== "exited") throw new Error("Could not confirm shutdown; run kept");
-			removeRunDir(run.runDir);
+			// A busy child killed by stop is not a crash.
+			stoppingRuns.add(run.handle);
+			try {
+				const wasRunning = childLiveness(run.terminal) === "running";
+				if (!closeRunWindow(run)) throw new Error("Could not close Rex window; run kept");
+				if (wasRunning) await waitForRunShutdown(run.runDir);
+				if (await childLivenessAsync(run.terminal) !== "exited") throw new Error("Could not confirm shutdown; run kept");
+				removeRunDir(run.runDir);
+			} finally {
+				stoppingRuns.delete(run.handle);
+			}
 			return result([{ ...run, state: "exited" }], `Stopped ${run.handle}. Transcript kept: ${run.sessionFile ?? "(none)"}`);
 		}
 		default: throw new Error(`Unknown action: ${input.action}`);

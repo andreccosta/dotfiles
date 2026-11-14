@@ -5,6 +5,8 @@
 // The child's Pi transcript lives in ~/.pi/agent/subagents/sessions/ and is kept.
 // The child Pi process runs in a Rex terminal block; Rex is the only process supervisor.
 // All children of one parent Pi session share a Rex session, one window (tab) per child.
+// Turn events from children to their parent live in ~/.pi/agent/subagents/events/<parentSessionId>/
+// and survive `subagent stop`.
 
 import { execFile, spawnSync } from "node:child_process";
 import {
@@ -56,6 +58,8 @@ export interface RunMetadata {
 	thinking: string;
 	/** Extra pi CLI flags (tools, isolation, trust) reused when the run is relaunched. */
 	launchArgs?: string[];
+	/** False when the parent asked not to be pinged on turn completion. Absent means true. */
+	notify?: boolean;
 	/** Set by the parent when it stops the child on quit or session switch; the child is relaunched on resume. */
 	suspended?: boolean;
 	state: RunState;
@@ -108,6 +112,11 @@ export function metadataPath(runDir: string): string {
 
 export function inboxDir(runDir: string): string {
 	return join(runDir, "inbox");
+}
+
+export function hasInboxMessages(runDir: string): boolean {
+	const queueDir = inboxDir(runDir);
+	return existsSync(queueDir) && readdirSync(queueDir).some((file) => file.endsWith(".json"));
 }
 
 export function isValidRunName(value: unknown): value is string {
@@ -173,6 +182,7 @@ export function readMetadata(runDir: string): RunMetadata | undefined {
 			(metadata.group !== undefined && !isValidGroupLabel(metadata.group)) ||
 			(metadata.terminal !== undefined && !isRexTerminal(metadata.terminal)) ||
 			(metadata.sessionFile !== undefined && typeof metadata.sessionFile !== "string") ||
+			(metadata.notify !== undefined && typeof metadata.notify !== "boolean") ||
 			typeof metadata.runDir !== "string"
 		) {
 			return undefined;
@@ -606,7 +616,25 @@ function isAssistantEntry(entry: SessionEntry): entry is AssistantEntry {
 	return (entry.message as Record<string, unknown>).role === "assistant";
 }
 
+export interface LatestAssistant {
+	id: string;
+	message: AssistantMessage;
+}
+
+/** Latest assistant entry of an active branch, in order from root to leaf. */
+export function latestAssistantEntry(branch: readonly unknown[]): LatestAssistant | undefined {
+	for (let index = branch.length - 1; index >= 0; index--) {
+		const entry = branch[index];
+		if (isSessionEntry(entry) && isAssistantEntry(entry)) return { id: entry.id, message: entry.message };
+	}
+	return undefined;
+}
+
 export function readLatestAssistant(sessionFile: string): AssistantMessage | undefined {
+	return readLatestAssistantEntry(sessionFile)?.message;
+}
+
+export function readLatestAssistantEntry(sessionFile: string): LatestAssistant | undefined {
 	let content: string;
 	try {
 		content = readFileSync(sessionFile, "utf8");
@@ -623,12 +651,7 @@ export function readLatestAssistant(sessionFile: string): AssistantMessage | und
 			// The final JSONL record may still be in the process of being appended.
 		}
 	}
-	const branch = activeBranch(entries);
-	for (let index = branch.length - 1; index >= 0; index--) {
-		const entry = branch[index];
-		if (isAssistantEntry(entry)) return entry.message;
-	}
-	return undefined;
+	return latestAssistantEntry(activeBranch(entries));
 }
 
 export function assistantText(message: AssistantMessage): string {
@@ -640,4 +663,181 @@ export function assistantText(message: AssistantMessage): string {
 		if (block.type === "text" && typeof block.text === "string") parts.push(block.text);
 	}
 	return parts.join("\n").trim() || message.errorMessage || "(no response text)";
+}
+
+// --- Turn events ---------------------------------------------------------------
+
+export type SubagentEventKind = "completed" | "failed" | "aborted" | "crashed";
+
+/** Written by a child when it finishes a turn, or by the parent when a busy child dies. */
+export interface SubagentEvent {
+	handle: string;
+	name?: string;
+	kind: SubagentEventKind;
+	/** Assistant entry ID; absent when the turn produced no new response. */
+	entryId?: string;
+	/** Assistant text, capped at EVENT_EXCERPT_LIMIT. */
+	excerpt?: string;
+	sessionFile?: string;
+}
+
+export interface PendingEvent {
+	path: string;
+	event: SubagentEvent;
+}
+
+export const EVENT_EXCERPT_LIMIT = 4096;
+export const EVENT_BATCH_LIMIT = 8192;
+
+/** Per parent and outside the run directories, so events survive `subagent stop`. */
+export function eventsDir(parentSessionId: string): string {
+	return join(getAgentDir(), "subagents", "events", parentSessionId);
+}
+
+function isSubagentEvent(value: unknown): value is SubagentEvent {
+	if (typeof value !== "object" || value === null) return false;
+	const event = value as Record<string, unknown>;
+	return (
+		typeof event.handle === "string" &&
+		(event.name === undefined || typeof event.name === "string") &&
+		(event.kind === "completed" || event.kind === "failed" || event.kind === "aborted" || event.kind === "crashed") &&
+		(event.entryId === undefined || typeof event.entryId === "string") &&
+		(event.excerpt === undefined || typeof event.excerpt === "string") &&
+		(event.sessionFile === undefined || typeof event.sessionFile === "string")
+	);
+}
+
+/** Orders events written by one process within the same millisecond. */
+let eventSequence = 0;
+
+export function writeEvent(parentSessionId: string, event: SubagentEvent): void {
+	const dir = eventsDir(parentSessionId);
+	const sequence = String(eventSequence++ % 1e6).padStart(6, "0");
+	const target = join(dir, `${Date.now()}-${sequence}-${Math.random().toString(36).slice(2, 10)}.json`);
+	const temporary = `${target}.tmp`;
+	// Retry once if the parent removed the empty directory between mkdir and write.
+	for (let attempt = 0; ; attempt++) {
+		mkdirSync(dir, { recursive: true, mode: 0o700 });
+		try {
+			writeFileSync(temporary, `${JSON.stringify(event)}\n`, { encoding: "utf8", mode: 0o600 });
+			renameSync(temporary, target);
+			return;
+		} catch (error) {
+			if (attempt > 0 || (error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+		}
+	}
+}
+
+/** Pending events, oldest first. Unreadable event files are removed. */
+export function readPendingEvents(parentSessionId: string): PendingEvent[] {
+	const dir = eventsDir(parentSessionId);
+	if (!existsSync(dir)) return [];
+	const pending: PendingEvent[] = [];
+	for (const name of readdirSync(dir).filter((entry) => entry.endsWith(".json")).sort()) {
+		const path = join(dir, name);
+		try {
+			const value: unknown = JSON.parse(readFileSync(path, "utf8"));
+			if (!isSubagentEvent(value)) throw new Error("Invalid subagent event");
+			pending.push({ path, event: value });
+		} catch {
+			rmSync(path, { force: true });
+		}
+	}
+	return pending;
+}
+
+/** Remove events, then the parent's events directory once it is empty. */
+export function removeEvents(parentSessionId: string, events: PendingEvent[]): void {
+	for (const { path } of events) rmSync(path, { force: true });
+	try {
+		rmdirSync(eventsDir(parentSessionId));
+	} catch {
+		// Not empty (for example, a child just wrote an event) or already gone.
+	}
+}
+
+/**
+ * Drop the pending event of a response that `wait` returned. The child writes the
+ * event before reporting idle, so it is on disk by the time `wait` returns.
+ */
+export function removeEventsForEntry(parentSessionId: string, handle: string, entryId: string): void {
+	removeEvents(
+		parentSessionId,
+		readPendingEvents(parentSessionId).filter(({ event }) => event.handle === handle && event.entryId === entryId),
+	);
+}
+
+/** Handles being stopped by `subagent stop` in this process; their exit is not a crash. */
+export const stoppingRuns = new Set<string>();
+
+/** Pure: whether a run's child died mid-turn and the parent wants to hear about it. */
+export function isCrashed(run: RunMetadata, liveness: ChildLiveness): boolean {
+	return (
+		run.notify !== false &&
+		!run.suspended &&
+		!stoppingRuns.has(run.handle) &&
+		run.terminal !== undefined &&
+		(run.state === "busy" || run.state === "starting") &&
+		liveness === "exited"
+	);
+}
+
+/**
+ * Pure: the event for a settled child turn. `isNew` is false when `latest` predates
+ * the turn or was already reported, so a stale response is not sent again.
+ */
+export function turnEvent(
+	run: RunMetadata,
+	latest: LatestAssistant | undefined,
+	isNew: boolean,
+	aborted: boolean,
+	sessionFile: string | undefined,
+): SubagentEvent {
+	const response = isNew ? latest : undefined;
+	const stopReason = response?.message.stopReason;
+	const kind: SubagentEventKind =
+		aborted || stopReason === "aborted" ? "aborted" : stopReason === "error" || !response ? "failed" : "completed";
+	const event: SubagentEvent = { handle: run.handle, name: run.name, kind, sessionFile };
+	if (!response) return event;
+	const text = assistantText(response.message);
+	const excerpt =
+		text.length <= EVENT_EXCERPT_LIMIT
+			? text
+			: `${text.slice(0, EVENT_EXCERPT_LIMIT)}\n[Truncated. Full response is in ${sessionFile ?? "the child's transcript"}.]`;
+	return { ...event, entryId: response.id, excerpt };
+}
+
+export function formatEvent(event: SubagentEvent): string {
+	const who = `Subagent ${event.name ? `${event.name} (${event.handle})` : event.handle}`;
+	const entry = event.entryId ? ` [entry ${event.entryId}]` : "";
+	const header =
+		event.kind === "completed"
+			? `${who} finished a turn${entry}`
+			: event.kind === "failed"
+				? `${who} turn failed${entry}`
+				: event.kind === "aborted"
+					? `${who} turn was aborted${entry || " before a new response"}`
+					: `${who} exited while busy. Transcript: ${event.sessionFile ?? "(none)"}`;
+	return event.excerpt ? `${header}:\n${event.excerpt}` : `${header}.`;
+}
+
+/**
+ * Select pending events for one parent message. Events past `budget` characters
+ * stay on disk for the next batch, in order.
+ */
+export function collectEventBatch(
+	parentSessionId: string,
+	budget = EVENT_BATCH_LIMIT,
+): { content: string; events: PendingEvent[] } {
+	const parts: string[] = [];
+	const events: PendingEvent[] = [];
+	let size = 0;
+	for (const pending of readPendingEvents(parentSessionId)) {
+		const part = formatEvent(pending.event);
+		if (events.length > 0 && size + part.length > budget) break;
+		parts.push(part);
+		events.push(pending);
+		size += part.length + 2;
+	}
+	return { content: parts.join("\n\n"), events };
 }

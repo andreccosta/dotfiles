@@ -6,7 +6,7 @@ export function registerSubagentTool(pi: ExtensionAPI): void {
 	pi.registerTool({
 		name: "subagent",
 		label: "Subagent",
-		description: "Manage observable Pi child agents in Rex tabs: spawn, status, rename, send, wait, stop, or list. Inherits the parent model and reasoning level by default. Wait returns the latest assistant response (limited to 50KB/2000 lines); cancellation stops waiting, not the child. Stop children when finished.",
+		description: "Manage observable Pi child agents in Rex tabs: spawn, status, rename, send, wait, stop, or list. Inherits the parent model and reasoning level by default. Children ping the parent with a message, once it is idle, when they finish a turn (unless spawned with notify: false), so keep working instead of blocking on wait. Wait returns the latest assistant response (limited to 50KB/2000 lines); cancellation stops waiting, not the child. Stop children when finished.",
 		promptSnippet: "Spawn and manage Pi subagents in Rex tabs for independent work",
 		promptGuidelines: ["Use the subagent tool for Pi child agents; read its bundled skill for lifecycle and isolation guidance. Stop subagents when no longer needed."],
 		parameters: Type.Object({
@@ -25,6 +25,7 @@ export function registerSubagentTool(pi: ExtensionAPI): void {
 			noSkills: Type.Optional(Type.Boolean()),
 			noPromptTemplates: Type.Optional(Type.Boolean()),
 			noContextFiles: Type.Optional(Type.Boolean()),
+			notify: Type.Optional(Type.Boolean({ description: "Spawn: ping the parent when the child finishes a turn or dies mid-turn; default true. Use false with wait for synchronous results" })),
 			message: Type.Optional(Type.String({ description: "Required for send" })),
 			followUp: Type.Optional(Type.Boolean()),
 			timeoutSeconds: Type.Optional(Type.Integer({ minimum: 1, description: "Wait deadline; default 1800 seconds" })),

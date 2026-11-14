@@ -3,9 +3,9 @@ import { test } from "node:test";
 import { mkdtempSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import extension from "../extensions/subagent/index.ts";
+import extension, { reportCrashedRuns } from "../extensions/subagent/index.ts";
 import { runSubagent, type ParentContext } from "../extensions/subagent/operations.ts";
-import { inboxDir, updateMetadata } from "../extensions/subagent/shared.ts";
+import { inboxDir, readMetadata, readPendingEvents, updateMetadata, writeEvent } from "../extensions/subagent/shared.ts";
 
 // A fake Rex executable exercises process integration without touching live Rex.
 test("subagent tool lifecycle", async (t) => {
@@ -20,6 +20,7 @@ const marker = path.join(process.env.PI_CODING_AGENT_DIR, 'stopped');
 const args = process.argv.slice(2);
 if (args[0] === 'new') console.log(JSON.stringify({ session_id: 'session', initial_windows: [{window_id:'window',block_ids:['block']}] }));
 else if (args[0] === 'api') console.log(JSON.stringify(fs.existsSync(marker) ? {} : {child:{pid:123}}));
+else if (args[0] === 'window' && args[1] === 'new') console.log(JSON.stringify({ window_id: 'window2', block_ids: ['block2'] }));
 else if (args[0] === 'window' && args[1] === 'close') fs.writeFileSync(marker, 'yes');
 else if (args[0] === 'window' && args[1] === 'ls') console.log(JSON.stringify({ windows: [] }));
 `, { mode: 0o755 });
@@ -67,6 +68,7 @@ else if (args[0] === 'window' && args[1] === 'ls') console.log(JSON.stringify({ 
 		assert.ok(run.launchArgs?.includes("--no-extensions"));
 		assert.ok(run.launchArgs?.some((arg) => arg.endsWith("subagent/index.ts")));
 		assert.equal(run.terminal?.block, "block");
+		assert.equal(run.notify, true);
 	});
 
 	await t.test("scopes list and handle operations to parent", async () => {
@@ -103,9 +105,11 @@ else if (args[0] === 'window' && args[1] === 'ls') console.log(JSON.stringify({ 
 		const sessionFile = join(root, "child.jsonl");
 		writeFileSync(sessionFile, JSON.stringify({ type: "message", id: "one", parentId: null, message: { role: "assistant", content: [{ type: "text", text: "Finished review" }], stopReason: "error" } }) + "\n");
 		updateMetadata(run.runDir, { state: "idle", hasStarted: true, sessionFile });
+		writeEvent(parent.sessionId, { handle, kind: "failed", entryId: "one", excerpt: "Finished review" });
 		const response = await runSubagent({ action: "wait", handle }, parent);
 		assert.equal(response.text, "Finished review");
 		assert.equal(response.isError, true);
+		assert.deepEqual(readPendingEvents(parent.sessionId), []);
 		writeFileSync(sessionFile, JSON.stringify({ type: "message", id: "one", parentId: null, message: { role: "assistant", content: [{ type: "text", text: "x".repeat(60_000) }], stopReason: "stop" } }) + "\n");
 		const toolResult = await registeredTool.execute("test", { action: "wait", handle }, undefined, undefined, {
 			sessionManager: { getSessionId: () => parent.sessionId, getSessionFile: () => parent.sessionFile },
@@ -120,5 +124,21 @@ else if (args[0] === 'window' && args[1] === 'ls') console.log(JSON.stringify({ 
 		await runSubagent({ action: "stop", handle }, parent);
 		assert.equal((await runSubagent({ action: "list" }, parent)).runs.length, 0);
 		assert.equal(readFileSync(sessionFile, "utf8").includes("x".repeat(60_000)), true);
+	});
+
+	await t.test("reports a busy child that died once, and not opted-out runs", async () => {
+		// The "stopped" marker makes the fake Rex report every child as exited.
+		const crashed = (await runSubagent({ action: "spawn", name: "crashy", prompts: ["task"] }, parent)).runs[0];
+		const quiet = (await runSubagent({ action: "spawn", prompts: ["task"], notify: false }, parent)).runs[0];
+		assert.equal(quiet.notify, false);
+		updateMetadata(crashed.runDir, { state: "busy" });
+		updateMetadata(quiet.runDir, { state: "busy" });
+		await reportCrashedRuns(parent.sessionId);
+		await reportCrashedRuns(parent.sessionId);
+		assert.deepEqual(readPendingEvents(parent.sessionId).map(({ event }) => event), [{ handle: crashed.handle, name: "crashy", kind: "crashed" }]);
+		assert.equal(readMetadata(crashed.runDir)?.state, "exited");
+		assert.equal(readMetadata(quiet.runDir)?.state, "busy");
+		await runSubagent({ action: "stop", handle: crashed.handle }, parent);
+		await runSubagent({ action: "stop", handle: quiet.handle }, parent);
 	});
 });
