@@ -32,7 +32,7 @@
     "work/gpt-6-astra:high"
   ],
   "extensionChangelogVersions": {
-    "{\"source\":\"npm:@gotgenes/pi-anthropic-auth\",\"scope\":\"user\"}": "3.4.4"
+    "{\"source\":\"npm:@gotgenes/pi-anthropic-auth\",\"scope\":\"user\"}": "3.6.0"
   },
   "enableInstallTelemetry": false
 }
