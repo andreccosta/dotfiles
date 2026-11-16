@@ -20,7 +20,7 @@ Commands:
 
 Each open creates a new session, initially labelled <repo>/<branch>
 (just <repo> for the primary checkout). Labels are never used for lookup.
-If a worktree already exists, create/review will suggest using open instead.
+If a review worktree already exists, review will suggest using open instead.
 Focusing needs Remote Control turned on in Rex.app (Settings > Rex Server).
 Focusing automatically targets the app that owns the invoking terminal pane.
 
@@ -142,9 +142,6 @@ cmd_create() {
   cwd="$(checkout_root)"
   source="$(source_root "$cwd")"
 
-  if path="$(resolve_worktree_path "$cwd" "$branch")"; then
-    existing_worktree "$path"
-  fi
   if [[ -n "$base" ]]; then
     out="$(wt -C "$cwd" switch --create "$branch" --base "$base" --no-cd --format=json)"
   else
@@ -206,21 +203,23 @@ resolve_worktree_path() {
     checkout_root "$root"
     return
   fi
-  wt -C "$root" list --format=json | python3 -c '
-import json, os, sys
+  git -C "$root" worktree list --porcelain -z | python3 -c '
+import os, sys
 root, target = sys.argv[1:]
 # Worktrunk runs from the checkout root, so resolve relative paths the same way, and
 # compare real paths so symlinked checkouts still match.
 real_target = os.path.realpath(os.path.join(root, target))
-data = json.load(sys.stdin)
-for item in data.get("items", []):
-    wt = item.get("worktree") or {}
-    path = wt.get("path")
-    if not path:
-        continue
-    if item.get("branch") == target or os.path.realpath(path) == real_target:
-        print(path)
-        sys.exit(0)
+path = branch = None
+for field in sys.stdin.buffer.read().decode().split("\0"):
+    if field.startswith("worktree "):
+        path, branch = field[len("worktree "):], None
+    elif field.startswith("branch refs/heads/"):
+        branch = field[len("branch refs/heads/"):]
+    elif field == "" and path:
+        if branch == target or os.path.realpath(path) == real_target:
+            print(path)
+            sys.exit(0)
+        path = None
 sys.exit(1)
 ' "$root" "$target"
 }

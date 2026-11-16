@@ -27,10 +27,7 @@ if name == 'wt':
     if command == 'switch':
         print(json.dumps({'path': os.environ['REVIEW'], 'action': os.environ.get('WT_ACTION', 'created')}))
     elif command == 'list':
-        print(json.dumps({'items': [
-            {'branch': 'feature/review', 'worktree': {'path': os.environ['REVIEW']}},
-            {'branch': 'feature/normal', 'worktree': {'path': os.environ['NORMAL']}}
-        ]}))
+        raise AssertionError('worktrees must resolve via git worktree list')
     elif command == 'remove':
         sys.exit(int(os.environ['REMOVE_FAIL']))
 elif name == 'paseo':
@@ -192,12 +189,6 @@ for tool in hwt pwt rwt; do
       grep -q 'worktree already exists; use `rwt open ' "$sandbox/stderr"
       assert_no_ui
     done
-    : > "$CALLS"
-    if bash "$script" create feature/review 2> "$sandbox/stderr"; then
-      printf 'FAIL: create accepted an existing worktree\n' >&2; exit 1
-    fi
-    grep -q 'worktree already exists; use `rwt open ' "$sandbox/stderr"
-    assert_no_ui
   fi
   ln -sfn "$ROOT" "$sandbox/link"
   if [[ "$tool" == pwt ]]; then
