@@ -44,7 +44,6 @@ home
 agents
 ghostty
 herdr
-kanata
 nvim
 opencode
 pi
@@ -62,9 +61,6 @@ linearmouse
 EOF
       ;;
     Linux)
-      cat <<'EOF'
-linux-hypr
-EOF
       if [ -f /etc/arch-release ]; then
         echo linux-arch
       fi
