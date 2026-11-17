@@ -46,6 +46,12 @@ test("rejects ordinary OpenAI keys and empty LB key prefixes", () => {
 test("registers work with catalog models, URL precedence, and Codex-only idempotent cleanup", async () => {
 	const names = ["CODEX_LB_URL", "CODEX_LB_BASE_URL", "CODEX_LB_API_KEY", "CODEX_LB_TRANSPORT"];
 	const saved = Object.fromEntries(names.map((name) => [name, process.env[name]]));
+	const originalFetch = globalThis.fetch;
+	globalThis.fetch = async (url, init) => {
+		assert.match(String(url), /http:\/\/(primary|fallback)\.example:2455\/v1\/models$/);
+		assert.equal((init?.headers as Record<string, string>).Authorization, "Bearer sk-clb-test");
+		return Response.json({ data: [{ id: "gpt-6.2-sol" }] });
+	};
 	try {
 		process.env.CODEX_LB_API_KEY = "sk-clb-test";
 		process.env.CODEX_LB_BASE_URL = "http://fallback.example:2455/v1";
@@ -59,7 +65,8 @@ test("registers work with catalog models, URL precedence, and Codex-only idempot
 				on: (event: string, handler: () => void) => { assert.equal(event, "session_shutdown"); cleanup = handler; },
 			} as unknown as ExtensionAPI);
 			assert.ok(registration);
-			assert.ok(registration.models && registration.models.length > 0);
+			assert.deepEqual(registration.models?.map((model) => model.id), ["gpt-6.2-sol"]);
+			assert.equal(typeof registration.refreshModels, "function");
 			assert.equal(registration.apiKey, "$CODEX_LB_API_KEY");
 			assert.equal(registration.api, transport === "codex" ? CODEX_API_ID : API_ID);
 			assert.equal(registration.baseUrl, `http://primary.example:2455/${transport === "codex" ? "backend-api" : "v1"}`);
@@ -79,6 +86,7 @@ test("registers work with catalog models, URL precedence, and Codex-only idempot
 			on: () => assert.fail("must not register handlers without an environment key"),
 		} as unknown as ExtensionAPI);
 	} finally {
+		globalThis.fetch = originalFetch;
 		for (const name of names) {
 			if (saved[name] === undefined) delete process.env[name];
 			else process.env[name] = saved[name];

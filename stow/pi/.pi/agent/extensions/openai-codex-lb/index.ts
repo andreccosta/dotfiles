@@ -1,6 +1,6 @@
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import { loadOpenAICodexLbAdapter } from "./clone.ts";
-import { loadOpenAICodexModels } from "./models.ts";
+import { createModelDiscovery } from "./discovery.ts";
 
 export const PROVIDER_ID = "work";
 export const API_ID = "openai-responses";
@@ -67,15 +67,21 @@ export default async function openAICodexLbExtension(pi: ExtensionAPI) {
 
 	const baseUrl = normalizeBaseUrl(configuredBaseUrl, transport);
 	const apiKey = resolveApiKeyConfig();
-	const models = loadOpenAICodexModels();
 	const adapter = transport === "codex" ? await loadOpenAICodexLbAdapter() : undefined;
+	const discovery = createModelDiscovery({
+		baseUrl,
+		api: adapter ? CODEX_API_ID : API_ID,
+		apiKey: () => process.env[API_KEY_ENV]?.trim() ?? "",
+	});
+	await discovery.initialize();
 
 	pi.registerProvider(PROVIDER_ID, {
 		name: "Work (OpenAI Codex LB)",
 		baseUrl,
 		apiKey,
 		api: adapter ? CODEX_API_ID : API_ID,
-		models,
+		models: discovery.models,
+		refreshModels: (context) => discovery.refreshModels(context),
 		...(adapter ? { streamSimple: adapter.streamSimple } : {}),
 	});
 
