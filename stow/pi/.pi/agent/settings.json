@@ -24,9 +24,13 @@
   "enabledModels": [
     "anthropic/claude-opus-5-5:medium",
     "anthropic/claude-fable-5-2:high",
+    "openai-codex/gpt-6.2-sol:medium",
+    "openai-codex/gpt-6.2-astra:medium",
     "openai-codex/gpt-6.1-sol:medium",
     "openai-codex/gpt-6.1-terra:medium",
     "openai-codex/gpt-6-astra:high",
+    "work/gpt-6.2-sol:medium",
+    "work/gpt-6.2-astra:medium",
     "work/gpt-6.1-sol:medium",
     "work/gpt-6.1-terra:medium",
     "work/gpt-6-astra:high"
