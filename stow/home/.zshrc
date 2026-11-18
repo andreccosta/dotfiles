@@ -103,7 +103,7 @@ bindkey -- $'\e[4~' end-of-line
 bindkey -- $'\e[8~' end-of-line
 
 # completion - optimized for speed
-autoload -Uz compinit add-zsh-hook
+autoload -Uz compinit
 ZCD="$_ZSH_CACHE_DIR/.zcompdump"
 
 # Trust shared Homebrew completions owned by my other local account.

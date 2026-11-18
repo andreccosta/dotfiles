@@ -535,10 +535,6 @@ export function resolveRunState(metadata: RunMetadata, liveness: ChildLiveness):
 	return liveness === "exited" ? "exited" : metadata.state;
 }
 
-export function effectiveRunState(metadata: RunMetadata): RunState {
-	return resolveRunState(metadata, metadata.terminal ? childLiveness(metadata.terminal) : "exited");
-}
-
 export async function effectiveRunStateAsync(metadata: RunMetadata, signal?: AbortSignal): Promise<RunState> {
 	return resolveRunState(metadata, metadata.terminal ? await childLivenessAsync(metadata.terminal, signal) : "exited");
 }
