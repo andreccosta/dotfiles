@@ -1,8 +1,22 @@
 #!/bin/bash
+# Shared PATH setup, sourced by .zshenv (zsh) and .profile (bash).
 
-# go
 export GOPATH="$HOME/code/go"
-export PATH="$PATH:$GOPATH/bin"
 
-# user bin
-export PATH="$PATH:$HOME/bin"
+# Move an existing directory to the front of PATH, dropping any other copy.
+_path_prepend() {
+  [ -d "$1" ] || return 0
+  local rest=":$PATH:"
+  rest="${rest//":$1:"/:}"
+  rest="${rest#:}"
+  rest="${rest%:}"
+  PATH="$1${rest:+:$rest}"
+}
+
+_path_prepend "$HOME/bin"
+_path_prepend "$HOME/.local/bin"
+_path_prepend "$GOPATH/bin"
+_path_prepend "$HOME/.cargo/bin"
+unset -f _path_prepend
+
+export PATH

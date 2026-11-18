@@ -24,14 +24,7 @@ _zsh_cached_init() {
 # PATH handling (idempotent)
 typeset -U path PATH
 
-export GOPATH="$HOME/code/go"
-
-[[ -d "$HOME/bin" ]] && path=("$HOME/bin" $path)
-[[ -d "$HOME/.local/bin" ]] && path=("$HOME/.local/bin" $path)
-[[ -d "$GOPATH/bin" ]] && path=("$GOPATH/bin" $path)
-[[ -d "$HOME/.cargo/bin" ]] && path=("$HOME/.cargo/bin" $path)
-
-export PATH
+[[ -r ~/.path ]] && source ~/.path
 
 [[ -r ~/.exports ]] && source ~/.exports
 
