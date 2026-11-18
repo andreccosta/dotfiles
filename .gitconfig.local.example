@@ -3,7 +3,7 @@
 # Shared Git configuration enables SSH signing; each machine selects its key here.
 # Work-directory-specific includes may intentionally override these settings.
 
-# Option 1: 1Password on macOS.
+# Option 1: 1Password (Linux: /opt/1Password/op-ssh-sign).
 # Replace the placeholder with the SSH public key stored in 1Password.
 # The helper avoids depending on SSH_AUTH_SOCK or ~/.ssh/config.
 # [user]
@@ -17,7 +17,11 @@
 # [user]
 #     signingkey = ~/.ssh/git_signing_key
 
-# To require an agent instead, use the public-key (.pub) path and ensure
-# SSH_AUTH_SOCK points to the agent holding the matching private key.
+# Option 3: an SSH agent, e.g. 1Password forwarded with `ssh -A`.
+# Use the public key (.pub path or key string) and leave gpg.ssh.program
+# unset; SSH_AUTH_SOCK must point to the agent holding the private key.
+# [user]
+#     signingkey = ~/.ssh/git_signing_key.pub
+
 # Keep private keys out of this repository. Add trusted signing PUBLIC keys
 # to stow/home/.config/git/allowed_signers for local signature verification.

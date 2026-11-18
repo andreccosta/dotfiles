@@ -61,7 +61,7 @@ sudo pacman -S stow
 
 1. Ensures `git` and `stow` are installed
 2. Stows the default package set from `stow/` into `$HOME`
-3. Configures git commit signing for this machine and checks the GitHub SSH setup (see [Git signing & SSH on a new machine](#git-signing--ssh-on-a-new-machine))
+3. Checks the git commit signing and GitHub SSH setup (see [Git signing & SSH on a new machine](#git-signing--ssh-on-a-new-machine))
 4. Makes `zsh` the default shell if available
 
 When installing the `home` package, `./dot install` also rebuilds bat's theme cache if `bat` is on PATH. Machines without bat skip this step; after installing it, rerun `./dot install home` or run `bat cache --build`.
@@ -130,35 +130,31 @@ To let `rwt` switch Rex.app to the session, turn on Remote Control in Rex.app's 
 
 ## Git signing & SSH on a new machine
 
-Commits and tags are signed with SSH keys. The shared `stow/home/.gitconfig` uses the 1Password **Github Signing Key**, and per-machine choices go in the untracked `~/.gitconfig.local`. That file is included last, so it overrides the shared config.
+Commits and tags are signed with SSH keys. The shared `stow/home/.gitconfig` enables signing but sets no key: each machine picks its key in the untracked `~/.gitconfig.local`, which is included last. [`.gitconfig.local.example`](.gitconfig.local.example) is a starting point.
 
-`./dot install` (when installing the `home` package) works out the signing setup for each machine:
+`./dot install` (when installing the `home` package) never edits `~/.gitconfig.local`. It only warns when signing is enabled but `user.signingkey` is unset or points to a missing file, or `gpg.ssh.program` doesn't exist.
 
-| Machine | What `./dot install` does | Signs with |
-| --- | --- | --- |
-| 1Password app installed and SSH agent running | sets `gpg.ssh.program` to `op-ssh-sign` | 1Password signing key |
-| 1Password installed but SSH agent off | warns; enable it in 1Password > Settings > Developer | - |
-| `~/.gitconfig.local` sets `user.signingkey` | keeps it | that key file |
-| No 1Password, nothing configured, run from a terminal | asks once: pick a key in `~/.ssh`, generate a dedicated one, use a forwarded agent, or skip | your choice |
-| No 1Password, nothing configured, no terminal | prints the manual commands below | - |
+### Setup
 
-A saved `gpg.ssh.program` path that no longer exists is removed.
-
-### Manual setup
-
-On a machine without 1Password, choose one of:
+Choose one:
 
 ```bash
+# 1Password. Point the key at the signing key's public key (exported .pub file
+# or the key string), and enable 1Password > Settings > Developer > SSH agent.
+# Linux: /opt/1Password/op-ssh-sign
+git config --file ~/.gitconfig.local user.signingkey ~/.ssh/op_github_signing_key.pub
+git config --file ~/.gitconfig.local gpg.ssh.program /Applications/1Password.app/Contents/MacOS/op-ssh-sign
+
 # Key file on this machine. Works unattended (e.g. coding agents), so use a
 # dedicated key without a passphrase that you can revoke separately.
 git config --file ~/.gitconfig.local user.signingkey ~/.ssh/<private_key>
 
-# Forwarded 1Password agent. Only works while connected with `ssh -A`
-# (or `ForwardAgent yes`); approvals happen on the local machine.
-git config --file ~/.gitconfig.local dotfiles.signing agent
+# Forwarded agent (e.g. 1Password over `ssh -A` or `ForwardAgent yes`). Use the
+# public key; only signs while connected, approvals happen on the local machine.
+git config --file ~/.gitconfig.local user.signingkey ~/.ssh/<public_key>.pub
 ```
 
-For a key file, point `user.signingkey` at the **private** key, so signing doesn't need an agent. Then:
+For a new key, then:
 
 1. Add its public key on GitHub as a **Signing key** (Settings > SSH and GPG keys).
 2. Add it to `stow/home/.config/git/allowed_signers` so `git log --show-signature` can verify it locally:
