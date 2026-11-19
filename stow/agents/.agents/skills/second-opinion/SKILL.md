@@ -11,7 +11,7 @@ This is a skill, not a `second-opinion` shell command; no helper or compatibilit
 
 ## 1. Select the runtime and reviewer
 
-Prefer the host's native subagent and messaging facilities when they support the requested reviewer/model, fresh conversation context, access to the current working tree, reliable completion detection, and follow-ups with the same reviewer. Load and follow their guidance. Select agent creation and messaging together: independently launched terminals are not automatically reachable through native agent messaging.
+Prefer the host's native subagent and messaging facilities when they support the requested reviewer/model, fresh conversation context, access to the current working tree, reliable completion detection, and follow-ups with the same reviewer. Load and follow their guidance. Select agent creation and messaging together: independently launched terminals are not automatically reachable through native agent messaging, unless both sides support local peer messaging (see *Peer messaging* below), which then replaces file-based completion.
 
 Otherwise, choose the Herdr/Rex fallback from the current environment, not whichever app happens to be focused:
 
@@ -53,6 +53,16 @@ Pass prompt text as a single literal argument, never through `eval` or interpola
 
 Start a fresh reviewer and send the prepared prompt through the native facility. Follow its guidance for messaging, completion detection, collecting the full response, and follow-ups with the same reviewer. Save its returned handles in the recovery notes. Do not also launch a Herdr/Rex reviewer. If it cannot preserve the reviewer's conversation across rounds, use a fallback instead.
 
+### Peer messaging (Herdr/Rex launch, peer delivery)
+
+When both the caller and the reviewer are harness sessions that can message local peers (for example Claude Code's `ListAgents`/`SendMessage`), launch the reviewer through Herdr or Rex as below but exchange every prompt and response through peer messaging instead of findings files or terminal scraping:
+
+- Launch the reviewer with a unique session name (e.g. `claude --name <reviewer-name>`), and no extra directory grants: it needs no notes-directory access.
+- Resolve your own peer name (e.g. from `ListAgents`) and include it in the initial prompt. Instruct the reviewer to send its complete response, ending with the verdict, to that name via peer messaging when the round is done, and to keep its terminal reply to a one-line pointer.
+- Confirm the reviewer appears in the peer listing before sending follow-ups. Send each follow-up to the reviewer's name via peer messaging; do not type into its terminal.
+- The arrival of the reviewer's message is the completion signal; do not poll for it. Use terminal capture only to detect startup failures, dialogs, or an exited reviewer, and report those to the user.
+- If peer messaging fails or the reviewer never appears as a peer, fall back to the mechanism's own completion convention below.
+
 ### Herdr
 
 Load the `herdr` skill first, then apply this workflow-specific layout override: open a new background tab in the current workspace instead of Herdr's default sibling pane. A request for a second opinion through this skill selects this layout; no separate topology request is needed. Keep the reviewer in the repository/worktree being reviewed. All other Herdr safety and coordination rules still apply.
@@ -86,7 +96,7 @@ rex block call -s "$reviewer_session" -b "$reviewer_block" process
 
 Use the returned session/block IDs, not inherited `REX_SESSION`/`REX_BLOCK`. `rex new` leaves the displayed session unchanged; do not select it unless asked. `--shell=none` prevents an exited reviewer from leaving a shell that could interpret a follow-up as a command.
 
-Rex has no Herdr-style harness-aware idle/blocked wait. Use an explicit completion convention: for each round, name a **new** findings path such as `<notes-dir>/findings-1.md`. Instruct the reviewer to write the full findings to a separate temporary file, publish it at the named path only when complete (for example by renaming it), and then reply that the round is complete. Grant only the required temporary-directory access using supported harness options, if needed; do not bypass approvals globally.
+Rex has no Herdr-style harness-aware idle/blocked wait. Prefer peer messaging (above) when available; otherwise use an explicit completion convention: for each round, name a **new** findings path such as `<notes-dir>/findings-1.md`. Instruct the reviewer to write the full findings to a separate temporary file, publish it at the named path only when complete (for example by renaming it), and then reply that the round is complete. Grant only the required temporary-directory access using supported harness options, if needed; do not bypass approvals globally.
 
 Check the file and capture/process state at bounded intervals, for up to about 540 seconds per wait. A published file must contain the round's full response and final verdict; a running process, echoed prompt, old round's file, or wait timeout is not completion. Confirm the reviewer has finished its turn and is ready for input before any follow-up. If it is still working, keep waiting; if it needs approval, tell the user. If it exited, report that continuity is lost rather than sending text to a shell or silently replacing it.
 
@@ -117,7 +127,7 @@ If either command fails, inspect before doing anything else: delivery may be par
    Checks: <commands run and results>
    ```
 
-   Ask it to re-review the current working tree against the original merge-base SHA and report *Resolved*, *Not resolved*, *Discarded findings* (whether it accepts each discard/deferral and why), and *New findings*. Preserve existing finding numbers; number new ones after previous findings. Do not re-raise accepted resolutions/discards. When disputing new evidence, explain what is still wrong and what would change its mind instead of repeating the prior argument. End with a fresh verdict and, for Rex, publish to the new round's findings path. Update recovery notes before and after delivery.
+   Ask it to re-review the current working tree against the original merge-base SHA and report *Resolved*, *Not resolved*, *Discarded findings* (whether it accepts each discard/deferral and why), and *New findings*. Preserve existing finding numbers; number new ones after previous findings. Do not re-raise accepted resolutions/discards. When disputing new evidence, explain what is still wrong and what would change its mind instead of repeating the prior argument. End with a fresh verdict and deliver it the same way as round 1 (peer message, or for Rex without peers, the new round's findings path). Update recovery notes before and after delivery.
 6. **Repeat** steps 2-5 until the reviewer returns `VERDICT: approved` or accepts every remaining discard and deferral, or the user stops.
 7. **Finish** with a short summary: what was fixed, what was discarded and why (and whether the reviewer agreed), the number of rounds, the final verdict, and the reviewer's location.
 
