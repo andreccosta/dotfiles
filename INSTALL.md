@@ -162,7 +162,7 @@ For a new key, then:
 
 ### SSH authentication with 1Password
 
-`./dot install` only checks these and prints what's missing. It never edits `~/.ssh`.
+SSH authentication is separate from commit signing. `./dot install` does not check or modify `~/.ssh`; configure authentication separately if needed.
 
 ```sshconfig
 # ~/.ssh/config: use the 1Password agent

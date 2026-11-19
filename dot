@@ -372,6 +372,22 @@ sync_claude_skills() {
   done
 }
 
+# Log short, non-interactive install steps without printing successful output.
+run_install_step() {
+  local output status
+
+  printf '> %s\n' "$*"
+  if output="$("$@" 2>&1)"; then
+    return 0
+  else
+    status=$?
+    if [ -n "$output" ]; then
+      printf '%s\n' "$output" >&2
+    fi
+    return "$status"
+  fi
+}
+
 link_herdr_worktrunk_plugin() {
   local plugin_path="$HOME/.config/herdr/plugins/worktrunk"
 
@@ -391,40 +407,14 @@ EOF
   fi
 
   echo
-  echo "> herdr plugin link $plugin_path --enabled"
-  if ! herdr plugin link "$plugin_path" --enabled; then
+  if ! run_install_step herdr plugin link "$plugin_path" --enabled; then
     echo "warning: failed to link Herdr Worktrunk plugin" >&2
     return 0
   fi
 
-  echo "> herdr server reload-config"
-  if ! herdr server reload-config; then
+  if ! run_install_step herdr server reload-config; then
     echo "warning: Herdr server is not running or config reload failed; the plugin will load next time Herdr starts" >&2
   fi
-}
-
-op_agent_socket_path() {
-  case "$(uname -s)" in
-    Darwin) printf '%s\n' "$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock" ;;
-    Linux) printf '%s\n' "$HOME/.1password/agent.sock" ;;
-    *) return 1 ;;
-  esac
-}
-
-op_agent_running() {
-  local socket
-
-  socket="$(op_agent_socket_path)" || return 1
-  [ -S "$socket" ]
-}
-
-# Display a path with $HOME shortened to ~.
-# shellcheck disable=SC2088 # a literal ~ is intended for display
-tilde_path() {
-  case "$1" in
-    "$HOME"/*) printf '~/%s\n' "${1#"$HOME"/}" ;;
-    *) printf '%s\n' "$1" ;;
-  esac
 }
 
 # Report (never edit) a missing git signing setup. The shared .gitconfig
@@ -469,42 +459,6 @@ warning: git commit signing is enabled but not set up ($problem).
 EOF
 }
 
-# Report (never edit) SSH settings that the 1Password setup relies on.
-check_github_ssh() {
-  local socket
-  local agent
-
-  command_exists ssh || return 0
-
-  if [ ! -f "$HOME/.ssh/known_hosts" ] || ! ssh-keygen -F github.com >/dev/null 2>&1; then
-    cat <<EOF
-
-Note: github.com is not in ~/.ssh/known_hosts. Add it with:
-  ssh-keyscan github.com >> ~/.ssh/known_hosts
-and compare the fingerprints (ssh-keygen -lf ~/.ssh/known_hosts) against
-https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/githubs-ssh-key-fingerprints
-EOF
-  fi
-
-  op_agent_running || return 0
-  socket="$(op_agent_socket_path)"
-
-  agent="$(ssh -G github.com </dev/null 2>/dev/null | awk '/^identityagent / { sub(/^identityagent /, ""); print }')"
-  if [ -z "$agent" ] || [ "$agent" = "SSH_AUTH_SOCK" ]; then
-    agent="${SSH_AUTH_SOCK:-}"
-  fi
-  agent="${agent/#\~/$HOME}"
-
-  if [ "$agent" != "$socket" ]; then
-    cat <<EOF
-
-Note: ssh does not use the 1Password SSH agent for github.com. Add to ~/.ssh/config:
-  Host *
-    IdentityAgent "$(tilde_path "$socket")"
-EOF
-  fi
-}
-
 run_install() {
   run_stow -R "$@"
 
@@ -514,10 +468,8 @@ run_install() {
 
   if [ "${RUN_STOW_SKIP_RECONCILE:-0}" -eq 0 ] && package_list_contains home; then
     check_git_signing
-    check_github_ssh
     if command_exists bat; then
-      echo "> bat cache --build"
-      bat cache --build
+      run_install_step bat cache --build
     fi
   fi
 
