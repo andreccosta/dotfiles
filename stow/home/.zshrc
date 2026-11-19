@@ -172,6 +172,3 @@ fi
 if [[ -o interactive && -t 0 ]]; then
   _zsh_cached_init fzf --zsh
 fi
-
-# rex
-[[ -r /opt/homebrew/share/rexurrect/rexurrect.plugin.zsh ]] && source /opt/homebrew/share/rexurrect/rexurrect.plugin.zsh
