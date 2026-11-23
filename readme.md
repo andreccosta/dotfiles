@@ -79,6 +79,30 @@ rex config check
 rex config reload
 ```
 
+### Resuming agents after a server restart
+
+Rex restores sessions, windows and blocks (same IDs, working directories) but
+not the programs in them. `~/.config/rex/resume.zsh` (sourced from `.zshrc`)
+fills the gap for `claude` and `pi`: in a block's outermost shell, they run
+through wrappers that keep a per-block record of the conversation under
+`~/.local/state/rex-resume/`, deleted when the agent exits normally. When a
+restored block's shell starts with a record left, the resume command
+(`claude --resume <id>` or `pi --session <file>`) is typed at the prompt for
+you to run.
+
+Conversations are recorded once saved, after their first reply. Pi records
+through `stow/pi/.pi/agent/extensions/rex-resume.ts`. Claude needs this hook
+under both `SessionStart` and `Stop` in `~/.claude/settings.json`, which isn't
+tracked here:
+
+```json
+{ "hooks": [{ "type": "command", "command": "sh ~/.config/rex/claude-resume-hook.sh" }] }
+```
+
+Agents started outside the wrappers (`command claude`, a full path, nested in
+another agent or in a multiplexer inside the block) aren't recorded. Startup
+flags such as `--model` aren't kept.
+
 ## Agent skills
 
 Shared agent skills live in the `agents` Stow package. See [stow/agents/README.md](stow/agents/README.md) for the `second-opinion` workflow.

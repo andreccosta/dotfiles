@@ -166,6 +166,9 @@ if [[ -o interactive ]]; then
     "/opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 
   unfunction _source_first_readable
+
+  # Resume claude/pi in blocks restored by Rex (rex package).
+  [[ -r ~/.config/rex/resume.zsh ]] && source ~/.config/rex/resume.zsh
 fi
 
 # fzf integration
