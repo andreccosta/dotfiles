@@ -46,6 +46,8 @@ $ ./dot update
 - Linux (Debian/Ubuntu): `sudo apt-get update && sudo apt-get upgrade -y`, then `mise up`
 - Linux (Arch): `paru -Syu` or `yay -Syu` if available, then `mise up`
 
+After `mise up`, `./dot update` runs `pi update --all` if `pi` is on `PATH`.
+
 ## macOS bootstrap
 
 ```console

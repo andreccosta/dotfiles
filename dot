@@ -21,7 +21,7 @@ Usage: ./dot <command> [package...]
 
 Commands:
   install    Sync the default or specified dotfiles packages into $HOME
-  update     Update system packages and mise tools
+  update     Update system packages, mise tools, and Pi packages (if available)
   macos      Install macOS Brewfile packages and apply macOS defaults
   help       Show this help message
 EOF
@@ -520,6 +520,12 @@ run_update() {
   echo
   echo "> mise up"
   mise up
+
+  if command_exists pi; then
+    echo
+    echo "> pi update --all"
+    pi update --all
+  fi
 }
 
 run_macos() {

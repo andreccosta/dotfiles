@@ -97,6 +97,8 @@ Update system packages and mise tools:
 - Linux (Debian/Ubuntu): runs `sudo apt-get update && sudo apt-get upgrade -y`, then `mise up`
 - Linux (Arch): runs `paru -Syu` or `yay -Syu` if available, then `mise up`
 
+After `mise up`, `./dot update` runs `pi update --all` if `pi` is on `PATH`.
+
 Install macOS Brewfile packages and apply macOS defaults:
 
 ```bash
