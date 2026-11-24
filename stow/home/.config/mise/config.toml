@@ -16,7 +16,7 @@ zig = "latest"
 env_shell_expand = true
 idiomatic_version_file_enable_tools = ["ruby"]
 minimum_release_age = "12h"
-minimum_release_age_excludes = ["claude", "codex", "herdr", "opencode", "npm:@earendil-works/pi-coding-agent", "npm:paseo"]
+minimum_release_age_excludes = ["claude", "codex", "herdr", "opencode", "npm:@earendil-works/pi-coding-agent", "npm:@getpaseo/cli"]
 
 [settings.ruby]
 compile = false
