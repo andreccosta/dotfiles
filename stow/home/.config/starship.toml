@@ -32,7 +32,7 @@ error_symbol = '[❯](bold red)'
 
 [hostname]
 ssh_only = false
-detect_env_vars = ["SSH_CONNECTION", "REX_SESSION"]
+detect_env_vars = ["SSH_CONNECTION", "REX_BLOCK"]
 style = "10"
 
 [cmd_duration]

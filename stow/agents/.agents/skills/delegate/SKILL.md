@@ -34,7 +34,7 @@ Prefer the host's native subagent and messaging facilities when they support the
 Otherwise, choose the Herdr/Rex fallback from the current environment, not whichever app happens to be focused:
 
 - If `test "${HERDR_ENV:-}" = 1` passes, follow the Herdr flow below and load the `herdr` skill first.
-- Otherwise, if `REX_SESSION` is nonempty, follow the Rex flow below and load the `rex` skill first. Verify the inherited session is live with `rex whoami --json` before creating anything.
+- Otherwise, if `REX_BLOCK` is nonempty, follow the Rex flow below and load the `rex` skill first. Verify the inherited session is live with `rex whoami --json` before creating anything.
 - If neither applies, do not control either app. Look up the worktree path with the command below, report the branch and path, suggest `wt switch <branch> -x <agent-cli>`, and stop.
 
 For native subagents, Rex, or the outside-app fallback, obtain the absolute worktree path with structured output; require exactly one nonempty matching path before continuing:
@@ -86,7 +86,7 @@ rex new <ticket-id-lowercase> -c "$worktree_path" --window Agent --json -- <agen
 
 Replace the command placeholders with the harness's CLI and arguments that pass `"$handoff"` as its initial prompt. Do not use a one-shot/print mode; the user must be able to continue the conversation.
 
-Save `.session_id` and `.initial_windows[0].block_ids[0]` from the response. Use these new IDs, not the caller's inherited `REX_SESSION`/`REX_BLOCK`. `rex new` leaves the user's displayed session unchanged; do not select it unless asked.
+Save `.session_id` and `.initial_windows[0].block_ids[0]` from the response. Use these new IDs, not the caller's inherited `REX_BLOCK`. `rex new` leaves the user's displayed session unchanged; do not select it unless asked.
 
 Confirm the agent started and received the task by inspecting the new block:
 

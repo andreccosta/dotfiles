@@ -16,7 +16,7 @@ Prefer the host's native subagent and messaging facilities when they support the
 Otherwise, choose the Herdr/Rex fallback from the current environment, not whichever app happens to be focused:
 
 - If `HERDR_ENV=1`, load the `herdr` skill and follow the Herdr flow below.
-- Otherwise, if `REX_SESSION` is nonempty, load the `rex` skill and follow its installed guide. Verify the inherited session is live with `rex whoami --json` before creating anything.
+- Otherwise, if `REX_BLOCK` is nonempty, load the `rex` skill and follow its installed guide. Verify the inherited session is live with `rex whoami --json` before creating anything.
 - If neither applies, report the blocker without controlling either app.
 
 Default to a different harness than the caller: codex when you are claude, otherwise claude, using its default model. Honor an explicitly requested reviewer/model. Resolve the caller from your known harness or native runtime process/agent information, not the terminal app or model name. If you cannot identify it, say so rather than claiming a guaranteed different harness. Check the installed runtime and harness help for supported arguments; report unavailable reviewers instead of silently substituting another.
@@ -94,7 +94,7 @@ rex capture -s "$reviewer_session" -b "$reviewer_block" --trim --unwrap
 rex block call -s "$reviewer_session" -b "$reviewer_block" process
 ```
 
-Use the returned session/block IDs, not inherited `REX_SESSION`/`REX_BLOCK`. `rex new` leaves the displayed session unchanged; do not select it unless asked. `--shell=none` prevents an exited reviewer from leaving a shell that could interpret a follow-up as a command.
+Use the returned session/block IDs, not inherited `REX_BLOCK`. `rex new` leaves the displayed session unchanged; do not select it unless asked. `--shell=none` prevents an exited reviewer from leaving a shell that could interpret a follow-up as a command.
 
 Rex has no Herdr-style harness-aware idle/blocked wait. Prefer peer messaging (above) when available; otherwise use an explicit completion convention: for each round, name a **new** findings path such as `<notes-dir>/findings-1.md`. Instruct the reviewer to write the full findings to a separate temporary file, publish it at the named path only when complete (for example by renaming it), and then reply that the round is complete. Grant only the required temporary-directory access using supported harness options, if needed; do not bypass approvals globally.
 

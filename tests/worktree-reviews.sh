@@ -39,6 +39,8 @@ elif name == 'paseo':
 elif name == 'rex':
     if args[:2] == ['ls', '--json']:
         raise AssertionError('rwt must not look up sessions by label')
+    elif args[:2] == ['whoami', '--json']:
+        print(json.dumps({'session_id': 'current-session'}))
     elif args[0] == 'new':
         print(json.dumps({'session_id': 'new-session'}))
     elif args[:2] == ['block', 'call']:
@@ -52,8 +54,8 @@ chmod +x "$sandbox/bin/mock"
 for name in wt herdr paseo rex; do ln -s mock "$sandbox/bin/$name"; done
 export PATH="$sandbox/bin:$PATH" HERDR_ENV=1 HERDR_WORKSPACE_ID=current-ws
 export HERDR_BIN_PATH="$sandbox/bin/herdr" PASEO_BIN_PATH="$sandbox/bin/paseo"
-export REX_BIN_PATH="$sandbox/bin/rex" REX_SESSION=current-session
-unset REX_CLIENT REX_BLOCK
+export REX_BIN_PATH="$sandbox/bin/rex" REX_BLOCK=current-block
+unset REX_CLIENT
 assert_call() {
   python3 - "$@" <<'PY'
 import json, os, sys
@@ -65,7 +67,7 @@ assert_no_rex_open() {
   python3 - <<'PY'
 import json, os
 calls = [json.loads(line) for line in open(os.environ['CALLS'])]
-assert not any(c[0] == 'rex' and c[1] != 'kill' for c in calls), calls
+assert not any(c[0] == 'rex' and c[1] not in ('kill', 'whoami') for c in calls), calls
 PY
 }
 assert_no_ui() {
@@ -157,17 +159,17 @@ for tool in hwt pwt rwt; do
     grep -q 'Remote Control is disabled' "$sandbox/stderr"
     # The invoking pane's owner selects the app, even with multiple apps attached.
     : > "$CALLS"
-    REX_BLOCK=current-block PANE_OWNER=owning-client bash "$script" open feature/review
-    assert_call rex block call -s current-session -b current-block size
+    PANE_OWNER=owning-client bash "$script" open feature/review
+    assert_call rex block call -b current-block size
     assert_call rex -C owning-client "do" session.select session_id=new-session
     # Pane ownership takes priority over an inherited client setting.
     : > "$CALLS"
-    REX_CLIENT=other-client REX_BLOCK=current-block PANE_OWNER=owning-client bash "$script" open feature/review
-    assert_call rex block call -s current-session -b current-block size
+    REX_CLIENT=other-client PANE_OWNER=owning-client bash "$script" open feature/review
+    assert_call rex block call -b current-block size
     assert_call rex -C owning-client "do" session.select session_id=new-session
     # Missing ownership falls back to Rex's default client selection.
     : > "$CALLS"
-    REX_BLOCK=current-block bash "$script" open feature/review
+    bash "$script" open feature/review
     assert_call rex "do" session.select session_id=new-session
     # Explicit opens always create fresh sessions.
     : > "$CALLS"
@@ -243,7 +245,7 @@ for tool in hwt pwt rwt; do
     assert_no_rex_open
     # Outside a Rex session, removal must not invoke Rex at all.
     : > "$CALLS"
-    (unset REX_SESSION; bash "$script" remove)
+    (unset REX_BLOCK; bash "$script" remove)
     assert_no_ui
   fi
   cd "$ROOT"

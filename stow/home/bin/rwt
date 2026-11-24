@@ -114,8 +114,8 @@ focus_session() {
   local client_args=()
   # A session may be attached to several apps; the invoking pane's owner is
   # more specific than session membership.
-  if [[ -n "${REX_SESSION:-}" && -n "${REX_BLOCK:-}" ]]; then
-    client="$("$REX_BIN" block call -s "$REX_SESSION" -b "$REX_BLOCK" size 2>/dev/null | json_field owner)" || client=""
+  if [[ -n "${REX_BLOCK:-}" ]]; then
+    client="$("$REX_BIN" block call -b "$REX_BLOCK" size 2>/dev/null | json_field owner)" || client=""
   fi
   [[ -z "$client" ]] || client_args=(-C "$client")
   if error="$("$REX_BIN" ${client_args[@]+"${client_args[@]}"} "do" session.select "session_id=$id" 2>&1 >/dev/null)"; then
@@ -239,7 +239,7 @@ cmd_review() {
 }
 
 cmd_remove() {
-  local target="${1:-}" cwd source removed_root
+  local target="${1:-}" cwd source removed_root session
   [[ $# -le 1 ]] || fail "remove accepts at most: [branch-or-path]"
 
   cwd="$(checkout_root)"
@@ -260,8 +260,10 @@ cmd_remove() {
   fi
 
   # Only the invoking session has a known ID; never look up sessions by label.
-  if [[ -n "${REX_SESSION:-}" && "$removed_root" == "$cwd" && "$removed_root" != "$source" ]]; then
-    "$REX_BIN" kill "$REX_SESSION" >/dev/null || true
+  # Rex resolves it from REX_BLOCK, which still names the live invoking pane.
+  if [[ -n "${REX_BLOCK:-}" && "$removed_root" == "$cwd" && "$removed_root" != "$source" ]]; then
+    session="$("$REX_BIN" whoami --json 2>/dev/null | json_field session_id)" || session=""
+    [[ -z "$session" ]] || "$REX_BIN" kill "$session" >/dev/null || true
   fi
 }
 
