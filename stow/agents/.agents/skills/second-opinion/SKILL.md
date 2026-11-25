@@ -1,6 +1,6 @@
 ---
 name: second-opinion
-description: "Get a second opinion from another coding agent (different harness or model) on the current changes, preferring native subagent facilities with Herdr or Rex as fallbacks. Iterate directly with the reviewer, escalating to the user only significant direction changes or open questions. Use when asked for a second opinion, a cross-check, a review by claude/codex/pi/opencode or another model, or to have changes reviewed by another agent."
+description: "Get a second opinion from another coding agent (different harness or model) on the current changes, preferring native subagent facilities with Rex as fallback. Iterate directly with the reviewer, escalating to the user only significant direction changes or open questions. Use when asked for a second opinion, a cross-check, a review by claude/codex/pi/opencode or another model, or to have changes reviewed by another agent."
 ---
 
 # Second opinion
@@ -11,11 +11,7 @@ A request like "ask for a second opinion" means the whole loop below. Run it wit
 
 Prefer the host's native subagent and messaging facilities when they support the requested reviewer/model, fresh conversation context, access to the current working tree, reliable completion detection, and follow-ups with the same reviewer. Load and follow their guidance. Launch and messaging must use the same mechanism, or peer messaging (see below).
 
-Otherwise, choose the Herdr/Rex fallback from the current environment, not whichever app happens to be focused:
-
-- If `HERDR_ENV=1`, load the `herdr` skill and follow the Herdr flow below.
-- Otherwise, if `REX_BLOCK` is nonempty, load the `rex` skill and follow its installed guide. Verify the inherited session is live with `rex whoami --json` before creating anything.
-- If neither applies, report the blocker without controlling either app.
+Otherwise, if `REX_BLOCK` is nonempty, load the `rex` skill and follow the Rex flow below. Verify the inherited session is live with `rex whoami --json` before creating anything. If not, report the blocker.
 
 Default to a different harness than the caller: codex when you are claude, otherwise claude, using its default model. Honor an explicitly requested reviewer/model. Resolve the caller from your known harness or native runtime process/agent information, not the terminal app or model name. If you cannot identify it, say so rather than claiming a guaranteed different harness. Check the installed runtime and harness help for supported arguments; report unavailable reviewers instead of silently substituting another.
 
@@ -28,7 +24,7 @@ Resolve the absolute repository path and base: the user's requested base, otherw
 Create a unique temporary directory outside the repository for recovery notes and, when needed, complete findings. Record there:
 
 - selected mechanism, reviewer harness/model, repository, base, merge-base SHA, and focus;
-- returned native agent/session handles, Herdr agent/tab/pane IDs, or Rex session/block IDs;
+- returned native agent/session handles or Rex session/block IDs;
 - current round, prompt text, whether delivery was attempted/confirmed/uncertain, findings, and responses.
 
 Save returned IDs immediately, and keep the notes path in your conversation summary before compaction. Use the saved runtime and IDs for follow-ups, never the caller's IDs or UI focus. Before each send, record the round and delivery attempt; after a timeout or transport error, inspect state before retrying. Do not send a duplicate prompt or create a duplicate reviewer merely because a command timed out. If notes are lost, inspect native runtime listings and the existing reviewer; do not guess IDs or silently start over.
@@ -49,37 +45,17 @@ Pass prompt text as a single literal argument, never through `eval` or interpola
 
 ### Native subagents (preferred when supported)
 
-Start a fresh reviewer and send the prepared prompt through the native facility. Follow its guidance for messaging, completion detection, collecting the full response, and follow-ups with the same reviewer. Do not also launch a Herdr/Rex reviewer. If it cannot preserve the reviewer's conversation across rounds, use a fallback instead.
+Start a fresh reviewer and send the prepared prompt through the native facility. Follow its guidance for messaging, completion detection, collecting the full response, and follow-ups with the same reviewer. Do not also launch a Rex reviewer. If it cannot preserve the reviewer's conversation across rounds, use Rex instead.
 
-### Peer messaging (Herdr/Rex launch, peer delivery)
+### Peer messaging (Rex launch, peer delivery)
 
-When both the caller and the reviewer are harness sessions that can message local peers (for example Claude Code's `ListAgents`/`SendMessage`), launch the reviewer through Herdr or Rex as below but exchange every prompt and response through peer messaging instead of findings files or terminal scraping:
+When both the caller and the reviewer are harness sessions that can message local peers (for example Claude Code's `ListAgents`/`SendMessage`), launch the reviewer through Rex as below but exchange every prompt and response through peer messaging instead of findings files or terminal scraping:
 
 - Launch the reviewer with a unique session name (e.g. `claude --name <reviewer-name>`), and no extra directory grants: it needs no notes-directory access.
 - Resolve your own peer name (e.g. from `ListAgents`) and include it in the initial prompt. Instruct the reviewer to send its complete response, ending with the verdict, to that name via peer messaging when the round is done, and to keep its terminal reply to a one-line pointer.
 - Confirm the reviewer appears in the peer listing before sending follow-ups. Send each follow-up to the reviewer's name via peer messaging; do not type into its terminal.
 - The arrival of the reviewer's message is the completion signal; do not poll for it. Use terminal capture only to detect startup failures, dialogs, or an exited reviewer, and report those to the user.
-- If peer messaging fails or the reviewer never appears as a peer, fall back to the mechanism's own completion convention below.
-
-### Herdr
-
-Apply this workflow-specific layout override to the `herdr` skill: open a new background tab in the current workspace instead of Herdr's default sibling pane. A request for a second opinion through this skill selects this layout; no separate topology request is needed. Keep the reviewer in the repository/worktree being reviewed. All other Herdr safety and coordination rules still apply.
-
-```bash
-herdr agent list
-herdr tab create --workspace "$HERDR_WORKSPACE_ID" --cwd "$repo_path" --label "second opinion" --no-focus
-# Save .result.tab.tab_id and .result.root_pane.pane_id.
-herdr agent start "$reviewer_name" --kind "$reviewer_kind" --pane "$reviewer_pane" -- <native-agent-args>
-herdr agent prompt "$reviewer_name" "$prompt" --wait --timeout 540000
-herdr agent get "$reviewer_name"
-herdr agent read "$reviewer_name" --source recent-unwrapped --lines 120
-```
-
-Choose a unique live name matching `[a-z][a-z0-9_-]{0,31}`. Replace placeholders with resolved arguments and omit the final `--` if no native arguments are needed.
-
-After startup failure or a wait timeout, inspect `agent get` and `agent read`. Wait for `idle`/`done` before sending the initial prompt; if it is `blocked`, report the dialog rather than prompting into it. After a prompt was delivered, continue with `herdr agent wait "$reviewer_name" --timeout 540000`, not another `agent prompt`. `working`/`unknown` does not prove completion. Give your shell tool longer than the native timeout.
-
-Read the complete reviewer reply once settled. If terminal output is truncated or lost to an alternate screen, follow the Herdr skill's fallback: ask the idle reviewer to write the complete findings into the temporary directory, then read that file. Do not request file output initially for Herdr.
+- If peer messaging fails or the reviewer never appears as a peer, fall back to the Rex completion convention below.
 
 ### Rex
 
@@ -94,7 +70,7 @@ rex block call -s "$reviewer_session" -b "$reviewer_block" process
 
 Use the returned session/block IDs, not inherited `REX_BLOCK`. `rex new` leaves the displayed session unchanged; do not select it unless asked. `--shell=none` prevents an exited reviewer from leaving a shell that could interpret a follow-up as a command.
 
-Rex has no Herdr-style harness-aware idle/blocked wait. Prefer peer messaging (above) when available; otherwise use an explicit completion convention: for each round, name a **new** findings path such as `<notes-dir>/findings-1.md`. Instruct the reviewer to write the full findings to a separate temporary file, publish it at the named path only when complete (for example by renaming it), and then reply that the round is complete. Grant only the required temporary-directory access using supported harness options, if needed; do not bypass approvals globally.
+Rex has no harness-aware idle/blocked wait. Prefer peer messaging (above) when available; otherwise use an explicit completion convention: for each round, name a **new** findings path such as `<notes-dir>/findings-1.md`. Instruct the reviewer to write the full findings to a separate temporary file, publish it at the named path only when complete (for example by renaming it), and then reply that the round is complete. Grant only the required temporary-directory access using supported harness options, if needed; do not bypass approvals globally.
 
 Check the file and capture/process state at bounded intervals, for up to about 540 seconds per wait. A published file must contain the round's full response and final verdict; a running process, echoed prompt, old round's file, or wait timeout is not completion. Confirm the reviewer has finished its turn and is ready for input before any follow-up. If it is still working, keep waiting. If it exited, report that continuity is lost rather than sending text to a shell or silently replacing it.
 
@@ -135,4 +111,4 @@ If either fails, delivery may be partial; inspect first. Use the new round's fin
 6. **Repeat** until both agents agree there are no unresolved findings on the latest tree. A verdict alone isn't enough. If only *ask* items remain, pause until the user answers, then act on it and continue at step 5. If the same issues keep coming back without new evidence or progress, stop and bring the remaining items to the user.
 7. **Finish** with one summary: fixed, discarded (and whether the reviewer agreed), out of scope, stalemates, rounds, final verdict, reviewer location. Report stalemates as unresolved, not approved.
 
-Leave the reviewer's conversation and recovery notes available. **Clean up only when asked:** verify saved handles/IDs still identify what you created, close only that reviewer (native cleanup, `herdr tab close <reviewer-tab-id>`, or `rex kill <reviewer-session-id>`), never the caller's, then delete this review's temp dir.
+Leave the reviewer's conversation and recovery notes available. **Clean up only when asked:** verify saved handles/IDs still identify what you created, close only that reviewer (native cleanup or `rex kill <reviewer-session-id>`), never the caller's, then delete this review's temp dir.
