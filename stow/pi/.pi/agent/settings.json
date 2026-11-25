@@ -1,5 +1,5 @@
 {
-  "lastChangelogVersion": "1.6.0",
+  "lastChangelogVersion": "1.6.1",
   "theme": "terminal",
   "defaultProvider": "work",
   "defaultModel": "gpt-6.2-sol",
@@ -15,7 +15,6 @@
   "transport": "websocket-cached",
   "steeringMode": "all",
   "followUpMode": "all",
-  "showCacheMissNotices": true,
   "showHardwareCursor": true,
   "warnings": {
     "anthropicExtraUsage": false
@@ -32,5 +31,11 @@
   "extensionChangelogVersions": {
     "{\"source\":\"npm:@gotgenes/pi-anthropic-auth\",\"scope\":\"user\"}": "3.6.0"
   },
-  "enableInstallTelemetry": false
+  "enableInstallTelemetry": false,
+  "notices": {
+    "cacheMisses": true,
+    "cacheWarming": true,
+    "compactionCosts": true,
+    "reasoningDrops": true
+  }
 }
