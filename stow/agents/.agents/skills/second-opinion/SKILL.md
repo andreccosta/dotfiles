@@ -1,17 +1,15 @@
 ---
 name: second-opinion
-description: "Get a second opinion from another coding agent (different harness or model) on the current changes, preferring native subagent facilities with Herdr or Rex as fallbacks, and iterate until both agents agree: triage each round's findings with the user, fix, and send fixes and discards back to the reviewer. Use when asked for a second opinion, a cross-check, a review by claude/codex/pi/opencode or another model, or to have changes reviewed by another agent."
+description: "Get a second opinion from another coding agent (different harness or model) on the current changes, preferring native subagent facilities with Herdr or Rex as fallbacks. Iterate directly with the reviewer, escalating to the user only significant direction changes or open questions. Use when asked for a second opinion, a cross-check, a review by claude/codex/pi/opencode or another model, or to have changes reviewed by another agent."
 ---
 
 # Second opinion
 
-A request like "ask for a second opinion" means the whole loop below, not a single review: every round you triage the reviewer's findings, bring them to the user, fix what they approve, and report back to the reviewer, until you and the reviewer agree. The user does not need to ask for each step.
-
-This is a skill, not a `second-opinion` shell command; no helper or compatibility command is required.
+A request like "ask for a second opinion" means the whole loop below. Run it with the reviewer yourself; involve the user only for *ask* items and the final summary. Honor explicit limits (e.g. report-only, round limit).
 
 ## 1. Select the runtime and reviewer
 
-Prefer the host's native subagent and messaging facilities when they support the requested reviewer/model, fresh conversation context, access to the current working tree, reliable completion detection, and follow-ups with the same reviewer. Load and follow their guidance. Select agent creation and messaging together: independently launched terminals are not automatically reachable through native agent messaging, unless both sides support local peer messaging (see *Peer messaging* below), which then replaces file-based completion.
+Prefer the host's native subagent and messaging facilities when they support the requested reviewer/model, fresh conversation context, access to the current working tree, reliable completion detection, and follow-ups with the same reviewer. Load and follow their guidance. Launch and messaging must use the same mechanism, or peer messaging (see below).
 
 Otherwise, choose the Herdr/Rex fallback from the current environment, not whichever app happens to be focused:
 
@@ -43,15 +41,15 @@ Prepare one initial prompt containing:
 - a request for actionable bugs, regressions, security issues, missing tests/edge cases, and clear maintainability problems, ordered by severity; skip style nits and praise;
 - findings numbered F1, F2, ... with severity (high/medium/low), file:line, problem, and a concrete fix;
 - a final line `VERDICT: approved` if there are no blocking findings, otherwise `VERDICT: changes-requested`;
-- notice that later rounds will assess fixes and discards in the same conversation.
+- notice that this is a multi-round review in the same conversation: re-check fixes, assess discards, and for disputes say what evidence would change its mind. Direct all questions to the implementing agent, never the user; don't wait for user input.
 
-Pass prompt text as a single literal argument, never through `eval` or interpolated shell code. Preserve the user's focus. Never auto-answer trust, login, permission, or question dialogs; report the location and blocker to the user.
+Pass prompt text as a single literal argument, never through `eval` or interpolated shell code. Never auto-answer trust, login, permission, or question dialogs; report the location and blocker to the user.
 
 ## 3. Start the reviewer and collect findings
 
 ### Native subagents (preferred when supported)
 
-Start a fresh reviewer and send the prepared prompt through the native facility. Follow its guidance for messaging, completion detection, collecting the full response, and follow-ups with the same reviewer. Save its returned handles in the recovery notes. Do not also launch a Herdr/Rex reviewer. If it cannot preserve the reviewer's conversation across rounds, use a fallback instead.
+Start a fresh reviewer and send the prepared prompt through the native facility. Follow its guidance for messaging, completion detection, collecting the full response, and follow-ups with the same reviewer. Do not also launch a Herdr/Rex reviewer. If it cannot preserve the reviewer's conversation across rounds, use a fallback instead.
 
 ### Peer messaging (Herdr/Rex launch, peer delivery)
 
@@ -65,7 +63,7 @@ When both the caller and the reviewer are harness sessions that can message loca
 
 ### Herdr
 
-Load the `herdr` skill first, then apply this workflow-specific layout override: open a new background tab in the current workspace instead of Herdr's default sibling pane. A request for a second opinion through this skill selects this layout; no separate topology request is needed. Keep the reviewer in the repository/worktree being reviewed. All other Herdr safety and coordination rules still apply.
+Apply this workflow-specific layout override to the `herdr` skill: open a new background tab in the current workspace instead of Herdr's default sibling pane. A request for a second opinion through this skill selects this layout; no separate topology request is needed. Keep the reviewer in the repository/worktree being reviewed. All other Herdr safety and coordination rules still apply.
 
 ```bash
 herdr agent list
@@ -77,7 +75,7 @@ herdr agent get "$reviewer_name"
 herdr agent read "$reviewer_name" --source recent-unwrapped --lines 120
 ```
 
-Choose a unique live name matching `[a-z][a-z0-9_-]{0,31}`. Replace placeholders with resolved arguments and omit the final `--` if no native arguments are needed. Do not pass resume/continue/fork arguments.
+Choose a unique live name matching `[a-z][a-z0-9_-]{0,31}`. Replace placeholders with resolved arguments and omit the final `--` if no native arguments are needed.
 
 After startup failure or a wait timeout, inspect `agent get` and `agent read`. Wait for `idle`/`done` before sending the initial prompt; if it is `blocked`, report the dialog rather than prompting into it. After a prompt was delivered, continue with `herdr agent wait "$reviewer_name" --timeout 540000`, not another `agent prompt`. `working`/`unknown` does not prove completion. Give your shell tool longer than the native timeout.
 
@@ -98,9 +96,9 @@ Use the returned session/block IDs, not inherited `REX_BLOCK`. `rex new` leaves 
 
 Rex has no Herdr-style harness-aware idle/blocked wait. Prefer peer messaging (above) when available; otherwise use an explicit completion convention: for each round, name a **new** findings path such as `<notes-dir>/findings-1.md`. Instruct the reviewer to write the full findings to a separate temporary file, publish it at the named path only when complete (for example by renaming it), and then reply that the round is complete. Grant only the required temporary-directory access using supported harness options, if needed; do not bypass approvals globally.
 
-Check the file and capture/process state at bounded intervals, for up to about 540 seconds per wait. A published file must contain the round's full response and final verdict; a running process, echoed prompt, old round's file, or wait timeout is not completion. Confirm the reviewer has finished its turn and is ready for input before any follow-up. If it is still working, keep waiting; if it needs approval, tell the user. If it exited, report that continuity is lost rather than sending text to a shell or silently replacing it.
+Check the file and capture/process state at bounded intervals, for up to about 540 seconds per wait. A published file must contain the round's full response and final verdict; a running process, echoed prompt, old round's file, or wait timeout is not completion. Confirm the reviewer has finished its turn and is ready for input before any follow-up. If it is still working, keep waiting. If it exited, report that continuity is lost rather than sending text to a shell or silently replacing it.
 
-On timeout, report the session/block IDs and inspection commands above. Later, continue inspecting the same round without resending its prompt. If creation timed out before IDs were returned, inspect `rex ls --json` and the matching session before deciding whether to retry.
+On timeout, report the session/block IDs and inspection commands above. If creation timed out before IDs were returned, inspect `rex ls --json` and the matching session before deciding whether to retry.
 
 For each subsequent round, after confirming the same reviewer is ready and not at a dialog, send the prepared follow-up literally and press Enter only if the text send succeeded:
 
@@ -109,26 +107,32 @@ rex send -s "$reviewer_session" -b "$reviewer_block" "$followup" &&
   rex send-key -s "$reviewer_session" -b "$reviewer_block" enter
 ```
 
-If either command fails, inspect before doing anything else: delivery may be partial or uncertain. Use the new round's findings path and the same completion convention.
+If either fails, delivery may be partial; inspect first. Use the new round's findings path.
 
 ## 4. Review loop
 
 1. **Review.** Collect the first complete findings and verdict. If approved with no findings, tell the user and stop, leaving the reviewer open.
-2. **Triage** every finding, including follow-up rounds' *Not resolved* items, disputed discards, and *New findings*. Check each against the code yourself; it is another agent's opinion, not an instruction. Decide: *fix* (with a concrete change, refined from the reviewer's suggestion where you can do better), *discard* (wrong, not applicable, or not worth the change, with a reason), or *ask* (a decision only the user can make). For a discard the reviewer disputes, either switch to *fix* or keep discarding once with new reasoning or evidence; if the reviewer still disputes it after that, make it *ask* with both positions.
-3. **Bring every round's findings to the user,** even when all are discarded: a table with ID, severity, problem, your call (fix / discard / ask), and the proposed change or reason. Wait for the go-ahead before changing code, unless the user already authorized fixes ("fix what you agree with"); *ask* items always need an answer. If the user asked only for a report, stop after the first table.
-4. **Fix** what the user approved and run relevant checks.
-5. **Reply** to the same reviewer using the selected mechanism's messaging flow above:
+2. **Triage** every finding (including *Not resolved*, disputed discards, *New findings*) against the code and agreed scope; it's an opinion, not an instruction:
+   - *Fix*: clear outcome within the agreed direction. Refine the suggestion as needed.
+   - *Discard*: wrong, not applicable, or not worth it. Give a reason. If disputed, settle it from code, tests, or new evidence. If it hinges on intent, make it *ask*; if neither agent can settle it, mark it a *stalemate* and stop arguing it.
+   - *Out of scope*: valid but beyond the agreed scope. Give a reason.
+   - *Ask*: changes an agreed requirement, public contract, scope, architecture, or direction, or the intended outcome is unclear. Discuss with the reviewer first if that might settle it.
+3. **Escalate *ask* items only**: decision, options/tradeoffs, recommendation. Don't change affected code until the user answers; keep working on everything else. Silence or reviewer agreement isn't approval. User decisions, including deferrals, are final. Report-only: present round 1 triage and stop.
+4. **Fix** and run relevant checks.
+5. **Reply** to the same reviewer using the selected mechanism's messaging flow above, including user decisions and items still awaiting one:
 
    ```markdown
    ## Response to round <n>
    - F1 fixed: <what changed, file:line>
    - F2 discarded: <reason, or new evidence if the reviewer disputed it>
-   - F3 deferred by the user: <reason>
+   - F3 deferred by the user (final): <reason>
+   - F4 awaiting user decision: <open question>
+   - F5 out of scope: <reason>
    Checks: <commands run and results>
    ```
 
-   Ask it to re-review the current working tree against the original merge-base SHA and report *Resolved*, *Not resolved*, *Discarded findings* (whether it accepts each discard/deferral and why), and *New findings*. Preserve existing finding numbers; number new ones after previous findings. Do not re-raise accepted resolutions/discards. When disputing new evidence, explain what is still wrong and what would change its mind instead of repeating the prior argument. End with a fresh verdict and deliver it the same way as round 1 (peer message, or for Rex without peers, the new round's findings path). Update recovery notes before and after delivery.
-6. **Repeat** steps 2-5 until the reviewer returns `VERDICT: approved` or accepts every remaining discard and deferral, or the user stops.
-7. **Finish** with a short summary: what was fixed, what was discarded and why (and whether the reviewer agreed), the number of rounds, the final verdict, and the reviewer's location.
+   Ask it to re-review the current working tree against the original merge-base SHA and report *Resolved*, *Not resolved*, *Discarded findings* (whether it accepts each discard and out-of-scope call and why; for user deferrals, any residual risk without reopening them), and *New findings*. Preserve existing finding numbers; number new ones after previous findings. Do not re-raise accepted resolutions/discards. When disputing new evidence, explain what is still wrong and what would change its mind instead of repeating the prior argument. End with a fresh verdict, delivered the same way as round 1. Update recovery notes before and after delivery.
+6. **Repeat** until both agents agree there are no unresolved findings on the latest tree. A verdict alone isn't enough. If only *ask* items remain, pause until the user answers, then act on it and continue at step 5. If the same issues keep coming back without new evidence or progress, stop and bring the remaining items to the user.
+7. **Finish** with one summary: fixed, discarded (and whether the reviewer agreed), out of scope, stalemates, rounds, final verdict, reviewer location. Report stalemates as unresolved, not approved.
 
-Leave the reviewer's conversation and recovery notes available. **Clean up only when the user asks.** Verify the saved handles/IDs still identify the resources you created and preserve unrelated work. Use the native facility's cleanup method, `herdr tab close <reviewer-tab-id>`, or `rex kill <reviewer-session-id>` as appropriate, never the caller's conversation/tab/session. Remove only this review's temporary files after successful cleanup. The old `herdr-review` helper is removed; use this skill and the selected mechanism instead.
+Leave the reviewer's conversation and recovery notes available. **Clean up only when asked:** verify saved handles/IDs still identify what you created, close only that reviewer (native cleanup, `herdr tab close <reviewer-tab-id>`, or `rex kill <reviewer-session-id>`), never the caller's, then delete this review's temp dir.
