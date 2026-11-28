@@ -63,6 +63,7 @@ avoids extra harness-specific links; the skills remain shared by all harnesses.
 | `herdr` | [dmmulroy/.dotfiles](https://github.com/dmmulroy/.dotfiles/tree/main/home/.agents/skills/herdr) |
 | `gh-stack` | [github/gh-stack](https://github.com/github/gh-stack/tree/main/skills/gh-stack) |
 | `show-me` | [humanlayer/skills](https://github.com/humanlayer/skills/tree/main/plugins/show-me/skills/show-me) |
+| `slack-messaging` | [slackapi/slack-skills-plugin](https://github.com/slackapi/slack-skills-plugin/tree/main/skills/slack-messaging) |
 | `thermo-nuclear-code-quality-review` | [cursor/plugins](https://github.com/cursor/plugins/tree/main/cursor-team-kit/skills/thermo-nuclear-code-quality-review) |
 
 Use a temporary shell helper to keep commands short and the CLI version pinned:
@@ -89,10 +90,7 @@ Edit our own `delegate` and `second-opinion` skills directly with Git, never
 through `skills`. Other local or installer-owned skills (including Plannotator
 and Rex) are also outside this workflow.
 
-Repository metadata and licenses are excluded from Stow. The retained
-[gh-stack MIT notice](licenses/gh-stack.LICENSE) accompanies the initial import
-from `bd0a32504f9ae9f795875a9e6bb90ff7408fda08`. Install its CLI separately:
-`gh extension install github/gh-stack`.
+Repository metadata and licenses are excluded from Stow.
 
 ## second-opinion
 

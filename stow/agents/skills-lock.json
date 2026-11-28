@@ -27,6 +27,12 @@
       "skillPath": "plugins/show-me/skills/show-me/SKILL.md",
       "computedHash": "43766f53afe7eb9feba0bb7716590c35cbb8d39d4a91eddef50e9566a6f6ae19"
     },
+    "slack-messaging": {
+      "source": "slackapi/slack-skills-plugin",
+      "sourceType": "github",
+      "skillPath": "skills/slack-messaging/SKILL.md",
+      "computedHash": "d7999b5b50d3fccab79bfcf5288bbf71a8db0ab6a3c3e586d8b7dfeea2f66053"
+    },
     "thermo-nuclear-code-quality-review": {
       "source": "cursor/plugins",
       "ref": "main",
