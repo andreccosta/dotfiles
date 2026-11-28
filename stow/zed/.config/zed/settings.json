@@ -1,6 +1,7 @@
 {
+  "cli_default_open_behavior": "new_window",
   "project_panel": {
-    "dock": "right"
+    "dock": "left"
   },
   "outline_panel": {
     "dock": "right"
@@ -48,31 +49,23 @@
     "show": true,
   },
   "auto_install_extensions": {
-    "cue": true,
     "docker-compose": true,
     "dockerfile": true,
-    "earthfile": true,
-    "elixir": true,
-    "erlang": true,
     "git-firefly": true,
-    "gleam": true,
     "html": true,
     "just": true,
     "log": true,
     "lua": true,
     "make": true,
+    "material-icon-theme": true,
     "nginx": true,
-    "proto": true,
     "rainbow-csv": true,
     "ruby": true,
     "scss": true,
     "sql": true,
-    "templ": true,
-    "terraform": true,
+    "tokyo-night": true,
     "toml": true,
-    "typst": true,
     "xml": true,
-    "zedokai": true,
     "zig": true,
   },
   "lsp": {
@@ -85,7 +78,7 @@
           "codeLens": true,
           "completion": true,
           "definition": true,
-          "diagnostics": false,
+          "diagnostics": true,
           "documentHighlights": true,
           "documentLink": true,
           "documentSymbols": true,
@@ -131,7 +124,14 @@
       "language_servers": [
         "!typescript-language-server",
         "!eslint",
-        "tsgo",
+        "vtsls",
+        "...",
+      ],
+    },
+    "TSX": {
+      "language_servers": [
+        "!typescript-language-server",
+        "!eslint",
         "vtsls",
         "...",
       ],
@@ -140,7 +140,6 @@
       "language_servers": [
         "!typescript-language-server",
         "!eslint",
-        "tsgo",
         "vtsls",
         "...",
       ],
@@ -152,9 +151,6 @@
   },
   "preview_tabs": {
     "enabled": false,
-  },
-  "language_models": {
-    "anthropic": {},
   },
   "agent": {
     "dock": "left",

@@ -2,25 +2,16 @@
   {
     "label": "rspec: all specs",
     "command": "bin/rspec",
-    "args": ["--no-profile", "--format progress"]
+    "args": ["--no-profile", "--format", "progress"]
   },
   {
     "label": "rspec: current spec",
     "command": "bin/rspec",
-    "args": ["--no-profile", "--format progress", "$ZED_FILE"]
+    "args": ["--no-profile", "--format", "progress", "$ZED_FILE"]
   },
   {
     "label": "rspec: current example",
     "command": "bin/rspec",
-    "args": ["--no-profile", "--format progress", "$ZED_FILE:$ZED_ROW"]
-  },
-  {
-    "label": "rspec: current spec, fail fast",
-    "command": "docker compose exec web bin/rspec",
-    "args": ["--no-profile", "--format progress", "--fail-fast", "$ZED_FILE"]
-  },
-  {
-    "label": "ruby: guard",
-    "command": "bin/guard"
+    "args": ["--no-profile", "--format", "progress", "$ZED_FILE:$ZED_ROW"]
   }
 ]
