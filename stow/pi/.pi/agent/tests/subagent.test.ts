@@ -4,7 +4,7 @@ import { mkdtempSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSyn
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import extension, { reportCrashedRuns } from "../extensions/subagent/index.ts";
-import { runSubagent, type ParentContext } from "../extensions/subagent/operations.ts";
+import { runSubagent, type ParentContext, type SubagentInput } from "../extensions/subagent/operations.ts";
 import { inboxDir, readMetadata, readPendingEvents, updateMetadata, writeEvent } from "../extensions/subagent/shared.ts";
 
 // A fake Rex executable exercises process integration without touching live Rex.
@@ -140,5 +140,21 @@ else if (args[0] === 'window' && args[1] === 'ls') console.log(JSON.stringify({ 
 		assert.equal(readMetadata(quiet.runDir)?.state, "busy");
 		await runSubagent({ action: "stop", handle: crashed.handle }, parent);
 		await runSubagent({ action: "stop", handle: quiet.handle }, parent);
+	});
+
+	await t.test("disables MCP for allowlists that cannot reach it", async () => {
+		const cases: [Partial<SubagentInput>, boolean][] = [
+			[{}, false],
+			[{ noMcp: true }, true],
+			[{ tools: ["read", "grep"] }, true],
+			[{ tools: ["read", "codemode"] }, false],
+			[{ tools: ["read", "tool_search"] }, false],
+			[{ tools: ["read", "mcp__linear__*"] }, false],
+		];
+		for (const [input, disabled] of cases) {
+			const child = (await runSubagent({ action: "spawn", prompts: ["task"], notify: false, ...input }, parent)).runs[0];
+			assert.equal(child.launchArgs?.includes("--no-mcp"), disabled, JSON.stringify(input));
+			await runSubagent({ action: "stop", handle: child.handle }, parent);
+		}
 	});
 });

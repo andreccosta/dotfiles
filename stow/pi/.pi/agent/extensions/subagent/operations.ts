@@ -27,6 +27,7 @@ export interface SubagentInput {
 	noSkills?: boolean;
 	noPromptTemplates?: boolean;
 	noContextFiles?: boolean;
+	noMcp?: boolean;
 	notify?: boolean;
 	message?: string;
 	followUp?: boolean;
@@ -66,6 +67,12 @@ async function withState(run: RunMetadata): Promise<RunMetadata> {
 	return { ...run, state: await effectiveRunStateAsync(run) };
 }
 
+// MCP tools are reached only through codemode, tool_search, or mcp__ patterns; any
+// other allowlist would still connect to every server and expose its direct tools.
+function allowlistReachesMcp(tools: string[]): boolean {
+	return tools.some((tool) => tool === "codemode" || tool === "tool_search" || tool.startsWith("mcp__"));
+}
+
 function spawn(input: SubagentInput, parent: ParentContext): RunMetadata {
 	if (process.env.PI_SUBAGENT_RUN_DIR) throw new Error("Nested subagents are disabled");
 	const name = input.name === undefined ? undefined : checkedName(input.name);
@@ -92,6 +99,7 @@ function spawn(input: SubagentInput, parent: ParentContext): RunMetadata {
 	mkdirSync(inboxDir(runDir), { recursive: true, mode: 0o700 });
 	const launchArgs: string[] = [];
 	if (input.tools) launchArgs.push("--tools", input.tools.join(","));
+	if (input.noMcp || (input.tools && !allowlistReachesMcp(input.tools))) launchArgs.push("--no-mcp");
 	if (input.noExtensions) launchArgs.push("--no-extensions");
 	// Always load the control bridge, even if this extension was explicitly loaded
 	// in the parent rather than installed in an auto-discovered location.

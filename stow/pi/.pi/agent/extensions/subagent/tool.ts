@@ -25,6 +25,7 @@ export function registerSubagentTool(pi: ExtensionAPI): void {
 			noSkills: Type.Optional(Type.Boolean()),
 			noPromptTemplates: Type.Optional(Type.Boolean()),
 			noContextFiles: Type.Optional(Type.Boolean()),
+			noMcp: Type.Optional(Type.Boolean({ description: "Disable MCP servers; implied when tools omits codemode, tool_search, and mcp__ patterns" })),
 			notify: Type.Optional(Type.Boolean({ description: "Spawn: ping the parent when the child finishes a turn or dies mid-turn; default true. Use false with wait for synchronous results" })),
 			message: Type.Optional(Type.String({ description: "Required for send" })),
 			followUp: Type.Optional(Type.Boolean()),

@@ -15,6 +15,8 @@ Local changes:
 - Bound tool output to 50KB/2000 lines and return run identifiers/transcript paths in details.
 - Explicitly load the child control bridge even when normal extensions are disabled.
 - Update the bundled skill to describe the tool rather than CLI commands.
+- Spawn with `--no-mcp` (upstream's opt-in flag) automatically when the `tools` allowlist
+  cannot reach MCP: no `codemode`, `tool_search`, or `mcp__` patterns. `noMcp` forces it.
 - Children ping the parent with a batched message, once the parent is idle, when they finish a
   turn or die mid-turn, via events in `subagents/events/<parentSessionId>/`, so the
   parent need not block on `wait`. Spawn with `notify: false` to opt out.

@@ -39,12 +39,21 @@ Omit `tools` to inherit normal child defaults and configuration. To constrain a
 read-only investigation, use `tools: ["read", "grep", "find", "ls"]`. Bash can
 modify files and is not a read-only capability.
 
+MCP tools, from user or project `mcp.json`, are reachable only through `codemode`
+or `tool_search`. A `tools` list without either, and without `mcp__` patterns,
+spawns the child with MCP disabled. To give a constrained child MCP access, add
+`codemode` or `tool_search`; these reach every MCP tool, including ones that write,
+unless the list also names `mcp__<server>__*` patterns, for example
+`tools: ["read", "grep", "find", "ls", "codemode", "mcp__linear__*"]`.
+Project servers load only when the child's `cwd` has a stored trust decision.
+
 Optional spawn flags:
 
 - `noExtensions`: disable normal extension discovery; the child control bridge is still explicitly loaded.
 - `noSkills`: hide installed skills.
 - `noPromptTemplates`: disable prompt templates.
 - `noContextFiles`: ignore repository instruction files; avoid for implementation work.
+- `noMcp`: disable MCP servers even when `tools` is omitted.
 
 An unrecognized project trust context is declined rather than leaving the child
 blocked on a trust prompt. Stored project trust decisions are respected.
