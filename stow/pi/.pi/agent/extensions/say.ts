@@ -85,6 +85,8 @@ export default function sayExtension(pi: ExtensionAPI): void {
 		},
 	});
 
+	pi.on("agent_start", stop);
+
 	pi.on("agent_end", (_event, ctx) => {
 		if (autoRead) speak(ctx);
 	});
